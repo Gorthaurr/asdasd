@@ -1,0 +1,168 @@
+/* ============================================
+   TechHome — типографика + упрощённый футер
+   (Роутинг НЕ меняем; карточки/бейджи — как были)
+   ============================================ */
+
+/* === 0) ЕДИНАЯ ТИПОГРАФИКА === */
+/* Подключаем Inter (легковесно через Google Fonts). Если офлайн — упадёт на системные. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root{
+    --focus: #9ad0ff;           /* кольцо фокуса */
+    --primary-strong: #7bb1ff;  /* акцент (сердце/бейджи/ссылки) */
+    --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    /* Базовая типографика (размер/рост текста по сайту) */
+    --fs-base: 16px;      /* размер основного текста */
+    --lh-base: 1.5;       /* межстрочный интервал */
+    --ls-base: 0.01em;    /* лёгкое межбуквенное */
+    --fs-small: 0.92rem;  /* подписи/вспомогательный */
+    --fs-h1: 1.75rem;
+    --fs-h2: 1.35rem;
+    --fs-h3: 1.15rem;
+}
+
+html{ -webkit-text-size-adjust: 100%; }
+body{
+    font-family: var(--font-sans);      /* единый шрифт */
+    font-size: var(--fs-base);
+    line-height: var(--lh-base);
+    letter-spacing: var(--ls-base);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, h4{
+    font-family: var(--font-sans);
+    letter-spacing: 0.01em;
+    line-height: 1.25;
+    margin: 0 0 .5em;
+}
+h1{ font-size: var(--fs-h1); }
+h2{ font-size: var(--fs-h2); }
+h3{ font-size: var(--fs-h3); }
+small, .muted, .caption{ font-size: var(--fs-small); }
+
+/* Кнопки/инпуты — тот же шрифт, без «прыжков» */
+button, input, select, textarea{
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: 1.2;
+}
+
+/* Ссылки — единый стиль */
+a{
+    color: var(--primary-strong);
+    text-decoration-thickness: 1.4px;
+    text-underline-offset: 3px;
+}
+a:hover{ text-decoration: underline; }
+
+/* === 1) ЕДИНЫЙ FEEDBACK ДЛЯ КЛИКАБЕЛЬНЫХ (как раньше, но кратко) === */
+.btn, .icon-btn, .qty-btn, .checkout, .chip, .fav, a, [role="button"]{
+    transition: transform .06s ease, filter .12s ease, box-shadow .2s ease, background-color .2s ease, color .2s ease;
+}
+.btn:hover, .icon-btn:hover, .qty-btn:hover, .checkout:hover, .chip:hover, .fav:hover, a:hover, [role="button"]:hover{
+    filter: brightness(1.06);
+}
+.btn:active, .icon-btn:active, .qty-btn:active, .checkout:active, .chip:active, .fav:active, a:active, [role="button"]:active{
+    transform: translateY(1px) scale(0.985);
+    filter: brightness(0.97);
+}
+.btn:focus-visible, .icon-btn:focus-visible, .qty-btn:focus-visible, .checkout:focus-visible,
+.chip:focus-visible, .fav:focus-visible, a:focus-visible, [role="button"]:focus-visible{
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(154,208,255,0.25);
+}
+
+/* === 2) КАТАЛОГ: сердце и выравнивание низа (из прежних фиксов) === */
+.card .thumb{ position: relative; }
+.card .thumb .fav{
+    position: absolute; top: 10px; right: 10px; z-index: 3;
+    opacity: 1 !important; visibility: visible !important;
+}
+.card .thumb .fav svg path{ fill: none; stroke: currentColor; stroke-width: 1.5; }
+.card .thumb .fav.is-active svg path{ fill: var(--primary-strong); stroke: var(--primary-strong); }
+
+.card .content{ display: flex; flex-direction: column; }
+.card .name{
+    display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; line-height: 1.3; min-height: calc(1.3em * 2);
+}
+.card .meta{
+    display: flex; align-items: center; gap: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.card .price{
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; min-height: 40px; margin-top: auto;
+}
+.card .cost{ line-height: 1; }
+.card .qty-inline{ display: inline-grid; grid-auto-flow: column; align-items: center; gap: 8px; }
+.card .qty-inline .qty-btn{
+    width: 32px; height: 32px; border-radius: 8px; font-size: 18px; line-height: 1;
+    display: grid; place-items: center;
+}
+.card .qty-inline .qty-count{ min-width: 22px; text-align: center; font-weight: 700; }
+/* «Минус» неактивный — заметен, но выключен */
+.qty-btn:disabled{ opacity: .85; cursor: not-allowed; filter: none; transform: none; color: #8ea3c9; box-shadow: inset 0 0 0 1px #3a4260; }
+
+/* === 3) БЕЙДЖИ в хедере — синяя «пилюля», не перекрывает клики === */
+.actions .icon-btn{ position: relative; }
+.actions .icon-btn .badge{
+    position: absolute; top: 0; right: 0; transform: translate(40%,-40%);
+    min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px;
+    font-size: 12px; line-height: 18px; font-weight: 700;
+    background: var(--primary-strong); color: #0b0c0f;
+    border: 1px solid rgba(0,0,0,.25);
+    display: grid; place-items: center;
+    pointer-events: none;
+}
+
+/* === 4) ПРОСТОЙ СИММЕТРИЧНЫЙ ФУТЕР (без картинок/соцсетей) === */
+.site-footer{
+    margin-top: 32px;
+    background: linear-gradient(180deg, #101522, #0d101a);
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Верхний блок — 3 равные колонки: бренд (текст), Покупателям, Поддержка */
+.footer-simple{
+    padding: 24px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* симметрия */
+    gap: 16px;
+    align-items: start;
+}
+@media (max-width: 900px){ .footer-simple{ grid-template-columns: 1fr; } }
+
+/* Бренд (текст) */
+.fs-brand{ display: grid; gap: 6px; }
+.fs-title{ font-size: 1.1rem; margin: 0; }
+.fs-caption{ color: var(--muted); font-size: var(--fs-small); margin: 0; }
+
+/* Колонки ссылок */
+.fs-col h4{ margin: 0 0 8px; font-size: 1rem; }
+.fs-col ul{ list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.fs-col a{ color: #cfe2ff; text-decoration: none; }
+.fs-col a:hover{ text-decoration: underline; }
+
+/* Нижняя полоса */
+.fs-bottom{
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 10px 0 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    color: var(--muted);
+    font-size: var(--fs-small);
+}
+@media (max-width: 640px){
+    .fs-bottom{ grid-template-columns: 1fr; row-gap: 6px; }
+    .fs-bottom .fs-legal{ justify-self: start; }
+}
+.fs-bottom a{ color: #cfe2ff; text-decoration: none; }
+.fs-bottom a:hover{ text-decoration: underline; }

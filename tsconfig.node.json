@@ -1,0 +1,11 @@
+{
+  // Конфиг TypeScript для возможных node-утилит (скрипты, генераторы)
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS", // как у вас — совместимо с Node
+    "target": "ES2019", // безопасный таргет для Node LTS
+    "outDir": "./dist-node" // отделяем от фронтового билда
+  },
+  "include": ["scripts", "tools"], // если появятся скрипты (можно оставить пустым)
+  "exclude": ["src"] // не трогаем фронт
+}
