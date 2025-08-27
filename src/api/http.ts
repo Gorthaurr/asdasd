@@ -3,7 +3,7 @@ import axios from 'axios'; // HTTP-клиент
 
 
 const http = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL, // базовый URL берём из .env
+    baseURL: (import.meta as any).env.VITE_API_BASE_URL, // базовый URL берём из .env
     timeout: 10000, // таймаут 10 секунд
 });
 

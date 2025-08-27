@@ -34,6 +34,14 @@ export const selectFilteredSorted = createSelector(
         switch (cfg.sort) { // применяем сортировку
             case 'priceAsc': items.sort((a,b)=>a.price-b.price); break; // по цене ↑
             case 'priceDesc': items.sort((a,b)=>b.price-a.price); break; // по цене ↓
+            case 'nameAsc': items.sort((a,b)=>a.name.localeCompare(b.name)); break; // по названию А-Я
+            case 'nameDesc': items.sort((a,b)=>b.name.localeCompare(a.name)); break; // по названию Я-А
+            case 'rating': items.sort((a,b)=>b.rating-a.rating); break; // по рейтингу
+            case 'discount': items.sort((a,b)=>{
+                const discountA = a.oldPrice ? ((a.oldPrice - a.price) / a.oldPrice) * 100 : 0;
+                const discountB = b.oldPrice ? ((b.oldPrice - b.price) / b.oldPrice) * 100 : 0;
+                return discountB - discountA;
+            }); break; // по размеру скидки
             case 'new': items.sort((a,b)=>b.id-a.id); break; // по новизне (id)
             default: items.sort((a,b)=>b.rating-a.rating); // популярность (рейтинг)
         }

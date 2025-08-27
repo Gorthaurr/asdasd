@@ -1,0 +1,1790 @@
+/* ===== АНИМАЦИИ В СТИЛЕ REACT BITS ===== */
+
+/* === HERO АНИМАЦИИ === */
+.animated-hero {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-hero.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hero-title {
+    overflow: hidden;
+}
+
+.title-line {
+    display: block;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.title-line:nth-child(1) { animation-delay: 0.2s; }
+.title-line:nth-child(2) { animation-delay: 0.4s; }
+
+.title-line.highlight {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-description {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+}
+
+/* Плавающие фигуры */
+.floating-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    opacity: 0.1;
+    animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+    width: 60px;
+    height: 60px;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    width: 40px;
+    height: 40px;
+    top: 60%;
+    right: 15%;
+    animation-delay: 2s;
+}
+
+.shape-3 {
+    width: 30px;
+    height: 30px;
+    bottom: 20%;
+    left: 20%;
+    animation-delay: 4s;
+}
+
+.shape-4 {
+    width: 50px;
+    height: 50px;
+    top: 30%;
+    right: 30%;
+    animation-delay: 1s;
+}
+
+/* === АНИМИРОВАННЫЙ ПОИСК === */
+.animated-search {
+    position: relative;
+    background: var(--surface);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.animated-search.focused {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(110, 168, 254, 0.1);
+    transform: translateY(-2px);
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    transition: all 0.3s ease;
+}
+
+.animated-search.focused .search-icon {
+    color: var(--primary);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.animated-search input {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.animated-search input::placeholder {
+    color: var(--muted);
+    opacity: 0.7;
+    font-size: 14px;
+}
+
+.search-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(110, 168, 254, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-search.focused .search-ripple {
+    width: 300px;
+    height: 300px;
+}
+
+/* === АНИМИРОВАННЫЙ СЕЛЕКТ === */
+.animated-select {
+    position: relative;
+}
+
+.select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.select-trigger:hover {
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.select-trigger.open {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(110, 168, 254, 0.1);
+}
+
+.arrow {
+    transition: transform 0.3s ease;
+}
+
+.arrow.rotate {
+    transform: rotate(180deg);
+}
+
+.select-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: dropdownSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.select-option {
+    width: 100%;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.select-option:hover {
+    background: var(--surface-2);
+}
+
+.select-option.active {
+    background: var(--primary);
+    color: white;
+}
+
+/* === АНИМИРОВАННЫЕ ЧИПСЫ === */
+.animated-chips {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-chips.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.animated-chip {
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: chipSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.chip-text {
+    position: relative;
+    z-index: 2;
+}
+
+.chip-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-chip:active .chip-ripple {
+    width: 200px;
+    height: 200px;
+}
+
+.chip-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.animated-chip.is-active .chip-glow {
+    opacity: 0.2;
+}
+
+/* Анимация смены активного чипа */
+.animated-chip {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-chip.is-active {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.3);
+}
+
+.animated-chip:not(.is-active) {
+    transform: scale(1);
+    box-shadow: none;
+}
+
+/* === АНИМИРОВАННЫЕ КАРТОЧКИ ТОВАРОВ === */
+.animated-card {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-card.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.animated-card.hovered {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.card-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(110, 168, 254, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.animated-card.hovered .card-glow {
+    opacity: 1;
+}
+
+.card-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particleFloat 3s ease-in-out infinite;
+}
+
+.particle-1 {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.particle-2 {
+    top: 60%;
+    right: 15%;
+    animation-delay: 1s;
+}
+
+.particle-3 {
+    bottom: 30%;
+    left: 50%;
+    animation-delay: 2s;
+}
+
+/* === АНИМИРОВАННОЕ СЕРДЦЕ === */
+.animated-fav {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-fav:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.heart-path {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: rgba(255, 255, 255, 0.8);
+    transform-origin: center;
+}
+
+.animated-fav:hover .heart-path {
+    transform: scale(1.1);
+    color: rgba(255, 255, 255, 1);
+}
+
+.animated-fav.is-active {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.animated-fav.is-active .heart-path {
+    fill: var(--primary);
+    stroke: var(--primary);
+    color: var(--primary);
+    animation: heartBeat 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fav-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-fav:active .fav-ripple {
+    width: 100px;
+    height: 100px;
+}
+
+/* === АНИМИРОВАННЫЕ КНОПКИ КОЛИЧЕСТВА === */
+.animated-qty-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-qty-btn:hover {
+    transform: scale(1.1);
+}
+
+.animated-qty-btn:active {
+    transform: scale(0.95);
+}
+
+/* === АНИМИРОВАННЫЕ ИЗОБРАЖЕНИЯ === */
+.image-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(110, 168, 254, 0.2), rgba(124, 243, 208, 0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.animated-card:hover .image-overlay {
+    opacity: 1;
+}
+
+.view-details {
+    color: white;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    transform: translateY(10px);
+    transition: transform 0.3s ease;
+}
+
+.animated-card:hover .view-details {
+    transform: translateY(0);
+}
+
+/* === СТАТИСТИКА === */
+.stat-content {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.8s forwards;
+}
+
+.stat-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.stat-number {
+    color: var(--accent);
+    font-size: 1.2em;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 0.9em;
+}
+
+.stat-separator {
+    color: var(--muted);
+    margin: 0 4px;
+}
+
+/* === КЛЮЧЕВЫЕ КАДРЫ АНИМАЦИЙ === */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-20px) rotate(180deg);
+    }
+}
+
+@keyframes dropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes chipSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes particleFloat {
+    0%, 100% {
+        opacity: 0;
+        transform: translateY(0px);
+    }
+    50% {
+        opacity: 0.6;
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes heartBeat {
+    0% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.05);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    75% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* === АНИМИРОВАННЫЙ HEADER === */
+.animated-header {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-header.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.animated-brand {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+}
+
+.animated-logo {
+    position: relative;
+    overflow: hidden;
+}
+
+.logo-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 12px;
+}
+
+.animated-logo:hover .logo-glow {
+    opacity: 1;
+}
+
+.logo-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.logo-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    animation: logoParticleFloat 4s ease-in-out infinite;
+}
+
+.logo-particle.particle-1 {
+    top: 20%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.logo-particle.particle-2 {
+    top: 60%;
+    right: 20%;
+    animation-delay: 1.5s;
+}
+
+.logo-particle.particle-3 {
+    bottom: 30%;
+    left: 50%;
+    animation-delay: 3s;
+}
+
+.animated-title {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+}
+
+.title-main {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.title-subtitle {
+    opacity: 0;
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+}
+
+.animated-actions {
+    opacity: 0;
+    transform: translateX(20px);
+    animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+}
+
+.animated-icon-btn {
+    position: relative;
+    overflow: visible;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-icon-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+}
+
+.animated-icon-btn.is-active {
+    background: var(--primary);
+    color: white;
+}
+
+.icon-svg {
+    transition: all 0.3s ease;
+}
+
+.animated-icon-btn:hover .icon-svg {
+    transform: scale(1.1);
+}
+
+.heart-path {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-icon-btn:hover .heart-path {
+    transform: scale(1.1);
+}
+
+.animated-icon-btn.is-active .heart-path {
+    fill: var(--primary);
+    stroke: var(--primary);
+    color: var(--primary);
+    animation: heartBeat 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Дополнительные стили для сердечка в header */
+.animated-icon-btn .heart-path {
+    transform-origin: center;
+}
+
+.cart-path {
+    transition: all 0.3s ease;
+}
+
+.animated-icon-btn:hover .cart-path {
+    transform: scale(1.05);
+}
+
+.animated-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 0 6px;
+    box-shadow: 0 2px 8px rgba(110, 168, 254, 0.3);
+    animation: badgePulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+
+.badge-text {
+    position: relative;
+    z-index: 2;
+    line-height: 1;
+}
+
+.badge-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 10px;
+}
+
+.animated-badge:hover .badge-glow {
+    opacity: 1;
+}
+
+.cart-badge {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.btn-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-icon-btn:active .btn-ripple {
+    width: 100px;
+    height: 100px;
+}
+
+/* === ДОПОЛНИТЕЛЬНЫЕ АНИМАЦИИ === */
+@keyframes logoParticleFloat {
+    0%, 100% {
+        opacity: 0;
+        transform: translateY(0px) scale(0.5);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-10px) scale(1);
+    }
+}
+
+@keyframes badgePulse {
+    0% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.05);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    75% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* === АДАПТИВНОСТЬ === */
+@media (max-width: 768px) {
+    .animated-hero {
+        transform: translateY(20px);
+    }
+    
+    .animated-card.hovered {
+        transform: translateY(-4px) scale(1.01);
+    }
+    
+    .floating-shapes {
+        display: none;
+    }
+    
+    .animated-header {
+        transform: translateY(-10px);
+    }
+    
+    .animated-icon-btn:hover {
+        transform: translateY(-1px) scale(1.02);
+    }
+}
+
+/* === АНИМИРОВАННАЯ КОРЗИНА === */
+.animated-overlay {
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-overlay.open {
+    opacity: 1;
+}
+
+.animated-drawer {
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-drawer.open {
+    transform: translateX(0);
+}
+
+.drawer-title {
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: slideInDown 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards;
+}
+
+.animated-close-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.close-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-close-btn:active .close-ripple {
+    width: 100px;
+    height: 100px;
+}
+
+.animated-empty {
+    text-align: center;
+    padding: 40px 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+}
+
+.empty-icon {
+    margin-bottom: 16px;
+    color: var(--muted);
+    opacity: 0.5;
+}
+
+.animated-empty p {
+    margin: 0 0 8px 0;
+    font-size: 1.1em;
+    color: var(--text);
+}
+
+.animated-empty small {
+    color: var(--muted);
+}
+
+.cart-items-container {
+    opacity: 0;
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+}
+
+.animated-cart-item {
+    position: relative;
+    opacity: 0;
+    transform: translateX(20px);
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    margin-bottom: 12px;
+    padding: 12px;
+    background: var(--surface-2);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.cart-content {
+    flex: 1;
+}
+
+.cart-name {
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.cart-category {
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-bottom: 6px;
+}
+
+.cart-price {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.animated-qty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cart-item-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(110, 168, 254, 0.05) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: 12px;
+}
+
+.animated-cart-item:hover .cart-item-glow {
+    opacity: 1;
+}
+
+.animated-footer {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+}
+
+.animated-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    opacity: 0;
+    transform: translateX(-10px);
+    animation: slideInLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animated-summary:nth-child(1) { animation-delay: 0.5s; }
+.animated-summary:nth-child(2) { animation-delay: 0.6s; }
+.animated-summary:nth-child(3) { animation-delay: 0.7s; }
+
+.animated-summary.total {
+    font-weight: 800;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+    padding-top: 12px;
+}
+
+.animated-checkout {
+    position: relative;
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-top: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.8s forwards;
+}
+
+.animated-checkout:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(110, 168, 254, 0.3);
+}
+
+.checkout-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-checkout:active .checkout-ripple {
+    width: 300px;
+    height: 300px;
+}
+
+.checkout-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.animated-checkout:hover .checkout-glow {
+    opacity: 1;
+}
+
+/* === ДОПОЛНИТЕЛЬНЫЕ КЛЮЧЕВЫЕ КАДРЫ === */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* === АНИМИРОВАННАЯ ПАГИНАЦИЯ === */
+.animated-pagination {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+}
+
+.animated-pagination-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-pagination-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.2);
+}
+
+.animated-pagination-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.3);
+}
+
+.animated-pagination-btn span {
+    position: relative;
+    z-index: 2;
+}
+
+.btn-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-pagination-btn:active .btn-ripple {
+    width: 100px;
+    height: 100px;
+}
+
+.btn-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 6px;
+}
+
+.animated-pagination-btn:hover .btn-glow {
+    opacity: 1;
+}
+
+/* === СТИЛИ ДЛЯ СКИДОК === */
+.discount-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+    animation: badgePulse 4s ease-in-out infinite;
+}
+
+.discount-badge span {
+    position: relative;
+    z-index: 2;
+}
+
+.price-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.old-price {
+    color: var(--muted);
+    text-decoration: line-through;
+    font-size: 0.9em;
+    opacity: 0.7;
+}
+
+.cost {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+/* === АНИМИРОВАННАЯ СЕТКА ТОВАРОВ === */
+.animated-grid {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards;
+}
+
+.animated-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+}
+
+.animated-empty-state .empty-icon {
+    margin-bottom: 16px;
+    color: var(--muted);
+    opacity: 0.5;
+}
+
+.animated-empty-state p {
+    margin: 0 0 8px 0;
+    font-size: 1.2em;
+    color: var(--text);
+}
+
+.animated-empty-state small {
+    color: var(--muted);
+}
+
+/* === АНИМИРОВАННЫЙ ФУТЕР === */
+.animated-footer {
+    position: relative;
+    background: linear-gradient(135deg, var(--surface), var(--surface-2));
+    border-top: 1px solid var(--border);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-footer.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Плавающие элементы фона */
+.footer-bg-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.footer-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    opacity: 0.05;
+    animation: footerFloat 8s ease-in-out infinite;
+}
+
+.footer-shape.shape-1 {
+    width: 80px;
+    height: 80px;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.footer-shape.shape-2 {
+    width: 60px;
+    height: 60px;
+    top: 60%;
+    right: 15%;
+    animation-delay: 3s;
+}
+
+.footer-shape.shape-3 {
+    width: 40px;
+    height: 40px;
+    bottom: 30%;
+    left: 50%;
+    animation-delay: 6s;
+}
+
+/* === КРУТЫЕ АНИМАЦИИ В СТИЛЕ TWINBRU === */
+.footer-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.footer-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particleFloat 6s ease-in-out infinite;
+}
+
+.footer-particle:nth-child(1) {
+    top: 15%;
+    left: 20%;
+    animation-delay: 0s;
+    animation-duration: 8s;
+}
+
+.footer-particle:nth-child(2) {
+    top: 45%;
+    right: 25%;
+    animation-delay: 1s;
+    animation-duration: 7s;
+}
+
+.footer-particle:nth-child(3) {
+    bottom: 25%;
+    left: 30%;
+    animation-delay: 2s;
+    animation-duration: 9s;
+}
+
+.footer-particle:nth-child(4) {
+    top: 70%;
+    left: 60%;
+    animation-delay: 3s;
+    animation-duration: 6s;
+}
+
+.footer-particle:nth-child(5) {
+    bottom: 40%;
+    right: 40%;
+    animation-delay: 4s;
+    animation-duration: 8s;
+}
+
+.footer-particle:nth-child(6) {
+    top: 30%;
+    left: 80%;
+    animation-delay: 5s;
+    animation-duration: 7s;
+}
+
+/* Волновые линии */
+.footer-waves {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.footer-wave {
+    position: absolute;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(110, 168, 254, 0.03), transparent);
+    animation: waveMove 12s linear infinite;
+}
+
+.footer-wave:nth-child(1) {
+    top: 20%;
+    animation-delay: 0s;
+    animation-duration: 15s;
+}
+
+.footer-wave:nth-child(2) {
+    top: 60%;
+    animation-delay: 4s;
+    animation-duration: 18s;
+    animation-direction: reverse;
+}
+
+.footer-wave:nth-child(3) {
+    top: 80%;
+    animation-delay: 8s;
+    animation-duration: 20s;
+}
+
+/* Плавающие геометрические фигуры */
+.footer-geometry {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.geometry-shape {
+    position: absolute;
+    opacity: 0.03;
+    animation: geometryFloat 10s ease-in-out infinite;
+}
+
+.geometry-shape.triangle {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 35px solid var(--primary);
+    top: 25%;
+    left: 15%;
+    animation-delay: 0s;
+}
+
+.geometry-shape.square {
+    width: 25px;
+    height: 25px;
+    background: var(--accent);
+    transform: rotate(45deg);
+    top: 55%;
+    right: 20%;
+    animation-delay: 2s;
+}
+
+.geometry-shape.circle {
+    width: 30px;
+    height: 30px;
+    background: var(--primary);
+    border-radius: 50%;
+    bottom: 35%;
+    left: 70%;
+    animation-delay: 4s;
+}
+
+.geometry-shape.diamond {
+    width: 20px;
+    height: 20px;
+    background: var(--accent);
+    transform: rotate(45deg);
+    top: 75%;
+    left: 45%;
+    animation-delay: 6s;
+}
+
+/* Световые эффекты */
+.footer-lights {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.light-beam {
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, var(--primary), transparent);
+    opacity: 0.1;
+    animation: lightSweep 8s ease-in-out infinite;
+}
+
+.light-beam:nth-child(1) {
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.light-beam:nth-child(2) {
+    left: 50%;
+    animation-delay: 3s;
+}
+
+.light-beam:nth-child(3) {
+    left: 80%;
+    animation-delay: 6s;
+}
+
+/* Основной контент футера */
+.footer-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px 20px;
+}
+
+.footer-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    gap: 40px;
+}
+
+/* Бренд */
+.footer-brand {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+}
+
+.brand-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.brand-subtitle {
+    color: var(--muted);
+    margin: 0;
+    font-size: 0.95rem;
+    opacity: 0;
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards;
+}
+
+/* Социальные сети */
+.footer-social {
+    opacity: 0;
+    transform: translateX(20px);
+    animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+}
+
+.social-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: var(--text);
+}
+
+.social-icons {
+    display: flex;
+    gap: 16px;
+}
+
+.social-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+}
+
+.social-icon:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--primary);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(110, 168, 254, 0.2);
+}
+
+/* Интерактивные эффекты для социальных иконок */
+.social-icon:hover ~ .footer-particles .footer-particle {
+    animation-duration: 2s;
+    animation-timing-function: ease-out;
+}
+
+.social-icon:hover ~ .footer-geometry .geometry-shape {
+    animation-duration: 3s;
+    animation-timing-function: ease-in-out;
+}
+
+.social-icon:hover ~ .footer-lights .light-beam {
+    animation-duration: 2s;
+    animation-timing-function: ease-in-out;
+}
+
+.social-icon svg {
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover svg {
+    transform: scale(1.1);
+}
+
+.social-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.social-icon:active .social-ripple {
+    width: 100px;
+    height: 100px;
+}
+
+/* Нижняя секция */
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.5s forwards;
+}
+
+.footer-links {
+    display: flex;
+    gap: 24px;
+}
+
+.footer-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.footer-link:hover {
+    color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.footer-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.footer-link:hover::after {
+    width: 100%;
+}
+
+.footer-copyright {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+/* Анимация плавающих элементов */
+@keyframes footerFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-15px) rotate(180deg);
+    }
+}
+
+/* === НОВЫЕ КРУТЫЕ АНИМАЦИИ === */
+@keyframes particleFloat {
+    0%, 100% {
+        opacity: 0;
+        transform: translateY(0px) translateX(0px) scale(0.5);
+    }
+    25% {
+        opacity: 0.6;
+        transform: translateY(-20px) translateX(10px) scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-40px) translateX(-5px) scale(1.2);
+    }
+    75% {
+        opacity: 0.4;
+        transform: translateY(-30px) translateX(15px) scale(0.8);
+    }
+}
+
+@keyframes waveMove {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes geometryFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+        opacity: 0.03;
+    }
+    25% {
+        transform: translateY(-15px) rotate(90deg) scale(1.1);
+        opacity: 0.06;
+    }
+    50% {
+        transform: translateY(-25px) rotate(180deg) scale(0.9);
+        opacity: 0.04;
+    }
+    75% {
+        transform: translateY(-10px) rotate(270deg) scale(1.05);
+        opacity: 0.08;
+    }
+}
+
+@keyframes lightSweep {
+    0%, 100% {
+        opacity: 0.1;
+        transform: scaleY(1);
+    }
+    25% {
+        opacity: 0.3;
+        transform: scaleY(1.5);
+    }
+    50% {
+        opacity: 0.2;
+        transform: scaleY(0.8);
+    }
+    75% {
+        opacity: 0.4;
+        transform: scaleY(1.2);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .footer-main {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 30px;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+    
+    .footer-links {
+        justify-content: center;
+    }
+    
+    .social-icons {
+        justify-content: center;
+    }
+}
+
+/* === ПРЕДПОЧТЕНИЯ ПОЛЬЗОВАТЕЛЯ === */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

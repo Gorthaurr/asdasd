@@ -44,6 +44,8 @@ export function useCatalogUrlActions(){
             p.delete("page"); // смена фильтра -> страница 1
         });
         navigate({ pathname: "/", search: next }, { replace: false });
+        // Скролл к началу страницы при смене фильтра
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [location, navigate]);
 
     const setSort = useCallback((sort:string)=>{
@@ -53,6 +55,8 @@ export function useCatalogUrlActions(){
             p.delete("page"); // смена сортировки -> страница 1
         });
         navigate({ pathname: "/", search: next }, { replace: false });
+        // Скролл к началу страницы при смене сортировки
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [location, navigate]);
 
     const setPage = useCallback((page:number)=>{
@@ -73,6 +77,8 @@ export function useCatalogUrlActions(){
             p.delete("page");
         });
         navigate({ pathname: "/", search: next }, { replace: false });
+        // Скролл к началу страницы при переключении избранного
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [location, navigate]);
 
     return { setQ, setChip, setSort, setPage, toggleFavorites };

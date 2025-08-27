@@ -7,6 +7,7 @@ import "./styles/global.css";
 // ✅ Подключаем наш ErrorBoundary
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import "./styles/overrides.css";                    // ✅ доп. UX/контраст (после базовых)
+import "./styles/animations.css";                   // ✅ анимации в стиле React Bits
 
 
 createRoot(document.getElementById("root")!).render(
