@@ -162,8 +162,8 @@
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: visible;
-    min-width: 220px;
-    width: 220px;
+    min-width: 280px;
+    width: 280px;
     z-index: 2147483647;
     transform-origin: bottom;
 }
@@ -173,7 +173,7 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 10px 12px 10px 14px;
+    padding: 12px 16px 12px 18px;
     background: transparent;
     border: none;
     color: var(--text);
@@ -184,7 +184,7 @@
     text-overflow: ellipsis;
     position: relative;
     z-index: 2147483647;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
 }
 
@@ -251,7 +251,7 @@
     overflow-x: hidden;
     backdrop-filter: blur(8px);
     pointer-events: auto;
-    min-width: 220px;
+    min-width: 280px;
     z-index: 1000000;
     animation: dropdownExpand 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     padding: 8px 0;
@@ -287,7 +287,7 @@
 
 .select-option {
     width: 100%;
-    padding: 12px 16px;
+    padding: 14px 18px;
     background: transparent;
     border: none;
     color: var(--text);
@@ -297,7 +297,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
     position: relative;
     z-index: 1;
@@ -685,39 +685,44 @@ button:focus-visible {
     position: relative !important;
     overflow: hidden !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    background: var(--surface-2) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 999px !important;
-    color: var(--muted) !important;
-    font-weight: 600 !important;
-    min-width: 36px !important;
-    height: 36px !important;
+    background: linear-gradient(135deg, var(--surface-2), var(--surface)) !important;
+    border: 2px solid var(--border) !important;
+    border-radius: 50% !important;
+    color: var(--text) !important;
+    font-weight: 700 !important;
+    min-width: 40px !important;
+    height: 40px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
     padding: 0 !important;
-    font-size: 16px !important;
+    font-size: 18px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: blur(8px) !important;
 }
 
 .animated-qty-btn:hover {
-    background: var(--surface) !important;
+    background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
     border-color: var(--primary) !important;
-    color: var(--primary) !important;
-    transform: translateY(-4px) scale(1.05) !important;
-    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.2) !important;
+    color: white !important;
+    transform: translateY(-3px) scale(1.1) !important;
+    box-shadow: 0 8px 20px rgba(110, 168, 254, 0.3) !important;
 }
 
 .animated-qty-btn:active {
-    transform: translateY(0px) scale(0.98) !important;
-    box-shadow: 0 1px 4px rgba(110, 168, 254, 0.2) !important;
+    transform: translateY(-1px) scale(0.95) !important;
+    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.2) !important;
 }
 
 .animated-qty-btn:disabled {
-    opacity: 0.5 !important;
+    opacity: 0.4 !important;
     cursor: not-allowed !important;
     transform: none !important;
     box-shadow: none !important;
+    background: var(--surface-2) !important;
+    color: var(--muted) !important;
+    border-color: var(--border) !important;
 }
 
 /* Эффекты для кнопок количества */
@@ -798,13 +803,18 @@ button:focus-visible {
     opacity: 0;
     transform: translateY(20px);
     animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.8s forwards;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .stat-row {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 8px;
+    margin: 0;
 }
 
 .stat-number {
@@ -985,8 +995,12 @@ button:focus-visible {
 }
 
 .title-subtitle {
-    opacity: 0;
-    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+    opacity: 1;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 400;
+    margin-top: 2px;
+    display: block;
 }
 
 .animated-actions {

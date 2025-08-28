@@ -217,7 +217,6 @@ export default function Hero(){
                         <strong className="stat-number">4.9/5</strong>
                         <span className="stat-label">по оценкам покупателей</span>
                     </div>
-                    <div className="spark" aria-hidden="true"></div>
                     <div className="stat-row">
                         <strong className="stat-number">24/7</strong>
                         <span className="stat-label">поддержка</span>
