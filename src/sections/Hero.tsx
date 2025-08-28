@@ -25,15 +25,31 @@ function AnimatedSortSelect({ value, onChange }: { value: string; onChange: (v: 
         { value: 'discount', label: 'Со скидкой' }
     ], []);
 
-    // Обновляем позицию dropdown при открытии
+    // Обновляем позицию dropdown при открытии и прокрутке
     useEffect(() => {
         if (isOpen && selectRef.current) {
-            const rect = selectRef.current.getBoundingClientRect();
-            setDropdownPosition({
-                top: rect.bottom,
-                left: rect.left,
-                width: rect.width
-            });
+            const updatePosition = () => {
+                const rect = selectRef.current?.getBoundingClientRect();
+                if (rect) {
+                    setDropdownPosition({
+                        top: rect.bottom,
+                        left: rect.left,
+                        width: rect.width
+                    });
+                }
+            };
+
+            // Обновляем позицию сразу
+            updatePosition();
+
+            // Добавляем обработчики для обновления позиции при прокрутке и изменении размера окна
+            window.addEventListener('scroll', updatePosition, true);
+            window.addEventListener('resize', updatePosition);
+
+            return () => {
+                window.removeEventListener('scroll', updatePosition, true);
+                window.removeEventListener('resize', updatePosition);
+            };
         }
     }, [isOpen]);
 
@@ -53,16 +69,28 @@ function AnimatedSortSelect({ value, onChange }: { value: string; onChange: (v: 
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Обработка клавиши Escape
+    // Обработка клавиши Escape и прокрутки
     useEffect(() => {
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === 'Escape' && isOpen) {
                 setIsOpen(false);
             }
         };
+
+        const handleScroll = () => {
+            // Закрываем dropdown при прокрутке, если он открыт
+            if (isOpen) {
+                setIsOpen(false);
+            }
+        };
         
         document.addEventListener('keydown', handleEscape);
-        return () => document.removeEventListener('keydown', handleEscape);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, [isOpen]);
 
     const handleOptionClick = useCallback((optionValue: string) => {
@@ -227,12 +255,12 @@ export default function Hero(){
         <section className={`hero animated-hero ${isVisible ? 'visible' : ''}`} aria-label="Промо">
             <div className="hero-card">
                 <h1 className="hero-title">
-                    <span className="title-line">Техника, которая</span>
-                    <span className="title-line highlight">упрощает жизнь</span>
+                    <span className="title-line">Премиальная техника</span>
+                    <span className="title-line highlight">для вашего дома</span>
                 </h1>
                 <p className="hero-description">
-                    <span className="description-line">Выбирайте из сотен товаров: от кухонных помощников</span>
-                    <span className="description-line">до климат‑систем. Умные фильтры, быстрый поиск, корзина и избранное — всё в одном месте.</span>
+                    <span className="description-line">Бытовая, цифровая, садовая и аудио техника широкого сегмента</span>
+                    <span className="description-line">от ведущих мировых производителей. Умные фильтры, быстрый поиск, корзина и избранное — всё в одном месте.</span>
                 </p>
                 <div className="search-row">
                     <AnimatedSearch 
@@ -257,6 +285,48 @@ export default function Hero(){
                     <div className="stat-row">
                         <strong className="stat-number">365</strong>
                         <span className="stat-label">дней возврата</span>
+                    </div>
+                    <div className="stat-row">
+                        <strong className="stat-number">10+</strong>
+                        <span className="stat-label">лет опыта</span>
+                    </div>
+                </div>
+                
+                <div className="hero-features">
+                    <div className="feature-item">
+                        <div className="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </div>
+                        <div className="feature-content">
+                            <h4 className="feature-title">Гарантия качества</h4>
+                            <p className="feature-description">Вся техника с официальной гарантией, в заводской упаковке</p>
+                        </div>
+                    </div>
+                    
+                    <div className="feature-item">
+                        <div className="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </div>
+                        <div className="feature-content">
+                            <h4 className="feature-title">Премиальные бренды</h4>
+                            <p className="feature-description">Сотрудничаем со всеми мировыми производителями</p>
+                        </div>
+                    </div>
+                    
+                    <div className="feature-item">
+                        <div className="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </div>
+                        <div className="feature-content">
+                            <h4 className="feature-title">Быстрая доставка</h4>
+                            <p className="feature-description">Доставка в любой регион РФ с помощью транспортных компаний</p>
+                        </div>
                     </div>
                 </div>
                 <div className="hero-background">

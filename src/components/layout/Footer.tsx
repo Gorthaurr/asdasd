@@ -12,52 +12,14 @@ export default function Footer() {
 
     return (
         <footer className={`animated-footer ${isVisible ? 'visible' : ''}`}>
-            {/* Плавающие элементы фона */}
-            <div className="footer-bg-shapes">
-                <div className="footer-shape shape-1"></div>
-                <div className="footer-shape shape-2"></div>
-                <div className="footer-shape shape-3"></div>
-            </div>
-
-            {/* Крутые частицы */}
-            <div className="footer-particles">
-                <div className="footer-particle"></div>
-                <div className="footer-particle"></div>
-                <div className="footer-particle"></div>
-                <div className="footer-particle"></div>
-                <div className="footer-particle"></div>
-                <div className="footer-particle"></div>
-            </div>
-
-            {/* Волновые линии */}
-            <div className="footer-waves">
-                <div className="footer-wave"></div>
-                <div className="footer-wave"></div>
-                <div className="footer-wave"></div>
-            </div>
-
-            {/* Геометрические фигуры */}
-            <div className="footer-geometry">
-                <div className="geometry-shape triangle"></div>
-                <div className="geometry-shape square"></div>
-                <div className="geometry-shape circle"></div>
-                <div className="geometry-shape diamond"></div>
-            </div>
-
-            {/* Световые эффекты */}
-            <div className="footer-lights">
-                <div className="light-beam"></div>
-                <div className="light-beam"></div>
-                <div className="light-beam"></div>
-            </div>
-
             <div className="footer-content">
                 {/* Основная секция */}
                 <div className="footer-main">
                     {/* Бренд */}
                     <div className="footer-brand">
-                        <h3 className="brand-title">TechHome</h3>
-                        <p className="brand-subtitle">Бытовая техника для дома</p>
+                        <h3 className="brand-title">TechnoFame</h3>
+                        <p className="brand-subtitle">Премиальная бытовая техника</p>
+                        <p className="brand-description">Бытовая, цифровая, садовая и аудио техника от ведущих мировых производителей</p>
                     </div>
 
                     {/* Социальные сети */}
@@ -126,7 +88,7 @@ export default function Footer() {
                     </div>
                     
                     <div className="footer-copyright">
-                        <span>© {year} TechHome</span>
+                        <span>© {year} TechnoFame. Все права защищены.</span>
                     </div>
                 </div>
             </div>

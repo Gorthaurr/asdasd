@@ -33,8 +33,8 @@ export default function Header(){
                         </div>
                     </Link>
                     <div className="title animated-title">
-                        <span className="title-main">TechHome</span>
-                        <small className="title-subtitle">Бытовая техника • магазин</small>
+                        <span className="title-main">TechnoFame</span>
+                        <small className="title-subtitle">Премиальная бытовая техника</small>
                     </div>
                 </div>
 

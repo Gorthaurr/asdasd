@@ -8,8 +8,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root{
-    --focus: #9ad0ff;           /* кольцо фокуса */
-    --primary-strong: #7bb1ff;  /* акцент (сердце/бейджи/ссылки) */
+    --focus: var(--primary);           /* кольцо фокуса */
+    --primary-strong: var(--primary);  /* акцент (сердце/бейджи/ссылки) */
     --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -72,9 +72,9 @@ a:hover{ text-decoration: underline; }
 }
 .btn:focus-visible, .icon-btn:focus-visible, .qty-btn:focus-visible, .checkout:focus-visible,
 .chip:focus-visible, .fav:focus-visible, a:focus-visible, [role="button"]:focus-visible{
-    outline: 2px solid var(--focus);
+    outline: 2px solid var(--primary);
     outline-offset: 2px;
-    box-shadow: 0 0 0 3px rgba(154,208,255,0.25);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
 }
 
 /* === 2) КАТАЛОГ: сердце и выравнивание низа (из прежних фиксов) === */
@@ -103,12 +103,30 @@ a:hover{ text-decoration: underline; }
 .card .cost{ line-height: 1; }
 .card .qty-inline{ display: inline-grid; grid-auto-flow: column; align-items: center; gap: 8px; }
 .card .qty-inline .qty-btn{
-    width: 32px; height: 32px; font-size: 18px; line-height: 1;
+    width: 30px; height: 30px; font-size: 18px; line-height: 1;
     display: grid; place-items: center;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    transition: all 0.3s ease;
 }
-.card .qty-inline .qty-count{ min-width: 22px; text-align: center; font-weight: 700; }
+.card .qty-inline .qty-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: scale(1.05);
+}
+.card .qty-inline .qty-count{ min-width: 20px; text-align: center; font-weight: 700; }
 /* «Минус» неактивный — заметен, но выключен */
-.qty-btn:disabled{ opacity: .85; cursor: not-allowed; filter: none; transform: none; color: #8ea3c9; box-shadow: inset 0 0 0 1px #3a4260; }
+.qty-btn:disabled{ 
+    opacity: .85; 
+    cursor: not-allowed; 
+    filter: none; 
+    transform: none; 
+    color: var(--muted); 
+    box-shadow: inset 0 0 0 1px var(--border); 
+    border-color: var(--border);
+}
 
 /* === 3) БЕЙДЖИ в хедере — синяя «пилюля», не перекрывает клики === */
 .actions .icon-btn{ position: relative; }
@@ -125,7 +143,7 @@ a:hover{ text-decoration: underline; }
 /* === 4) ПРОСТОЙ СИММЕТРИЧНЫЙ ФУТЕР (без картинок/соцсетей) === */
 .site-footer{
     margin-top: 32px;
-    background: linear-gradient(180deg, #101522, #0d101a);
+    background: linear-gradient(180deg, #1a1a1a, #0f0f0f);
     border-top: 1px solid rgba(255,255,255,0.06);
 }
 
@@ -147,7 +165,7 @@ a:hover{ text-decoration: underline; }
 /* Колонки ссылок */
 .fs-col h4{ margin: 0 0 8px; font-size: 1rem; }
 .fs-col ul{ list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
-.fs-col a{ color: #cfe2ff; text-decoration: none; }
+.fs-col a{ color: var(--primary); text-decoration: none; }
 .fs-col a:hover{ text-decoration: underline; }
 
 /* Нижняя полоса */
@@ -164,5 +182,5 @@ a:hover{ text-decoration: underline; }
     .fs-bottom{ grid-template-columns: 1fr; row-gap: 6px; }
     .fs-bottom .fs-legal{ justify-self: start; }
 }
-.fs-bottom a{ color: #cfe2ff; text-decoration: none; }
+.fs-bottom a{ color: var(--primary); text-decoration: none; }
 .fs-bottom a:hover{ text-decoration: underline; }

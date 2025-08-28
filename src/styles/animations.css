@@ -102,7 +102,7 @@
 
 .animated-search.focused {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(110, 168, 254, 0.1);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
     transform: translateY(-2px);
 }
 
@@ -174,8 +174,8 @@
     border-radius: 12px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: visible;
-    min-width: 280px;
-    width: 280px;
+    min-width: 200px;
+    max-width: 250px;
     z-index: 2147483647;
     transform-origin: bottom;
 }
@@ -263,7 +263,8 @@
     overflow-x: hidden;
     backdrop-filter: blur(8px);
     pointer-events: auto;
-    min-width: 280px;
+    min-width: 200px;
+    max-width: 250px;
     z-index: 1000000;
     animation: dropdownExpand 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     padding: 8px 0;
@@ -697,13 +698,13 @@ button:focus-visible {
     position: relative !important;
     overflow: hidden !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    background: linear-gradient(135deg, var(--surface-2), var(--surface)) !important;
-    border: 2px solid var(--border) !important;
-    border-radius: 50% !important;
+    background: var(--surface-2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
     color: var(--text) !important;
     font-weight: 700 !important;
-    min-width: 40px !important;
-    height: 40px !important;
+    width: 30px !important;
+    height: 30px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -711,27 +712,25 @@ button:focus-visible {
     padding: 0 !important;
     font-size: 18px !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-    backdrop-filter: blur(8px) !important;
 }
 
 .animated-qty-btn:hover {
-    background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
     border-color: var(--primary) !important;
-    color: white !important;
-    transform: translateY(-3px) scale(1.1) !important;
-    box-shadow: 0 8px 20px rgba(110, 168, 254, 0.3) !important;
+    color: var(--primary) !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2) !important;
 }
 
 .animated-qty-btn:active {
-    transform: translateY(-1px) scale(0.95) !important;
-    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.2) !important;
+    transform: scale(0.95) !important;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1) !important;
 }
 
 .animated-qty-btn:disabled {
-    opacity: 0.4 !important;
+    opacity: 0.85 !important;
     cursor: not-allowed !important;
     transform: none !important;
-    box-shadow: none !important;
+    box-shadow: inset 0 0 0 1px var(--border) !important;
     background: var(--surface-2) !important;
     color: var(--muted) !important;
     border-color: var(--border) !important;
@@ -744,7 +743,7 @@ button:focus-visible {
     left: 50%;
     width: 0;
     height: 0;
-    background: radial-gradient(circle, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, transparent 70%);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -786,7 +785,7 @@ button:focus-visible {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(110, 168, 254, 0.2), rgba(124, 243, 208, 0.2));
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(230, 195, 74, 0.2));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1088,7 +1087,7 @@ button:focus-visible {
     font-size: 11px;
     font-weight: 700;
     padding: 0 6px;
-    box-shadow: 0 2px 8px rgba(110, 168, 254, 0.3);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
     animation: badgePulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 10;
 }
@@ -1126,7 +1125,7 @@ button:focus-visible {
     left: 50%;
     width: 0;
     height: 0;
-    background: radial-gradient(circle, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, transparent 70%);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1310,7 +1309,7 @@ button:focus-visible {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(110, 168, 254, 0.05) 0%, transparent 70%);
+    background: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -1369,7 +1368,7 @@ button:focus-visible {
 
 .animated-checkout:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(110, 168, 254, 0.3);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
 }
 
 .checkout-ripple {
@@ -1475,18 +1474,18 @@ button:focus-visible {
 
 .animated-pagination-btn:hover {
     transform: scale(1.05) !important;
-    background: linear-gradient(180deg, #1a2237, #131827) !important;
+    background: linear-gradient(180deg, #1a1a1a, #0f0f0f) !important;
     border-color: var(--primary) !important;
-    color: #fff !important;
-    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.2) !important;
+    color: var(--primary) !important;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2) !important;
 }
 
 .animated-pagination-btn.active {
-    background: linear-gradient(180deg, #1a2237, #131827) !important;
-    color: #fff !important;
+    background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
+    color: #000 !important;
     border-color: var(--primary) !important;
     transform: scale(1.05) !important;
-    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3) !important;
 }
 
 .animated-pagination-btn:disabled {
@@ -1507,7 +1506,7 @@ button:focus-visible {
     left: 50%;
     width: 0;
     height: 0;
-    background: radial-gradient(circle, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, transparent 70%);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1742,7 +1741,7 @@ button:focus-visible {
     position: absolute;
     width: 200%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(110, 168, 254, 0.03), transparent);
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.03), transparent);
     animation: waveMove 12s linear infinite;
 }
 
@@ -1943,7 +1942,7 @@ button:focus-visible {
     border-color: rgba(255, 255, 255, 0.3);
     color: var(--primary);
     transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 8px 20px rgba(110, 168, 254, 0.2);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
 }
 
 /* Интерактивные эффекты для социальных иконок */
@@ -1976,7 +1975,7 @@ button:focus-visible {
     left: 50%;
     width: 0;
     height: 0;
-    background: radial-gradient(circle, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, transparent 70%);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);

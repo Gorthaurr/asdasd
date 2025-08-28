@@ -144,14 +144,14 @@ export default function ProductPage(){
 
                         <div className="qty-inline" aria-label="Количество в корзине">
                             <button
-                                className="qty-btn"
+                                className="animated-qty-btn"
                                 aria-label="Убрать одну штуку"
                                 onClick={() => qty > 0 && dispatch(changeQty({ id: product.id, delta: -1 }))}
                                 disabled={qty===0}
                             >−</button>
                             <span className="qty-count" aria-live="polite">{qty}</span>
                             <button
-                                className="qty-btn"
+                                className="animated-qty-btn"
                                 aria-label="Добавить одну штуку"
                                 onClick={() => {
                                     if (qty === 0) dispatch(addToCart(product.id));
@@ -160,19 +160,19 @@ export default function ProductPage(){
                             >+</button>
                         </div>
 
-                        <button className="btn" onClick={() => smoothScrollTo(fullSpecsRef.current)} title="К полным характеристикам">
+                        <button className="btn primary" onClick={() => smoothScrollTo(fullSpecsRef.current)} title="К полным характеристикам">
                             Подробнее
                         </button>
 
                         {/* Сердце-избранное: активная синяя заливка как в карточке */}
                         <button
-                            className={`fav${isFav ? " is-active" : ""}`}
+                            className={`animated-fav${isFav ? " is-active" : ""}`}
                             aria-label="Добавить в избранное"
                             title="Добавить/убрать из избранного"
                             onClick={() => dispatch(toggleFav(product.id))}
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                                <path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.65-7 10-7 10Z"/>
+                                <path className="heart-path" d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.65-7 10-7 10Z"/>
                             </svg>
                         </button>
                     </div>
