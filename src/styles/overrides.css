@@ -103,7 +103,7 @@ a:hover{ text-decoration: underline; }
 .card .cost{ line-height: 1; }
 .card .qty-inline{ display: inline-grid; grid-auto-flow: column; align-items: center; gap: 8px; }
 .card .qty-inline .qty-btn{
-    width: 32px; height: 32px; border-radius: 8px; font-size: 18px; line-height: 1;
+    width: 32px; height: 32px; font-size: 18px; line-height: 1;
     display: grid; place-items: center;
 }
 .card .qty-inline .qty-count{ min-width: 22px; text-align: center; font-weight: 700; }

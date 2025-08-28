@@ -13,25 +13,27 @@ export default function Pagination(){
     const pages = Array.from({ length: totalPages }, (_, i) => i + 1); // массив страниц
     const goto = (p:number) => setPage(Math.min(Math.max(1, p), totalPages)); // безопасный переход
     return (
-        <div className="animated-pagination" style={{ gridColumn: '1/-1', display: 'flex', gap: 8, justifyContent: 'center', margin: '16px 0 8px' }}>
-            <button className="btn animated-pagination-btn" onClick={()=>goto(page-1)} disabled={page<=1}>
+        <div className="animated-pagination visible" style={{ gridColumn: '1/-1', display: 'flex', gap: 8, justifyContent: 'center', margin: '16px 0 8px' }}>
+            <button className="animated-pagination-btn" onClick={()=>goto(page-1)} disabled={page<=1}>
                 <span>‹ Предыдущая</span>
-                <div className="btn-ripple"></div>
+                <div className="pagination-btn-ripple"></div>
+                <div className="pagination-btn-glow"></div>
             </button>
             {pages.map(p => (
                 <button 
                     key={p} 
-                    className={`btn animated-pagination-btn ${p===page ? 'active' : ''}`} 
+                    className={`animated-pagination-btn ${p===page ? 'active' : ''}`} 
                     onClick={()=>goto(p)}
                 >
                     <span>{p}</span>
-                    <div className="btn-ripple"></div>
-                    <div className="btn-glow"></div>
+                    <div className="pagination-btn-ripple"></div>
+                    <div className="pagination-btn-glow"></div>
                 </button>
             ))}
-            <button className="btn animated-pagination-btn" onClick={()=>goto(page+1)} disabled={page>=totalPages}>
+            <button className="animated-pagination-btn" onClick={()=>goto(page+1)} disabled={page>=totalPages}>
                 <span>Следующая ›</span>
-                <div className="btn-ripple"></div>
+                <div className="pagination-btn-ripple"></div>
+                <div className="pagination-btn-glow"></div>
             </button>
         </div>
     );

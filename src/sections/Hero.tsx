@@ -1,27 +1,20 @@
 // Промо-блок: второй поиск, селект сортировки, чипсы категорий
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
 import Chips from '../components/controls/Chips';
+import { Portal } from '../components/common/Portal';
 import type { RootState } from '../app/store';
 
 
 // Анимированный селект сортировки
 function AnimatedSortSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
     const selectRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const options = [
+    const options = useMemo(() => [
         { value: 'popular', label: 'Сначала популярные' },
         { value: 'priceAsc', label: 'Цена: по возрастанию' },
         { value: 'priceDesc', label: 'Цена: по убыванию' },
@@ -30,16 +23,66 @@ function AnimatedSortSelect({ value, onChange }: { value: string; onChange: (v: 
         { value: 'nameDesc', label: 'Название: Я-А' },
         { value: 'rating', label: 'По рейтингу' },
         { value: 'discount', label: 'Со скидкой' }
-    ];
+    ], []);
+
+    // Обновляем позицию dropdown при открытии
+    useEffect(() => {
+        if (isOpen && selectRef.current) {
+            const rect = selectRef.current.getBoundingClientRect();
+            setDropdownPosition({
+                top: rect.bottom,
+                left: rect.left,
+                width: rect.width
+            });
+        }
+    }, [isOpen]);
+
+    // Обработка кликов вне селекта
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;
+            const isClickInsideSelect = selectRef.current?.contains(target);
+            const isClickInsideDropdown = dropdownRef.current?.contains(target);
+            
+            if (!isClickInsideSelect && !isClickInsideDropdown) {
+                setIsOpen(false);
+            }
+        };
+        
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Обработка клавиши Escape
+    useEffect(() => {
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && isOpen) {
+                setIsOpen(false);
+            }
+        };
+        
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, [isOpen]);
+
+    const handleOptionClick = useCallback((optionValue: string) => {
+        onChange(optionValue);
+        setIsOpen(false);
+    }, [onChange]);
+
+    const selectedOptionLabel = useMemo(() => {
+        return options.find(option => option.value === value)?.label || 'Сортировка';
+    }, [value, options]);
 
     return (
-        <div className="animated-select" ref={selectRef}>
+        <div className={`animated-select ${isOpen ? 'focused' : ''}`} ref={selectRef}>
             <button
                 className={`select-trigger ${isOpen ? 'open' : ''}`}
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="Сортировка"
+                type="button"
             >
-                <span>{options.find(opt => opt.value === value)?.label}</span>
+                <span>{selectedOptionLabel}</span>
                 <svg 
                     className={`arrow ${isOpen ? 'rotate' : ''}`} 
                     width="16" 
@@ -49,21 +92,36 @@ function AnimatedSortSelect({ value, onChange }: { value: string; onChange: (v: 
                     <path d="M7 10l5 5 5-5" stroke="currentColor" strokeWidth="2" fill="none"/>
                 </svg>
             </button>
+            
             {isOpen && (
-                <div className="select-dropdown">
-                    {options.map((option) => (
-                        <button
-                            key={option.value}
-                            className={`select-option ${value === option.value ? 'active' : ''}`}
-                            onClick={() => {
-                                onChange(option.value);
-                                setIsOpen(false);
-                            }}
-                        >
-                            {option.label}
-                        </button>
-                    ))}
-                </div>
+                <Portal ref={dropdownRef}>
+                    <div
+                        className="select-dropdown-portal"
+                        style={{
+                            position: 'fixed',
+                            top: dropdownPosition.top,
+                            left: dropdownPosition.left,
+                            width: dropdownPosition.width,
+                            zIndex: 999999,
+                        }}
+                        data-portal-dropdown="true"
+                    >
+                        <div className="select-dropdown-content">
+                            {options.map((option) => (
+                                <button
+                                    key={option.value}
+                                    className={`select-option ${value === option.value ? 'active' : ''}`}
+                                    onClick={() => handleOptionClick(option.value)}
+                                    type="button"
+                                    role="option"
+                                    aria-selected={value === option.value}
+                                >
+                                    {option.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </Portal>
             )}
         </div>
     );

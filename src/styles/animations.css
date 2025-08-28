@@ -157,6 +157,15 @@
 /* === АНИМИРОВАННЫЙ СЕЛЕКТ === */
 .animated-select {
     position: relative;
+    background: var(--surface);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: visible;
+    min-width: 220px;
+    width: 220px;
+    z-index: 2147483647;
+    transform-origin: bottom;
 }
 
 .select-trigger {
@@ -164,47 +173,116 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 12px 16px;
-    background: var(--surface);
-    border: 2px solid var(--border);
-    border-radius: 12px;
+    padding: 10px 12px 10px 14px;
+    background: transparent;
+    border: none;
     color: var(--text);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+    z-index: 2147483647;
+    font-size: 14px;
+    font-weight: 400;
 }
 
-.select-trigger:hover {
+.animated-select:hover {
     border-color: var(--primary);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
-.select-trigger.open {
+.animated-select.focused {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(110, 168, 254, 0.1);
+    transform: translateY(-2px);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
+    animation: selectExpand 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    margin-bottom: -2px;
 }
 
 .arrow {
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    margin-left: 8px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.animated-select.focused .arrow {
+    color: var(--primary);
+    transform: scale(1.1);
 }
 
 .arrow.rotate {
     transform: rotate(180deg);
 }
 
-.select-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    margin-top: 4px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+.animated-select.focused .arrow.rotate {
+    transform: rotate(180deg) scale(1.1);
+}
+
+/* Portal Dropdown Styles */
+.select-dropdown-portal {
+    position: fixed;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    z-index: 999999;
     opacity: 0;
-    transform: translateY(-10px);
     animation: dropdownSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    pointer-events: none;
+}
+
+.select-dropdown-content {
+    position: absolute;
+    background: var(--surface);
+    border: 2px solid var(--primary);
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    backdrop-filter: blur(8px);
+    pointer-events: auto;
+    min-width: 220px;
+    z-index: 1000000;
+    animation: dropdownExpand 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    padding: 8px 0;
+    
+    /* Стилизация скроллбара */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) transparent;
+}
+
+/* Стилизация скроллбара для WebKit браузеров */
+.select-dropdown-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.select-dropdown-content::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 3px;
+}
+
+.select-dropdown-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 3px;
+    border: none;
+}
+
+.select-dropdown-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--accent), var(--primary));
+}
+
+.select-dropdown-content::-webkit-scrollbar-corner {
+    background: transparent;
 }
 
 .select-option {
@@ -215,16 +293,183 @@
     color: var(--text);
     text-align: left;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    font-weight: 400;
+    position: relative;
+    z-index: 1;
 }
 
 .select-option:hover {
     background: var(--surface-2);
+    transform: translateX(4px);
 }
 
 .select-option.active {
     background: var(--primary);
     color: white;
+    transform: translateX(4px);
+    font-weight: 600;
+}
+
+/* Убираем outline и box-shadow для элементов dropdown */
+.select-option:focus,
+.select-option:focus-visible,
+.select-option:active,
+.select-option:hover {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Дополнительно убираем любые возможные эффекты обводки */
+.select-option {
+    outline: none !important;
+    outline-offset: 0 !important;
+}
+
+/* Агрессивное удаление всех возможных обводок */
+.select-option *,
+.select-option *:focus,
+.select-option *:focus-visible,
+.select-option *:active,
+.select-option *:hover {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Убираем обводку для всех кнопок в dropdown */
+.select-dropdown-content button,
+.select-dropdown-content button:focus,
+.select-dropdown-content button:focus-visible,
+.select-dropdown-content button:active,
+.select-dropdown-content button:hover {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Дополнительные стили для полного удаления обводки */
+.select-dropdown-content *,
+.select-dropdown-content *:focus,
+.select-dropdown-content *:focus-visible,
+.select-dropdown-content *:active,
+.select-dropdown-content *:hover,
+.select-dropdown-content *:focus-within {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Убираем обводку для всего dropdown контейнера */
+.select-dropdown-portal,
+.select-dropdown-portal *,
+.select-dropdown-portal *:focus,
+.select-dropdown-portal *:focus-visible,
+.select-dropdown-portal *:active,
+.select-dropdown-portal *:hover {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Глобальное удаление обводки для всех элементов в dropdown */
+[role="button"]:focus-visible,
+[role="option"]:focus-visible,
+button:focus-visible {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Специфичные стили для элементов dropdown */
+.select-option[role="option"]:focus-visible,
+.select-option[role="button"]:focus-visible,
+.select-option button:focus-visible {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
+}
+
+.select-option:first-child {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top: none;
+}
+
+.select-option:last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+/* Анимации для Portal dropdown */
+@keyframes dropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes dropdownExpand {
+    from {
+        opacity: 0;
+        transform: scaleY(0.8);
+        transform-origin: top;
+    }
+    to {
+        opacity: 1;
+        transform: scaleY(1);
+        transform-origin: top;
+    }
+}
+
+@keyframes selectExpand {
+    from {
+        transform: translateY(-2px);
+    }
+    to {
+        transform: translateY(-2px);
+    }
+}
+
+/* Адаптивность для Portal dropdown */
+@media (max-width: 768px) {
+    .animated-select {
+        min-width: 180px;
+        width: 180px;
+    }
+    
+    .select-trigger {
+        padding: 8px 10px 8px 12px;
+        font-size: 13px;
+    }
+    
+    .select-option {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+    
+    .select-dropdown-content {
+        min-width: 180px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+    
+    .select-dropdown-content::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .animated-select.focused {
+        transform: translateY(-1px) scaleY(1.01);
+    }
 }
 
 /* === АНИМИРОВАННЫЕ ЧИПСЫ === */
@@ -437,17 +682,78 @@
 
 /* === АНИМИРОВАННЫЕ КНОПКИ КОЛИЧЕСТВА === */
 .animated-qty-btn {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative !important;
+    overflow: hidden !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: var(--surface-2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 999px !important;
+    color: var(--muted) !important;
+    font-weight: 600 !important;
+    min-width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    font-size: 16px !important;
 }
 
 .animated-qty-btn:hover {
-    transform: scale(1.1);
+    background: var(--surface) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    transform: translateY(-4px) scale(1.05) !important;
+    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.2) !important;
 }
 
 .animated-qty-btn:active {
-    transform: scale(0.95);
+    transform: translateY(0px) scale(0.98) !important;
+    box-shadow: 0 1px 4px rgba(110, 168, 254, 0.2) !important;
+}
+
+.animated-qty-btn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Эффекты для кнопок количества */
+.qty-btn-ripple {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(110, 168, 254, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.animated-qty-btn:active .qty-btn-ripple {
+    width: 100px;
+    height: 100px;
+}
+
+.qty-btn-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 10px;
+    pointer-events: none;
+}
+
+.animated-qty-btn:hover .qty-btn-glow {
+    opacity: 0;
 }
 
 /* === АНИМИРОВАННЫЕ ИЗОБРАЖЕНИЯ === */
@@ -1122,22 +1428,45 @@
 }
 
 .animated-pagination-btn {
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative !important;
+    overflow: hidden !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: var(--surface-2) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 999px !important;
+    color: var(--muted) !important;
+    font-weight: 500 !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    padding: 8px 12px !important;
+    text-decoration: none !important;
 }
 
 .animated-pagination-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.2);
+    transform: scale(1.05) !important;
+    background: linear-gradient(180deg, #1a2237, #131827) !important;
+    border-color: var(--primary) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.2) !important;
 }
 
 .animated-pagination-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.3);
+    background: linear-gradient(180deg, #1a2237, #131827) !important;
+    color: #fff !important;
+    border-color: var(--primary) !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 12px rgba(110, 168, 254, 0.3) !important;
+}
+
+.animated-pagination-btn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 .animated-pagination-btn span {

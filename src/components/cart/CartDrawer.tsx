@@ -89,13 +89,21 @@ export default function CartDrawer(){
                                             className="qty-btn animated-qty-btn"
                                             aria-label="Уменьшить" 
                                             onClick={()=>dispatch(changeQty({ id: it.id, delta: -1 }))}
-                                        >−</button>
+                                        >
+                                            <span>−</span>
+                                            <div className="qty-btn-ripple"></div>
+                                            <div className="qty-btn-glow"></div>
+                                        </button>
                                         <span className="qty-count">{it.qty}</span>
                                         <button 
                                             className="qty-btn animated-qty-btn"
                                             aria-label="Увеличить" 
                                             onClick={()=>dispatch(changeQty({ id: it.id, delta: +1 }))}
-                                        >+</button>
+                                        >
+                                            <span>+</span>
+                                            <div className="qty-btn-ripple"></div>
+                                            <div className="qty-btn-glow"></div>
+                                        </button>
                                     </div>
                                     <div className="cart-item-glow"></div>
                                 </div>

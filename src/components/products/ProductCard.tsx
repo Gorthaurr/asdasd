@@ -142,7 +142,11 @@ export default function ProductCard({ p }: { p: Product }) {
                             title="Убрать"
                             onClick={() => qty > 0 && dispatch(changeQty({ id: p.id, delta: -1 }))}
                             disabled={qty === 0}
-                        >−</button>
+                        >
+                            <span>−</span>
+                            <div className="qty-btn-ripple"></div>
+                            <div className="qty-btn-glow"></div>
+                        </button>
 
                         <span className="qty-count" aria-live="polite">{qty}</span>
 
@@ -151,7 +155,11 @@ export default function ProductCard({ p }: { p: Product }) {
                             aria-label="Добавить одну штуку"
                             title="Добавить"
                             onClick={handleAddToCart}
-                        >+</button>
+                        >
+                            <span>+</span>
+                            <div className="qty-btn-ripple"></div>
+                            <div className="qty-btn-glow"></div>
+                        </button>
                     </div>
                 </div>
             </div>
