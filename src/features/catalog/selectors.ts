@@ -49,8 +49,6 @@ export const selectFilteredSorted = createSelector(
         return items; // отдаем упорядоченный список
     }
 );
-
-
 // Нарезка страниц
 export const selectPaged = createSelector(selectFilteredSorted, selectCatalog, (items, cfg) => {
     const total = items.length; // всего
@@ -74,3 +72,4 @@ export const selectCartDetailed = createSelector(selectCartItems, () => products
     const sum = rows.reduce((acc, r) => acc + r.price * r.qty, 0); // общая сумма
     return { rows, sum }; // возвращаем структуру для UI
 });
+

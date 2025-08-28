@@ -83,7 +83,7 @@ export default function ProductCard({ p }: { p: Product }) {
                 </button>
 
                 {/* Превью — ссылка на страницу товара */}
-                <Link to={`/product/${p.id}`} aria-label={`Перейти к товару: ${p.name}`} className="product-link">
+                <Link to={`/product/${p.originalId || p.id}`} aria-label={`Перейти к товару: ${p.name}`} className="product-link">
                     <div className="image-container">
                         {/* Бейдж скидки */}
                         {p.oldPrice && (
@@ -91,8 +91,37 @@ export default function ProductCard({ p }: { p: Product }) {
                                 <span>-{Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100)}%</span>
                             </div>
                         )}
+
+                        {/* Изображение товара */}
+                        {p.images && p.images.length > 0 ? (
+                            <img 
+                                src={p.images[0].url}
+                                alt={p.images[0].alt_text || p.name}
+                                className="product-image"
+                                loading="lazy"
+                                onError={(e) => {
+                                    // Fallback к SVG если изображение не загрузилось
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const svg = target.nextElementSibling as SVGElement;
+                                    if (svg) svg.style.display = 'block';
+                                }}
+                                onLoad={(e) => {
+                                    // Скрываем SVG placeholder когда изображение загрузилось
+                                    const svg = (e.target as HTMLImageElement).nextElementSibling as SVGElement;
+                                    if (svg) svg.style.display = 'none';
+                                }}
+                            />
+                        ) : null}
                         
-                        <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Изображение товара">
+                        {/* SVG placeholder (fallback) */}
+                        <svg 
+                            viewBox="0 0 600 400" 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            role="img" 
+                            aria-label="Изображение товара"
+                            style={{ display: p.images && p.images.length > 0 ? 'none' : 'block' }}
+                        >
                             <defs>
                                 <linearGradient id={`g${p.id}`} x1="0" x2="1">
                                     <stop offset="0%" stopColor="#1c2340" />
@@ -116,7 +145,7 @@ export default function ProductCard({ p }: { p: Product }) {
             <div className="content">
                 {/* Название — тоже ссылка */}
                 <div className="name">
-                    <Link to={`/product/${p.id}`} style={{ color: "inherit", textDecoration: "none" }}>
+                    <Link to={`/product/${p.originalId || p.id}`} style={{ color: "inherit", textDecoration: "none" }}>
                         {p.name}
                     </Link>
                 </div>

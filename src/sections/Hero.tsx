@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
-import Chips from '../components/controls/Chips';
+import ChipsApi from '../components/controls/ChipsApi';
 import { Portal } from '../components/common/Portal';
 import type { RootState } from '../app/store';
 
@@ -272,7 +272,7 @@ export default function Hero(){
                         onChange={(value) => setSort(value)} 
                     />
                 </div>
-                <Chips />
+                <ChipsApi />
                 <div className="hero-stats">
                     <div className="stat-row">
                         <strong className="stat-number">4.9/5</strong>

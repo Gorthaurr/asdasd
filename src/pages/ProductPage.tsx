@@ -5,7 +5,8 @@
 import { useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import products from "../mocks/products.json";
+import { useGetProductQuery } from "../api/productsApi";
+import { transformProduct } from "../utils/apiTransform";
 import type { Product } from "../types/product";
 import { fmtCurrency } from "../utils/format";
 import { selectCartItems, selectFavIds } from "../features/catalog/selectors";
@@ -14,10 +15,17 @@ import { toggleFav } from "../features/favs/favsSlice";
 
 export default function ProductPage(){
     const { id } = useParams();
+    
+    // Запрос к API для получения товара
+    const { data: apiProduct, isLoading, error } = useGetProductQuery(id || '', {
+        skip: !id, // не делаем запрос если нет ID
+    });
+
+    // Преобразуем API данные в формат frontend
     const product = useMemo<Product | undefined>(() => {
-        const pid = Number(id);
-        return (products as Product[]).find(p => p.id === pid);
-    }, [id]);
+        if (!apiProduct) return undefined;
+        return transformProduct(apiProduct);
+    }, [apiProduct]);
 
     const dispatch = useDispatch();
     const cart = useSelector(selectCartItems);
@@ -56,11 +64,53 @@ export default function ProductPage(){
         return { mainSpecs, fullSpecs, description, reviews };
     }, [product]);
 
-    if (!product || !details) {
+    // Рейтинг звезды - ВСЕГДА вызываем этот хук
+    const ratingStars = useMemo(() => {
+        if (!product) return null;
+        const full = Math.floor(product.rating);
+        const half = product.rating - full >= 0.5;
+        return (
+            <span className="stars" aria-hidden="true" style={{ cursor: "pointer" }}>
+                {Array.from({length:5}).map((_,i)=>(
+                    <svg key={i} width="18" height="18" viewBox="0 0 24 24">
+                        <path
+                            d="M12 3.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4L12 18.6 6.2 21.3l1.1-6.4L2.6 10.3l6.5-.9 2.9-5.9z"
+                            fill={i<full ? "currentColor" : i===full && half ? "currentColor" : "none"}
+                            opacity={i===full && half ? .5 : 1}
+                            stroke="currentColor"
+                            strokeWidth=".8"
+                        />
+                    </svg>
+                ))}
+            </span>
+        );
+    }, [product?.rating]);
+
+    // Состояние загрузки
+    if (isLoading) {
         return (
             <main className="container" style={{ padding: "24px 0" }}>
-                <h2>Товар не найден</h2>
-                <p>Проверьте ссылку или вернитесь на главную страницу.</p>
+                <div className="loading-state">
+                    <div className="loading-spinner"></div>
+                    <p>Загружаем товар...</p>
+                </div>
+            </main>
+        );
+    }
+
+    // Состояние ошибки
+    if (error || !product || !details) {
+        return (
+            <main className="container" style={{ padding: "24px 0" }}>
+                <div className="error-state">
+                    <div className="error-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke="currentColor" strokeWidth="1.5"/>
+                        </svg>
+                    </div>
+                    <h2>Товар не найден</h2>
+                    <p>Проверьте ссылку или вернитесь на главную страницу.</p>
+                </div>
             </main>
         );
     }
@@ -71,32 +121,19 @@ export default function ProductPage(){
         window.scrollTo({ top: y, behavior: "smooth" });
     };
 
-    const ratingStars = useMemo(()=>{
-        const full = Math.floor(product.rating);
-        const half = product.rating - full >= 0.5;
-        return (
-            <span className="stars" aria-hidden="true" style={{ cursor: "pointer" }}>
-        {Array.from({length:5}).map((_,i)=>(
-            <svg key={i} width="18" height="18" viewBox="0 0 24 24">
-                <path
-                    d="M12 3.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4L12 18.6 6.2 21.3l1.1-6.4L2.6 10.3l6.5-.9 2.9-5.9z"
-                    fill={i<full ? "currentColor" : i===full && half ? "currentColor" : "none"}
-                    opacity={i===full && half ? .5 : 1}
-                    stroke="currentColor"
-                    strokeWidth=".8"
-                />
-            </svg>
-        ))}
-      </span>
-        );
-    }, [product.rating]);
-
     return (
         <main className="container product-page" style={{ padding: "16px 0 40px" }}>
             <section className="product-page-grid">
                 {/* Фото (плейсхолдер) */}
                 <div className="product-gallery">
-                    <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label={`Изображение: ${product.name}`}>
+                    {/* SVG placeholder (fallback) */}
+                    <svg 
+                        viewBox="0 0 800 600" 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        role="img" 
+                        aria-label={`Изображение: ${product.name}`}
+                        style={{ display: product.images && product.images.length > 0 ? 'none' : 'block' }}
+                    >
                         <defs>
                             <linearGradient id={`pg${product.id}`} x1="0" x2="1">
                                 <stop offset="0%" stopColor="#1c2340" />
@@ -110,6 +147,28 @@ export default function ProductPage(){
                             <rect x="370" y="460" width="60" height="14" rx="7" fill="#7cf3d0" />
                         </g>
                     </svg>
+                    
+                    {/* Изображение товара */}
+                    {product.images && product.images.length > 0 ? (
+                        <img 
+                            src={product.images[0].url}
+                            alt={product.images[0].alt_text || product.name}
+                            className="product-main-image"
+                            loading="eager"
+                            onError={(e) => {
+                                // Fallback к SVG если изображение не загрузилось
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                const svg = target.previousElementSibling as SVGElement;
+                                if (svg) svg.style.display = 'block';
+                            }}
+                            onLoad={(e) => {
+                                // Скрываем SVG placeholder когда изображение загрузилось
+                                const svg = (e.target as HTMLImageElement).previousElementSibling as SVGElement;
+                                if (svg) svg.style.display = 'none';
+                            }}
+                        />
+                    ) : null}
                 </div>
 
                 {/* Сводка и действия */}

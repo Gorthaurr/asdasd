@@ -1,9 +1,13 @@
+import type { ProductImage } from './api';
+
 // Тип товара — единая точка правды по полям каталога
 export interface Product {
-    id: number; // уникальный идентификатор
-    name: string; // название товара
-    category: string;// категория (для чипсов/фильтрации)
-    price: number; // цена (EUR)
-    oldPrice?: number; // старая цена для скидок (опционально)
-    rating: number; // рейтинг (0..5)
+    id: number; // for compatibility with existing code
+    originalId?: string; // original ID from API (string)
+    name: string;
+    category: string;
+    price: number;
+    oldPrice?: number;
+    rating: number;
+    images?: ProductImage[]; // images for the product
 }
