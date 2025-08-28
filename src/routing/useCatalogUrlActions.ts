@@ -29,8 +29,8 @@ export function useCatalogUrlActions(){
             return;
         }
         const next = withParams(new URLSearchParams(location.search), p=>{
-            const v = q.trim();
-            if (v) p.set("q", v); else p.delete("q");
+            // Убираем trim() чтобы сохранять пробелы
+            if (q) p.set("q", q); else p.delete("q");
             p.delete("page"); // поиск всегда на 1-й странице
         });
         // replace для набора текста — не захламляем историю

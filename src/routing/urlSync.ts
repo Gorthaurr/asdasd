@@ -12,7 +12,7 @@ type Shape = { q: string; chip: string; sort: string; page: number; favoriteOnly
 function parseSearch(search: string): Shape {
     const p = new URLSearchParams(search);
     return {
-        q: (p.get("q") ?? "").trim(),
+        q: p.get("q") ?? "", // Убираем trim() чтобы сохранять пробелы
         chip: p.get("chip") ?? "Все",
         sort: p.get("sort") ?? "popular",
         page: p.get("page") ? Math.max(1, Number(p.get("page"))) : 1,
@@ -32,7 +32,7 @@ export default function LocationSync(){
     // Нормализованные формы
     const urlShape   = useMemo(()=>parseSearch(location.search), [location.search]);
     const stateShape = useMemo<Shape>(()=>({
-        q: (catalog.q ?? "").trim(),
+        q: catalog.q ?? "", // Убираем trim() чтобы сохранять пробелы
         chip: catalog.chip ?? "Все",
         sort: catalog.sort ?? "popular",
         page: Math.max(1, catalog.page ?? 1),

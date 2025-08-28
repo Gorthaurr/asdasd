@@ -133,9 +133,37 @@ function AnimatedSearch({ value, onChange }: { value: string; onChange: (v: stri
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Разрешаем пробелы, но убираем лишние в начале и конце
-        const newValue = e.target.value;
-        onChange(newValue);
+        // Просто передаем значение без изменений
+        console.log('=== INPUT CHANGE ===');
+        console.log('Value:', e.target.value);
+        console.log('Length:', e.target.value.length);
+        console.log('Contains space:', e.target.value.includes(' '));
+        console.log('Char codes:', Array.from(e.target.value).map(c => c.charCodeAt(0)));
+        onChange(e.target.value);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        console.log('=== KEY DOWN ===');
+        console.log('Key:', e.key);
+        console.log('Code:', e.keyCode);
+        console.log('Which:', e.which);
+        console.log('Char code:', e.key.charCodeAt(0));
+        if (e.key === ' ') {
+            console.log('SPACE KEY PRESSED!');
+        }
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        console.log('=== KEY PRESS ===');
+        console.log('Key:', e.key);
+        console.log('Char code:', e.key.charCodeAt(0));
+    };
+
+    const handleClear = () => {
+        onChange('');
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
     };
 
     return (
@@ -154,14 +182,32 @@ function AnimatedSearch({ value, onChange }: { value: string; onChange: (v: stri
                 ref={inputRef}
                 value={value}
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                onKeyPress={handleKeyPress}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                type="search"
+                type="text"
                 placeholder="Поиск товаров..."
                 autoComplete="off"
                 aria-label="Поиск по товарам"
             />
-            <div className="search-ripple"></div>
+            {value && (
+                <button
+                    type="button"
+                    className="search-clear"
+                    onClick={handleClear}
+                    aria-label="Очистить поиск"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path 
+                            d="M18 6L6 18M6 6l12 12" 
+                            stroke="currentColor" 
+                            strokeWidth="2" 
+                            strokeLinecap="round"
+                        />
+                    </svg>
+                </button>
+            )}
         </div>
     );
 }
@@ -180,39 +226,26 @@ export default function Hero(){
     return (
         <section className={`hero animated-hero ${isVisible ? 'visible' : ''}`} aria-label="Промо">
             <div className="hero-card">
-                <div className="hero-content">
-                    <h1 className="hero-title">
-                        <span className="title-line">Техника, которая</span>
-                        <span className="title-line highlight">упрощает жизнь</span>
-                    </h1>
-                    <p className="hero-description">
-                        Выбирайте из сотен товаров: от кухонных помощников до климат‑систем. 
-                        Умные фильтры, быстрый поиск, корзина и избранное — всё в одном месте.
-                    </p>
-                    <div className="search-row">
-                        <AnimatedSearch 
-                            value={q} 
-                            onChange={(value) => setQ(value)} 
-                        />
-                        <AnimatedSortSelect 
-                            value={sort} 
-                            onChange={(value) => setSort(value)} 
-                        />
-                    </div>
-                    <Chips />
+                <h1 className="hero-title">
+                    <span className="title-line">Техника, которая</span>
+                    <span className="title-line highlight">упрощает жизнь</span>
+                </h1>
+                <p className="hero-description">
+                    <span className="description-line">Выбирайте из сотен товаров: от кухонных помощников</span>
+                    <span className="description-line">до климат‑систем. Умные фильтры, быстрый поиск, корзина и избранное — всё в одном месте.</span>
+                </p>
+                <div className="search-row">
+                    <AnimatedSearch 
+                        value={q} 
+                        onChange={(value) => setQ(value)} 
+                    />
+                    <AnimatedSortSelect 
+                        value={sort} 
+                        onChange={(value) => setSort(value)} 
+                    />
                 </div>
-                <div className="hero-background">
-                    <div className="floating-shapes">
-                        <div className="shape shape-1"></div>
-                        <div className="shape shape-2"></div>
-                        <div className="shape shape-3"></div>
-                        <div className="shape shape-4"></div>
-                    </div>
-                </div>
-            </div>
-            {/* Блок доверия/статистики */}
-            <div className="stat" aria-label="Качество сервиса">
-                <div className="stat-content">
+                <Chips />
+                <div className="hero-stats">
                     <div className="stat-row">
                         <strong className="stat-number">4.9/5</strong>
                         <span className="stat-label">по оценкам покупателей</span>
@@ -220,9 +253,18 @@ export default function Hero(){
                     <div className="stat-row">
                         <strong className="stat-number">24/7</strong>
                         <span className="stat-label">поддержка</span>
-                        <span className="stat-separator">•</span>
+                    </div>
+                    <div className="stat-row">
                         <strong className="stat-number">365</strong>
                         <span className="stat-label">дней возврата</span>
+                    </div>
+                </div>
+                <div className="hero-background">
+                    <div className="floating-shapes">
+                        <div className="shape shape-1"></div>
+                        <div className="shape shape-2"></div>
+                        <div className="shape shape-3"></div>
+                        <div className="shape shape-4"></div>
                     </div>
                 </div>
             </div>
