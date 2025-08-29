@@ -1,8 +1,14 @@
-// Страница товара: слева фото, справа краткие характеристики.
-// «Подробнее» скроллит к полным характеристикам, клик по рейтингу — к отзывам.
-// Сердце — как в карточке (активная синяя заливка); контроль количества: − qty +.
+/**
+ * Страница товара: слева фото, справа краткие характеристики.
+ * 
+ * Функциональность:
+ * - «Подробнее» скроллит к полным характеристикам
+ * - Клик по рейтингу — к отзывам
+ * - Сердце — как в карточке (активная синяя заливка)
+ * - Контроль количества: − qty +
+ */
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetProductQuery } from "../api/productsApi";
@@ -13,12 +19,251 @@ import { selectCartItems, selectFavIds } from "../features/catalog/selectors";
 import { addToCart, changeQty } from "../features/cart/cartSlice";
 import { toggleFav } from "../features/favs/favsSlice";
 
-export default function ProductPage(){
-    const { id } = useParams();
+// Типы для внутренних компонентов
+interface ProductSpec {
+    label: string;
+    value: string;
+}
+
+interface ProductReview {
+    user: string;
+    rating: number;
+    text: string;
+}
+
+interface ProductDetails {
+    mainSpecs: ProductSpec[];
+    fullSpecs: ProductSpec[];
+    description: string;
+    reviews: ProductReview[];
+}
+
+/**
+ * Компонент для отображения звездного рейтинга
+ */
+interface RatingStarsProps {
+    rating: number;
+    size?: number;
+    className?: string;
+    title?: string;
+}
+
+const RatingStars: React.FC<RatingStarsProps> = ({ 
+    rating, 
+    size = 18, 
+    className = "stars", 
+    title 
+}) => {
+    const stars = useMemo(() => {
+        const full = Math.floor(rating);
+        const half = rating - full >= 0.5;
+        
+        return Array.from({ length: 5 }).map((_, i) => (
+            <svg key={i} width={size} height={size} viewBox="0 0 24 24">
+                <path
+                    d="M12 3.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4L12 18.6 6.2 21.3l1.1-6.4L2.6 10.3l6.5-.9 2.9-5.9z"
+                    fill={i < full ? "currentColor" : i === full && half ? "currentColor" : "none"}
+                    opacity={i === full && half ? 0.5 : 1}
+                    stroke="currentColor"
+                    strokeWidth="0.8"
+                />
+            </svg>
+        ));
+    }, [rating, size]);
+
+    return (
+        <span 
+            className={className} 
+            aria-hidden="true" 
+            style={{ cursor: title ? "pointer" : "default" }}
+            title={title}
+        >
+            {stars}
+        </span>
+    );
+};
+
+/**
+ * Компонент для отображения изображения товара с fallback
+ */
+interface ProductImageProps {
+    product: Product;
+}
+
+const ProductImage: React.FC<ProductImageProps> = ({ product }) => {
+    const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+        const target = e.target as HTMLImageElement;
+        target.style.display = 'none';
+        const svg = target.previousElementSibling as SVGElement;
+        if (svg) svg.style.display = 'block';
+    }, []);
+
+    const handleImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+        const svg = (e.target as HTMLImageElement).previousElementSibling as SVGElement;
+        if (svg) svg.style.display = 'none';
+    }, []);
+
+    const hasImages = product.images && product.images.length > 0;
+
+    return (
+        <div className="product-gallery">
+            {/* SVG placeholder (fallback) */}
+            <svg 
+                viewBox="0 0 800 600" 
+                xmlns="http://www.w3.org/2000/svg" 
+                role="img" 
+                aria-label={`Изображение: ${product.name}`}
+                style={{ display: hasImages ? 'none' : 'block' }}
+            >
+                <defs>
+                    <linearGradient id={`pg${product.id}`} x1="0" x2="1">
+                        <stop offset="0%" stopColor="#1c2340" />
+                        <stop offset="100%" stopColor="#0f1428" />
+                    </linearGradient>
+                </defs>
+                <rect width="800" height="600" fill={`url(#pg${product.id})`} />
+                <g fill="#6ea8fe" opacity="0.9">
+                    <rect x="220" y="140" width="360" height="260" rx="24" />
+                    <rect x="250" y="170" width="300" height="200" rx="12" fill="#182039" />
+                    <rect x="370" y="460" width="60" height="14" rx="7" fill="#7cf3d0" />
+                </g>
+            </svg>
+            
+            {/* Изображение товара */}
+            {hasImages && product.images && (
+                <img 
+                    src={product.images[0].url}
+                    alt={product.images[0].alt_text || product.name}
+                    className="product-main-image"
+                    loading="eager"
+                    onError={handleImageError}
+                    onLoad={handleImageLoad}
+                />
+            )}
+        </div>
+    );
+};
+
+/**
+ * Компонент для управления количеством товара
+ */
+interface QuantityControlProps {
+    productId: number;
+    quantity: number;
+    onQuantityChange: (delta: number) => void;
+    onAddToCart: () => void;
+}
+
+const QuantityControl: React.FC<QuantityControlProps> = ({ 
+    productId, 
+    quantity, 
+    onQuantityChange, 
+    onAddToCart 
+}) => {
+    const handleDecrease = useCallback(() => {
+        if (quantity > 0) {
+            onQuantityChange(-1);
+        }
+    }, [quantity, onQuantityChange]);
+
+    const handleIncrease = useCallback(() => {
+        if (quantity === 0) {
+            onAddToCart();
+        } else {
+            onQuantityChange(1);
+        }
+    }, [quantity, onQuantityChange, onAddToCart]);
+
+    return (
+        <div className="qty-inline" aria-label="Количество в корзине">
+            <button
+                className="animated-qty-btn"
+                aria-label="Убрать одну штуку"
+                onClick={handleDecrease}
+                disabled={quantity === 0}
+            >
+                −
+            </button>
+            <span className="qty-count" aria-live="polite">
+                {quantity}
+            </span>
+            <button
+                className="animated-qty-btn"
+                aria-label="Добавить одну штуку"
+                onClick={handleIncrease}
+            >
+                +
+            </button>
+        </div>
+    );
+};
+
+/**
+ * Компонент для отображения отзывов
+ */
+interface ReviewsSectionProps {
+    reviews: ProductReview[];
+}
+
+const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => (
+    <section id="reviews" className="panel" style={{ marginTop: 16 }}>
+        <h2 style={{ marginTop: 0 }}>Отзывы покупателей</h2>
+        <div className="reviews">
+            {reviews.map((review, index) => (
+                <article key={index} className="review">
+                    <header>
+                        <strong>{review.user}</strong>
+                        <RatingStars 
+                            rating={review.rating} 
+                            size={14} 
+                            title={`${review.rating} из 5`}
+                            className="stars"
+                        />
+                    </header>
+                    <p>{review.text}</p>
+                </article>
+            ))}
+        </div>
+    </section>
+);
+
+/**
+ * Компонент для отображения характеристик
+ */
+interface SpecificationsSectionProps {
+    specs: ProductSpec[];
+    title: string;
+}
+
+const SpecificationsSection: React.FC<SpecificationsSectionProps> = ({ specs, title }) => (
+    <section className="panel" style={{ marginTop: 16 }}>
+        <h2 style={{ marginTop: 0 }}>{title}</h2>
+        <dl className="full-specs">
+            {specs.map(spec => (
+                <div key={spec.label} className="fs-row">
+                    <dt>{spec.label}</dt>
+                    <dd>{spec.value}</dd>
+                </div>
+            ))}
+        </dl>
+    </section>
+);
+
+/**
+ * Основной компонент страницы товара
+ * 
+ * Отображает полную информацию о товаре с возможностью:
+ * - Просмотра изображений
+ * - Управления количеством в корзине
+ * - Добавления в избранное
+ * - Просмотра характеристик и отзывов
+ */
+export default function ProductPage() {
+    const { id } = useParams<{ id: string }>();
     
     // Запрос к API для получения товара
     const { data: apiProduct, isLoading, error } = useGetProductQuery(id || '', {
-        skip: !id, // не делаем запрос если нет ID
+        skip: !id,
     });
 
     // Преобразуем API данные в формат frontend
@@ -30,21 +275,25 @@ export default function ProductPage(){
     const dispatch = useDispatch();
     const cart = useSelector(selectCartItems);
     const favIds = useSelector(selectFavIds);
+    
     const isFav = product ? favIds.includes(product.id) : false;
-    const qty = product ? (cart[product.id] ?? 0) : 0;
+    const quantity = product ? (cart[product.id] ?? 0) : 0;
 
     const fullSpecsRef = useRef<HTMLDivElement>(null);
     const reviewsRef = useRef<HTMLDivElement>(null);
 
-    const details = useMemo(() => {
+    // Генерация данных о товаре
+    const details = useMemo<ProductDetails | null>(() => {
         if (!product) return null;
-        const mainSpecs = [
+        
+        const mainSpecs: ProductSpec[] = [
             { label: "Категория", value: product.category },
             { label: "Модель", value: product.name },
             { label: "Цена", value: fmtCurrency(product.price) },
             { label: "Рейтинг", value: product.rating.toFixed(1) },
         ];
-        const fullSpecs = [
+        
+        const fullSpecs: ProductSpec[] = [
             { label: "Питание", value: "220–240 В" },
             { label: "Гарантия", value: "24 мес" },
             { label: "Страна", value: "ЕС" },
@@ -54,37 +303,50 @@ export default function ProductPage(){
             { label: "Уровень шума", value: "до 60 dB" },
             { label: "Энергопотребление", value: "A+" },
         ];
-        const description =
-            "Современная техника для ежедневных задач. Модель сочетает надёжность, удобство и лаконичный дизайн. Подходит для повседневного использования, проста в обслуживании.";
-        const reviews = [
+        
+        const description = "Современная техника для ежедневных задач. Модель сочетает надёжность, удобство и лаконичный дизайн. Подходит для повседневного использования, проста в обслуживании.";
+        
+        const reviews: ProductReview[] = [
             { user: "Алексей", rating: 5, text: "Качество отличное, пользуемся каждый день." },
             { user: "Мария", rating: 4, text: "Хорошая модель, доставка быстрая." },
             { user: "Иван", rating: 4, text: "Цена/качество на уровне, рекомендую." },
         ];
+        
         return { mainSpecs, fullSpecs, description, reviews };
     }, [product]);
 
-    // Рейтинг звезды - ВСЕГДА вызываем этот хук
-    const ratingStars = useMemo(() => {
-        if (!product) return null;
-        const full = Math.floor(product.rating);
-        const half = product.rating - full >= 0.5;
-        return (
-            <span className="stars" aria-hidden="true" style={{ cursor: "pointer" }}>
-                {Array.from({length:5}).map((_,i)=>(
-                    <svg key={i} width="18" height="18" viewBox="0 0 24 24">
-                        <path
-                            d="M12 3.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4L12 18.6 6.2 21.3l1.1-6.4L2.6 10.3l6.5-.9 2.9-5.9z"
-                            fill={i<full ? "currentColor" : i===full && half ? "currentColor" : "none"}
-                            opacity={i===full && half ? .5 : 1}
-                            stroke="currentColor"
-                            strokeWidth=".8"
-                        />
-                    </svg>
-                ))}
-            </span>
-        );
-    }, [product?.rating]);
+    // Обработчики событий
+    const handleQuantityChange = useCallback((delta: number) => {
+        if (product) {
+            dispatch(changeQty({ id: product.id, delta }));
+        }
+    }, [dispatch, product]);
+
+    const handleAddToCart = useCallback(() => {
+        if (product) {
+            dispatch(addToCart(product.id));
+        }
+    }, [dispatch, product]);
+
+    const handleToggleFav = useCallback(() => {
+        if (product) {
+            dispatch(toggleFav(product.id));
+        }
+    }, [dispatch, product]);
+
+    const smoothScrollTo = useCallback((element: HTMLElement | null) => {
+        if (!element) return;
+        const y = element.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top: y, behavior: "smooth" });
+    }, []);
+
+    const handleScrollToReviews = useCallback(() => {
+        smoothScrollTo(reviewsRef.current);
+    }, [smoothScrollTo]);
+
+    const handleScrollToSpecs = useCallback(() => {
+        smoothScrollTo(fullSpecsRef.current);
+    }, [smoothScrollTo]);
 
     // Состояние загрузки
     if (isLoading) {
@@ -105,7 +367,11 @@ export default function ProductPage(){
                 <div className="error-state">
                     <div className="error-icon">
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke="currentColor" strokeWidth="1.5"/>
+                            <path 
+                                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" 
+                                stroke="currentColor" 
+                                strokeWidth="1.5"
+                            />
                         </svg>
                     </div>
                     <h2>Товар не найден</h2>
@@ -115,61 +381,11 @@ export default function ProductPage(){
         );
     }
 
-    const smoothScrollTo = (el: HTMLElement | null) => {
-        if (!el) return;
-        const y = el.getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top: y, behavior: "smooth" });
-    };
-
     return (
         <main className="container product-page" style={{ padding: "16px 0 40px" }}>
             <section className="product-page-grid">
-                {/* Фото (плейсхолдер) */}
-                <div className="product-gallery">
-                    {/* SVG placeholder (fallback) */}
-                    <svg 
-                        viewBox="0 0 800 600" 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        role="img" 
-                        aria-label={`Изображение: ${product.name}`}
-                        style={{ display: product.images && product.images.length > 0 ? 'none' : 'block' }}
-                    >
-                        <defs>
-                            <linearGradient id={`pg${product.id}`} x1="0" x2="1">
-                                <stop offset="0%" stopColor="#1c2340" />
-                                <stop offset="100%" stopColor="#0f1428" />
-                            </linearGradient>
-                        </defs>
-                        <rect width="800" height="600" fill={`url(#pg${product.id})`} />
-                        <g fill="#6ea8fe" opacity="0.9">
-                            <rect x="220" y="140" width="360" height="260" rx="24" />
-                            <rect x="250" y="170" width="300" height="200" rx="12" fill="#182039" />
-                            <rect x="370" y="460" width="60" height="14" rx="7" fill="#7cf3d0" />
-                        </g>
-                    </svg>
-                    
-                    {/* Изображение товара */}
-                    {product.images && product.images.length > 0 ? (
-                        <img 
-                            src={product.images[0].url}
-                            alt={product.images[0].alt_text || product.name}
-                            className="product-main-image"
-                            loading="eager"
-                            onError={(e) => {
-                                // Fallback к SVG если изображение не загрузилось
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                const svg = target.previousElementSibling as SVGElement;
-                                if (svg) svg.style.display = 'block';
-                            }}
-                            onLoad={(e) => {
-                                // Скрываем SVG placeholder когда изображение загрузилось
-                                const svg = (e.target as HTMLImageElement).previousElementSibling as SVGElement;
-                                if (svg) svg.style.display = 'none';
-                            }}
-                        />
-                    ) : null}
-                </div>
+                {/* Фото товара */}
+                <ProductImage product={product} />
 
                 {/* Сводка и действия */}
                 <div className="product-summary">
@@ -179,47 +395,53 @@ export default function ProductPage(){
                     <div
                         role="button"
                         title="Перейти к отзывам"
-                        onClick={() => smoothScrollTo(reviewsRef.current)}
-                        style={{ display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer", color: "var(--muted)" }}
+                        onClick={handleScrollToReviews}
+                        style={{ 
+                            display: "inline-flex", 
+                            alignItems: "center", 
+                            gap: 8, 
+                            cursor: "pointer", 
+                            color: "var(--muted)" 
+                        }}
                     >
-                        {ratingStars}
+                        <RatingStars rating={product.rating} />
                         <strong>{product.rating.toFixed(1)}</strong>
                         <span>(отзывы)</span>
                     </div>
 
                     {/* Краткие характеристики */}
                     <ul className="specs-list">
-                        {details.mainSpecs.map((s) => (
-                            <li key={s.label}>
-                                <span>{s.label}</span>
-                                <span>{s.value}</span>
+                        {details.mainSpecs.map((spec) => (
+                            <li key={spec.label}>
+                                <span>{spec.label}</span>
+                                <span>{spec.value}</span>
                             </li>
                         ))}
                     </ul>
 
                     {/* Действия: − qty +, Подробнее, Сердце */}
-                    <div style={{ display: "flex", gap: 12, alignItems: "center", marginTop: 10 }}>
-                        <strong className="cost" style={{ fontSize: "1.15rem" }}>{fmtCurrency(product.price)}</strong>
+                    <div style={{ 
+                        display: "flex", 
+                        gap: 12, 
+                        alignItems: "center", 
+                        marginTop: 10 
+                    }}>
+                        <strong className="cost" style={{ fontSize: "1.15rem" }}>
+                            {fmtCurrency(product.price)}
+                        </strong>
 
-                        <div className="qty-inline" aria-label="Количество в корзине">
-                            <button
-                                className="animated-qty-btn"
-                                aria-label="Убрать одну штуку"
-                                onClick={() => qty > 0 && dispatch(changeQty({ id: product.id, delta: -1 }))}
-                                disabled={qty===0}
-                            >−</button>
-                            <span className="qty-count" aria-live="polite">{qty}</span>
-                            <button
-                                className="animated-qty-btn"
-                                aria-label="Добавить одну штуку"
-                                onClick={() => {
-                                    if (qty === 0) dispatch(addToCart(product.id));
-                                    else dispatch(changeQty({ id: product.id, delta: +1 }));
-                                }}
-                            >+</button>
-                        </div>
+                        <QuantityControl
+                            productId={product.id}
+                            quantity={quantity}
+                            onQuantityChange={handleQuantityChange}
+                            onAddToCart={handleAddToCart}
+                        />
 
-                        <button className="btn primary" onClick={() => smoothScrollTo(fullSpecsRef.current)} title="К полным характеристикам">
+                        <button 
+                            className="btn primary" 
+                            onClick={handleScrollToSpecs} 
+                            title="К полным характеристикам"
+                        >
                             Подробнее
                         </button>
 
@@ -228,10 +450,13 @@ export default function ProductPage(){
                             className={`animated-fav${isFav ? " is-active" : ""}`}
                             aria-label="Добавить в избранное"
                             title="Добавить/убрать из избранного"
-                            onClick={() => dispatch(toggleFav(product.id))}
+                            onClick={handleToggleFav}
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                                <path className="heart-path" d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.65-7 10-7 10Z"/>
+                                <path 
+                                    className="heart-path" 
+                                    d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.65-7 10-7 10Z"
+                                />
                             </svg>
                         </button>
                     </div>
@@ -239,46 +464,15 @@ export default function ProductPage(){
             </section>
 
             {/* Полные характеристики */}
-            <section ref={fullSpecsRef} id="full-specs" className="panel" style={{ marginTop: 16 }}>
-                <h2 style={{ marginTop: 0 }}>Характеристики</h2>
-                <dl className="full-specs">
-                    {details.fullSpecs.map(s => (
-                        <div key={s.label} className="fs-row">
-                            <dt>{s.label}</dt>
-                            <dd>{s.value}</dd>
-                        </div>
-                    ))}
-                </dl>
-
+            <section ref={fullSpecsRef} id="full-specs">
+                <SpecificationsSection specs={details.fullSpecs} title="Характеристики" />
                 <h3>Описание</h3>
                 <p style={{ color: "var(--muted)" }}>{details.description}</p>
             </section>
 
             {/* Отзывы */}
-            <section ref={reviewsRef} id="reviews" className="panel" style={{ marginTop: 16 }}>
-                <h2 style={{ marginTop: 0 }}>Отзывы покупателей</h2>
-                <div className="reviews">
-                    {details.reviews.map((r, i) => (
-                        <article key={i} className="review">
-                            <header>
-                                <strong>{r.user}</strong>
-                                <span className="stars" aria-hidden="true" title={`${r.rating} из 5`} style={{ marginLeft: 8 }}>
-                  {Array.from({length:5}).map((_,j)=>(
-                      <svg key={j} width="14" height="14" viewBox="0 0 24 24">
-                          <path
-                              d="M12 3.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4L12 18.6 6.2 21.3l1.1-6.4L2.6 10.3l6.5-.9 2.9-5.9z"
-                              fill={j < r.rating ? "currentColor" : "none"}
-                              stroke="currentColor"
-                              strokeWidth=".8"
-                          />
-                      </svg>
-                  ))}
-                </span>
-                            </header>
-                            <p>{r.text}</p>
-                        </article>
-                    ))}
-                </div>
+            <section ref={reviewsRef}>
+                <ReviewsSection reviews={details.reviews} />
             </section>
         </main>
     );

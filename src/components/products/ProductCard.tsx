@@ -1,5 +1,11 @@
-// Карточка товара: кликабельное превью/название → страница товара,
-// «сердце» избранного (активное = синяя заливка), контроль количества (− qty +)
+/**
+ * Карточка товара: кликабельное превью/название → страница товара
+ * 
+ * Функциональность:
+ * - «сердце» избранного (активное = синяя заливка)
+ * - Контроль количества (− qty +)
+ * - Анимированные эффекты при наведении
+ */
 
 import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -10,6 +16,14 @@ import { selectFavIds, selectCartItems } from "../../features/catalog/selectors"
 import { fmtCurrency } from "../../utils/format";
 import type { Product } from "../../types/product";
 
+/**
+ * Компонент карточки товара
+ * 
+ * Отображает основную информацию о товаре с возможностью:
+ * - Перехода на страницу товара
+ * - Добавления в избранное
+ * - Управления количеством в корзине
+ */
 export default function ProductCard({ p }: { p: Product }) {
     const dispatch = useDispatch();
     const favIds = useSelector(selectFavIds);
