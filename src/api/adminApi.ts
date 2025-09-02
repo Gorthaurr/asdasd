@@ -19,9 +19,16 @@ adminApiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Интерцептор для обработки ошибок
+// Интерцептор для обработки ошибок и автообновления токена
 adminApiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Если в ответе есть новый токен, обновляем его
+    const newToken = response.headers['x-new-token'];
+    if (newToken) {
+      localStorage.setItem('admin_token', newToken);
+    }
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
       // Токен истек или недействителен
@@ -145,7 +152,7 @@ export const adminApi = {
     page_size?: number;
     is_active?: boolean;
     role?: string;
-  }): Promise<User[]> {
+  }): Promise<{items: User[], meta: any}> {
     const response = await adminApiClient.get('/admin/users', { params });
     return response.data;
   },
@@ -194,6 +201,97 @@ export const adminApi = {
 
   async updateSystemSettings(settings: any): Promise<{ message: string }> {
     const response = await adminApiClient.put('/admin/settings', settings);
+    return response.data;
+  },
+
+  // Управление продуктами
+  async getProducts(params?: {
+    q?: string;
+    category_id?: number;
+    page?: number;
+    page_size?: number;
+  }): Promise<{items: any[], meta: any}> {
+    const response = await adminApiClient.get('/admin/products', { params });
+    return response.data;
+  },
+
+  async createProduct(productData: {
+    name: string;
+    category_id: number;
+    price_raw?: string;
+    price_cents?: number;
+    description?: string;
+    product_url?: string;
+  }): Promise<any> {
+    const response = await adminApiClient.post('/admin/products', productData);
+    return response.data;
+  },
+
+  async updateProduct(productId: string, productData: any): Promise<any> {
+    const response = await adminApiClient.put(`/admin/products/${productId}`, productData);
+    return response.data;
+  },
+
+  async getProduct(productId: string): Promise<any> {
+    const response = await adminApiClient.get(`/admin/products/${productId}`);
+    return response.data;
+  },
+
+  async deleteProduct(productId: string): Promise<{ message: string }> {
+    const response = await adminApiClient.delete(`/admin/products/${productId}`);
+    return response.data;
+  },
+
+  async setPrimaryImage(productId: string, imageId: number): Promise<{ message: string }> {
+    const response = await adminApiClient.put(`/admin/products/${productId}/images/${imageId}/primary`);
+    return response.data;
+  },
+
+
+
+  // Управление категориями
+  async getCategories(): Promise<Array<{id: number, slug: string, products_count: number}>> {
+    const response = await adminApiClient.get('/admin/categories');
+    return response.data;
+  },
+
+  async createCategory(categoryData: { slug: string }): Promise<any> {
+    const response = await adminApiClient.post('/admin/categories', categoryData);
+    return response.data;
+  },
+
+  async updateCategory(categoryId: number, categoryData: { slug: string }): Promise<any> {
+    const response = await adminApiClient.put(`/admin/categories/${categoryId}`, categoryData);
+    return response.data;
+  },
+
+  async deleteCategory(categoryId: number): Promise<{ message: string }> {
+    const response = await adminApiClient.delete(`/admin/categories/${categoryId}`);
+    return response.data;
+  },
+
+  // Управление заказами
+  async getOrders(params?: {
+    status_filter?: string;
+    page?: number;
+    page_size?: number;
+  }): Promise<{items: any[], meta: any}> {
+    const response = await adminApiClient.get('/admin/orders', { params });
+    return response.data;
+  },
+
+  async getOrder(orderId: string): Promise<any> {
+    const response = await adminApiClient.get(`/admin/orders/${orderId}`);
+    return response.data;
+  },
+
+  async updateOrderStatus(orderId: string, status: string): Promise<any> {
+    const response = await adminApiClient.put(`/admin/orders/${orderId}/status`, { status });
+    return response.data;
+  },
+
+  async updateOrder(orderId: string, orderData: any): Promise<any> {
+    const response = await adminApiClient.put(`/admin/orders/${orderId}`, orderData);
     return response.data;
   },
 };

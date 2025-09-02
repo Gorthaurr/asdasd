@@ -1,20 +1,18 @@
-import React from 'react';
-
 interface LoadingSpinnerProps {
   size?: 'small' | 'medium' | 'large';
   color?: string;
   className?: string;
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  size = 'medium', 
+const LoadingSpinner = ({
+  size = 'medium',
   color = 'currentColor',
-  className = ''
-}) => {
+  className = '',
+}: LoadingSpinnerProps) => {
   const sizeClasses = {
     small: 'w-4 h-4',
     medium: 'w-6 h-6',
-    large: 'w-8 h-8'
+    large: 'w-8 h-8',
   };
 
   return (
@@ -25,14 +23,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         fill="none"
         viewBox="0 0 24 24"
       >
-        <circle
-          className="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke={color}
-          strokeWidth="4"
-        />
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke={color} strokeWidth="4" />
         <path
           className="opacity-75"
           fill={color}

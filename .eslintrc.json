@@ -8,8 +8,7 @@
     "eslint:recommended",
     "@typescript-eslint/recommended",
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:jsx-a11y/recommended"
+    "plugin:react-hooks/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -22,7 +21,7 @@
   "plugins": [
     "react",
     "@typescript-eslint",
-    "jsx-a11y"
+    "react-hooks"
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",
@@ -34,7 +33,8 @@
     "prefer-const": "error",
     "no-var": "error",
     "object-shorthand": "error",
-    "prefer-template": "error"
+    "prefer-template": "error",
+    "no-console": "warn"
   },
   "settings": {
     "react": {

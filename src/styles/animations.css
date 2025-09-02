@@ -3,7 +3,7 @@
 /* === HERO АНИМАЦИИ === */
 .animated-hero {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(1.875rem); /* 30px */
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -12,30 +12,11 @@
     transform: translateY(0);
 }
 
-.hero-title {
-    overflow: hidden;
-}
-
-.title-line {
-    display: block;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.title-line:nth-child(1) { animation-delay: 0.2s; }
-.title-line:nth-child(2) { animation-delay: 0.4s; }
-
-.title-line.highlight {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
+/* Убираем дублирующиеся стили hero-title и title-line - они уже в global.css */
 
 .hero-description {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(1.25rem); /* 20px */
     animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
 }
 
@@ -59,32 +40,32 @@
 }
 
 .shape-1 {
-    width: 60px;
-    height: 60px;
+    width: 3.75rem; /* 60px */
+    height: 3.75rem;
     top: 20%;
     left: 10%;
     animation-delay: 0s;
 }
 
 .shape-2 {
-    width: 40px;
-    height: 40px;
+    width: 2.5rem; /* 40px */
+    height: 2.5rem;
     top: 60%;
     right: 15%;
     animation-delay: 2s;
 }
 
 .shape-3 {
-    width: 30px;
-    height: 30px;
+    width: 1.875rem; /* 30px */
+    height: 1.875rem;
     bottom: 20%;
     left: 20%;
     animation-delay: 4s;
 }
 
 .shape-4 {
-    width: 50px;
-    height: 50px;
+    width: 3.125rem; /* 50px */
+    height: 3.125rem;
     top: 30%;
     right: 30%;
     animation-delay: 1s;
@@ -95,7 +76,7 @@
     position: relative;
     background: var(--surface);
     border: 2px solid transparent;
-    border-radius: 12px;
+    border-radius: 0.75rem; /* 12px */
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
 }

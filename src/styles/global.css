@@ -1,5 +1,4 @@
 /* Глобальные стили в стиле TechnoFame - премиальная бытовая техника */
-@import "./admin.css";
 
 :root{ 
     /* Основная цветовая палитра в стиле TechnoFame */
@@ -20,6 +19,15 @@
     --success: #27ae60;
     --warning: #f39c12;
     --error: #e74c3c;
+    
+    /* Типографика */
+    --fs-base: 1rem;      /* 16px */
+    --fs-small: 0.875rem; /* 14px */
+    --fs-h1: 2.25rem;     /* 36px */
+    --fs-h2: 1.75rem;     /* 28px */
+    --fs-h3: 1.5rem;      /* 24px */
+    --lh-base: 1.6;
+    --ls-base: 0.01em;
 }
 *{box-sizing:border-box} html,body,#root{height:100%}
 body{

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { adminApi, DashboardStats as DashboardStatsType } from '../../api/adminApi';
 import LoadingSpinner from '../common/LoadingSpinner';
 
-const DashboardStats: React.FC = () => {
+const DashboardStats = () => {
   const [stats, setStats] = useState<DashboardStatsType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +15,6 @@ const DashboardStats: React.FC = () => {
         setStats(data);
       } catch (err) {
         setError('Ошибка загрузки статистики');
-        console.error('Error fetching dashboard stats:', err);
       } finally {
         setIsLoading(false);
       }
@@ -44,7 +43,7 @@ const DashboardStats: React.FC = () => {
   return (
     <div className="dashboard-stats">
       <h2>📊 Статистика системы</h2>
-      
+
       <div className="stats-grid">
         {/* Пользователи */}
         <div className="stat-card users-stats">

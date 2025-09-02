@@ -161,30 +161,15 @@ function AnimatedSearch({ value, onChange }: { value: string; onChange: (v: stri
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Просто передаем значение без изменений
-        console.log('=== INPUT CHANGE ===');
-        console.log('Value:', e.target.value);
-        console.log('Length:', e.target.value.length);
-        console.log('Contains space:', e.target.value.includes(' '));
-        console.log('Char codes:', Array.from(e.target.value).map(c => c.charCodeAt(0)));
         onChange(e.target.value);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        console.log('=== KEY DOWN ===');
-        console.log('Key:', e.key);
-        console.log('Code:', e.keyCode);
-        console.log('Which:', e.which);
-        console.log('Char code:', e.key.charCodeAt(0));
-        if (e.key === ' ') {
-            console.log('SPACE KEY PRESSED!');
-        }
+        // Обработка клавиш
     };
 
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        console.log('=== KEY PRESS ===');
-        console.log('Key:', e.key);
-        console.log('Char code:', e.key.charCodeAt(0));
+        // Обработка нажатий клавиш
     };
 
     const handleClear = () => {

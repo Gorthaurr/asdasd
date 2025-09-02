@@ -24,25 +24,7 @@
     --fs-h3: 1.15rem;
 }
 
-html{ -webkit-text-size-adjust: 100%; }
-body{
-    font-family: var(--font-sans);      /* единый шрифт */
-    font-size: var(--fs-base);
-    line-height: var(--lh-base);
-    letter-spacing: var(--ls-base);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-h1, h2, h3, h4{
-    font-family: var(--font-sans);
-    letter-spacing: 0.01em;
-    line-height: 1.25;
-    margin: 0 0 .5em;
-}
-h1{ font-size: var(--fs-h1); }
-h2{ font-size: var(--fs-h2); }
-h3{ font-size: var(--fs-h3); }
-small, .muted, .caption{ font-size: var(--fs-small); }
+/* Убираем дублирующиеся стили body, h1, h2, h3 - они уже в global.css */
 
 /* Кнопки/инпуты — тот же шрифт, без «прыжков» */
 button, input, select, textarea{

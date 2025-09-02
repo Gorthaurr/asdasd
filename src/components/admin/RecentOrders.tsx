@@ -1,42 +1,37 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
+import { adminApi } from '../../api/adminApi';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 interface Order {
   id: string;
-  order_number: string;
   customer_name: string;
-  total_amount: number;
+  total_cents: number;
   status: string;
   created_at: string;
+  items_count: number;
 }
 
-const RecentOrders: React.FC = () => {
-  // Моковые данные для демонстрации
-  const mockOrders: Order[] = [
-    {
-      id: '1',
-      order_number: 'ORD-001',
-      customer_name: 'Иван Петров',
-      total_amount: 15000,
-      status: 'pending',
-      created_at: '2024-01-15T10:30:00Z'
-    },
-    {
-      id: '2',
-      order_number: 'ORD-002',
-      customer_name: 'Мария Сидорова',
-      total_amount: 25000,
-      status: 'completed',
-      created_at: '2024-01-15T09:15:00Z'
-    },
-    {
-      id: '3',
-      order_number: 'ORD-003',
-      customer_name: 'Алексей Козлов',
-      total_amount: 8000,
-      status: 'pending',
-      created_at: '2024-01-15T08:45:00Z'
-    }
-  ];
+const RecentOrders = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setIsLoading(true);
+        const response = await adminApi.getOrders({ page: 1, page_size: 5 });
+        setOrders(response.items);
+      } catch (err) {
+        setError('Ошибка загрузки заказов');
+        console.error('Error fetching orders:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -70,38 +65,66 @@ const RecentOrders: React.FC = () => {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
-  return (
-    <div className="recent-orders">
-      <div className="section-header">
-        <h3>🛒 Недавние заказы</h3>
-        <button className="view-all-btn">Посмотреть все</button>
+  if (isLoading) {
+    return (
+      <div className="recent-orders">
+        <div className="section-header">
+          <h3>🛒 Недавние заказы</h3>
+        </div>
+        <div className="loading-container">
+          <LoadingSpinner size="medium" />
+          <p>Загрузка заказов...</p>
+        </div>
       </div>
-      
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="recent-orders">
+        <div className="section-header">
+          <h3>🛒 Недавние заказы</h3>
+        </div>
+        <div className="error-container">
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="admin-card">
+      <div className="admin-card-header">
+        <h3 className="admin-card-title">🛒 Недавние заказы</h3>
+      </div>
+      <div className="admin-card-content">
+
       <div className="orders-list">
-        {mockOrders.map((order) => (
+        {orders.map((order) => (
           <div key={order.id} className="order-item">
             <div className="order-header">
-              <span className="order-number">{order.order_number}</span>
+              <span className="order-number">#{order.id.slice(0, 8)}</span>
               <span className={`order-status ${getStatusColor(order.status)}`}>
                 {getStatusText(order.status)}
               </span>
             </div>
-            
+
             <div className="order-details">
               <div className="customer-info">
                 <span className="customer-name">{order.customer_name}</span>
                 <span className="order-date">{formatDate(order.created_at)}</span>
               </div>
-              
+
               <div className="order-amount">
-                {order.total_amount.toLocaleString('ru-RU')} ₽
+                {(order.total_cents / 100).toLocaleString('ru-RU')} ₽
+                <div className="items-count">{order.items_count} поз.</div>
               </div>
             </div>
-            
+
             <div className="order-actions">
               <button className="action-btn view-btn">👁️ Просмотр</button>
               <button className="action-btn edit-btn">✏️ Редактировать</button>
@@ -109,12 +132,13 @@ const RecentOrders: React.FC = () => {
           </div>
         ))}
       </div>
-      
-      {mockOrders.length === 0 && (
+
+      {orders.length === 0 && (
         <div className="no-orders">
           <p>📭 Заказов пока нет</p>
         </div>
       )}
+      </div>
     </div>
   );
 };

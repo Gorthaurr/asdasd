@@ -29,7 +29,7 @@ export const useAuth = () => {
     isLoading: true,
   });
 
-  // Проверяем токен при загрузке
+  // Проверяем токен при загрузке и периодически
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('admin_token');
@@ -44,7 +44,6 @@ export const useAuth = () => {
             isLoading: false,
           }));
         } catch (error) {
-          console.error('Token validation failed:', error);
           // Токен недействителен
           localStorage.removeItem('admin_token');
           setAuthState(prev => ({
@@ -63,21 +62,22 @@ export const useAuth = () => {
     };
 
     checkAuth();
+
+    // Проверяем токен каждые 5 минут для автоматического обновления
+    const interval = setInterval(checkAuth, 5 * 60 * 1000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const login = useCallback(async (username: string, password: string): Promise<void> => {
     try {
-      console.log('Attempting login with:', { username, password: '***' });
       const response = await adminApi.login(username, password);
-      console.log('Login response:', response);
       
       const { access_token, user } = response;
-      console.log('Extracted token:', access_token ? 'Token received' : 'No token');
-      console.log('Extracted user:', user);
       
-      // Сохраняем токен в localStorage
+      // Сохраняем токен и время входа в localStorage
       localStorage.setItem('admin_token', access_token);
-      console.log('Token saved to localStorage');
+      localStorage.setItem('admin_login_time', Date.now().toString());
       
       // Обновляем состояние
       setAuthState({
@@ -86,16 +86,15 @@ export const useAuth = () => {
         isAuthenticated: true,
         isLoading: false,
       });
-      console.log('Auth state updated, isAuthenticated:', true);
     } catch (error) {
-      console.error('Login error:', error);
       throw new Error('Ошибка аутентификации');
     }
   }, []);
 
   const logout = useCallback(() => {
-    // Удаляем токен из localStorage
+    // Удаляем токен и время входа из localStorage
     localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_login_time');
     
     // Сбрасываем состояние
     setAuthState({

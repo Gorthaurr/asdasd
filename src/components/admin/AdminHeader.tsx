@@ -1,7 +1,6 @@
-import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 
-const AdminHeader: React.FC = () => {
+const AdminHeader = () => {
   const { user, logout } = useAuth();
 
   const handleLogout = () => {
@@ -10,22 +9,23 @@ const AdminHeader: React.FC = () => {
 
   return (
     <header className="admin-header">
-      <div className="header-left">
-        <h1>TechHome - Админ-панель</h1>
+      <div className="admin-header-title">
+        <span style={{ color: 'var(--admin-text-muted)' }}>
+          {new Date().toLocaleDateString('ru-RU', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}
+        </span>
       </div>
-      
-      <div className="header-right">
-        <div className="user-menu">
-          <div className="user-info">
-            <span className="username">{user?.username}</span>
-            <span className="role">
-              {user?.is_super_admin ? 'Супер-админ' : 'Админ'}
-            </span>
-          </div>
-          
+
+      <div className="admin-header-actions">
+        <div className="admin-user-menu">
+          <span>{user?.full_name || user?.username}</span>
           <button 
-            className="logout-button"
-            onClick={handleLogout}
+            className="btn btn-secondary btn-sm" 
+            onClick={handleLogout} 
             title="Выйти из системы"
           >
             🚪 Выйти

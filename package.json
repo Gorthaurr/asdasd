@@ -8,7 +8,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write src/**/*.{ts,tsx,js,jsx,json,css,md}",
+    "type-check": "tsc --noEmit",
+    "check": "npm run lint && npm run type-check"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.5",
@@ -21,7 +26,16 @@
   "devDependencies": {
     "@types/react": "^18.2.74",
     "@types/react-dom": "^18.2.24",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "prettier": "^3.6.2",
     "typescript": "^5.5.3",
     "vite": "^7.1.3"
   }
