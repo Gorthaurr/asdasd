@@ -71,13 +71,17 @@ export const useAuth = () => {
 
   const login = useCallback(async (username: string, password: string): Promise<void> => {
     try {
+      console.log('useAuth.login starting...');
       const response = await adminApi.login(username, password);
+      console.log('adminApi.login completed, response:', response);
       
       const { access_token, user } = response;
+      console.log('Extracted token and user:', { token: access_token ? 'present' : 'missing', user: user ? 'present' : 'missing' });
       
       // Сохраняем токен и время входа в localStorage
       localStorage.setItem('admin_token', access_token);
       localStorage.setItem('admin_login_time', Date.now().toString());
+      console.log('Token saved to localStorage');
       
       // Обновляем состояние
       setAuthState({
@@ -86,7 +90,9 @@ export const useAuth = () => {
         isAuthenticated: true,
         isLoading: false,
       });
+      console.log('Auth state updated successfully');
     } catch (error) {
+      console.error('Login error in useAuth:', error);
       throw new Error('Ошибка аутентификации');
     }
   }, []);

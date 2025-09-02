@@ -118,10 +118,13 @@ export const adminApi = {
       });
       console.log('API response received:', response);
       console.log('Response data:', response.data);
+      console.log('Login successful, token:', response.data.access_token ? 'present' : 'missing');
       return response.data;
     } catch (error: any) {
       console.error('API login error:', error);
       console.error('Error response:', error.response);
+      console.error('Error status:', error.response?.status);
+      console.error('Error data:', error.response?.data);
       throw error;
     }
   },
