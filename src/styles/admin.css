@@ -4,25 +4,23 @@
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  background-color: var(--bg);
-  color: var(--text);
+  background-color: #f8fafc;
 }
 
 .admin-sidebar {
-  width: 17.5rem; /* 280px */
-  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
-  color: var(--text);
+  width: 280px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   padding: 0;
-  box-shadow: 0.125rem 0 0.625rem rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   position: fixed;
   height: 100vh;
   overflow-y: auto;
-  border-right: 1px solid var(--border);
 }
 
 .admin-main {
   flex: 1;
-  margin-left: 17.5rem;
+  margin-left: 280px;
   display: flex;
   flex-direction: column;
 }
@@ -33,38 +31,38 @@
 }
 
 .admin-dashboard {
-  max-width: 75rem; /* 1200px */
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .admin-dashboard h1 {
-  color: var(--text);
+  color: #1a202c;
   margin-bottom: 0.5rem;
-  font-size: var(--fs-h2);
+  font-size: 2rem;
   font-weight: 700;
 }
 
 .admin-dashboard > p {
-  color: var(--muted);
+  color: #718096;
   margin-bottom: 2rem;
   font-size: 1.1rem;
 }
 
 /* Заголовок */
 .admin-header {
-  background: var(--surface);
+  background: white;
   padding: 1rem 2rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .admin-header h1 {
   margin: 0;
-  color: var(--text);
-  font-size: var(--fs-h3);
+  color: #2d3748;
+  font-size: 1.5rem;
   font-weight: 600;
 }
 
@@ -86,18 +84,18 @@
 
 .username {
   font-weight: 600;
-  color: var(--text);
+  color: #2d3748;
   display: block;
 }
 
 .role {
   font-size: 0.875rem;
-  color: var(--muted);
+  color: #718096;
 }
 
 .logout-button {
-  background: var(--error);
-  color: var(--text);
+  background: #e53e3e;
+  color: white;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
