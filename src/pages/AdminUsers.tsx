@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { adminApi, User } from '../api/adminApi';
 import AdminLayout from '../components/admin/AdminLayout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -10,10 +10,12 @@ const AdminUsers = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [activeFilter, setActiveFilter] = useState<boolean | undefined>(undefined);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [isSearching, setIsSearching] = useState(false);
 
   const fetchUsers = async () => {
     try {
-      setIsLoading(true);
+      setIsSearching(true);
       const response = await adminApi.getUsers({
         q: searchQuery || undefined,
         role: roleFilter || undefined,
@@ -22,16 +24,48 @@ const AdminUsers = () => {
         page_size: 50,
       });
       setUsers(response.items);
+      setIsLoading(false);
     } catch (err) {
       setError('Ошибка загрузки пользователей');
       console.error('Error fetching users:', err);
-    } finally {
       setIsLoading(false);
+    } finally {
+      setIsSearching(false);
     }
   };
 
   useEffect(() => {
-    fetchUsers();
+    const timeoutId = setTimeout(() => {
+      const wasSearchInputFocused = document.activeElement === searchInputRef.current;
+      const cursorPosition = searchInputRef.current?.selectionStart || 0;
+      
+      fetchUsers().then(() => {
+        // Восстанавливаем фокус и позицию курсора несколькими способами
+        if (wasSearchInputFocused && searchInputRef.current) {
+          // Способ 1: Немедленно
+          searchInputRef.current.focus();
+          searchInputRef.current.setSelectionRange(cursorPosition, cursorPosition);
+          
+          // Способ 2: Через requestAnimationFrame
+          requestAnimationFrame(() => {
+            if (searchInputRef.current) {
+              searchInputRef.current.focus();
+              searchInputRef.current.setSelectionRange(cursorPosition, cursorPosition);
+            }
+          });
+          
+          // Способ 3: Через небольшой timeout
+          setTimeout(() => {
+            if (searchInputRef.current && document.activeElement !== searchInputRef.current) {
+              searchInputRef.current.focus();
+              searchInputRef.current.setSelectionRange(cursorPosition, cursorPosition);
+            }
+          }, 50);
+        }
+      });
+    }, 300); // Debounce 300ms
+
+    return () => clearTimeout(timeoutId);
   }, [searchQuery, roleFilter, activeFilter]);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -91,13 +125,28 @@ const AdminUsers = () => {
 
       <div className="admin-filters">
         <form onSubmit={handleSearch} className="search-form">
-          <input
-            type="text"
-            placeholder="Поиск по имени, email..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="search-input"
-          />
+          <div style={{ position: 'relative' }}>
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Поиск по имени, email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+              style={{ paddingRight: isSearching ? '40px' : '12px' }}
+            />
+            {isSearching && (
+              <div style={{ 
+                position: 'absolute', 
+                right: '12px', 
+                top: '50%', 
+                transform: 'translateY(-50%)',
+                fontSize: '14px'
+              }}>
+                🔄
+              </div>
+            )}
+          </div>
           <button type="submit" className="btn btn-secondary">🔍 Найти</button>
         </form>
 

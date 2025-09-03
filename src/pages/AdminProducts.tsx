@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { adminApi } from '../api/adminApi';
 import AdminLayout from '../components/admin/AdminLayout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -29,6 +29,7 @@ const AdminProducts = () => {
   const [editFormData, setEditFormData] = useState<any>({});
   const [categories, setCategories] = useState<any[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [pendingImageChanges, setPendingImageChanges] = useState<{
     uploaded: File[];
     deleted: number[];
@@ -439,6 +440,7 @@ const AdminProducts = () => {
       <div className="admin-filters">
         <form onSubmit={handleSearch} className="search-form">
           <input
+            ref={searchInputRef}
             type="text"
             placeholder="Поиск продуктов..."
             value={searchQuery}

@@ -4,7 +4,16 @@ const AdminHeader = () => {
   const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    logout();
+    console.log('AdminHeader: handleLogout called');
+    console.log('Current user:', user);
+    console.log('Logout function:', typeof logout);
+    
+    try {
+      logout();
+      console.log('Logout function executed successfully');
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   return (

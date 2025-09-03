@@ -98,9 +98,13 @@ export const useAuth = () => {
   }, []);
 
   const logout = useCallback(() => {
+    console.log('useAuth.logout called');
+    console.log('Current auth state before logout:', authState);
+    
     // Удаляем токен и время входа из localStorage
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_login_time');
+    console.log('Tokens removed from localStorage');
     
     // Сбрасываем состояние
     setAuthState({
@@ -109,7 +113,12 @@ export const useAuth = () => {
       isAuthenticated: false,
       isLoading: false,
     });
-  }, []);
+    console.log('Auth state reset to logged out');
+    
+    // Принудительно перенаправляем на страницу входа
+    window.location.href = '/admin/login';
+    console.log('Redirecting to /admin/login');
+  }, [authState]);
 
   const hasPermission = useCallback((permission: string): boolean => {
     if (!authState.user) return false;
