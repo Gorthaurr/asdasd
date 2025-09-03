@@ -1,0 +1,519 @@
+/* ========================================
+   ENHANCED EFFECTS FOR ADMIN-STYLE UI
+   Premium effects and animations
+   ======================================== */
+
+/* ========================================
+   PREMIUM HOVER EFFECTS
+   ======================================== */
+
+/* Magnetic Effect on Hover */
+.card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    transparent 0%, 
+    rgba(99, 102, 241, 0.05) 50%, 
+    transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.card:hover::after {
+  opacity: 1;
+}
+
+/* Premium Glow Animation */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    var(--primary) 0%, 
+    var(--accent) 50%, 
+    var(--primary) 100%);
+  background-size: 200% 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  animation: glowMove 3s linear infinite paused;
+}
+
+.card:hover::before {
+  transform: scaleX(1);
+  animation-play-state: running;
+}
+
+@keyframes glowMove {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* ========================================
+   PARTICLE SYSTEM
+   ======================================== */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, 
+    rgba(99, 102, 241, 0.1) 0%, 
+    transparent 70%);
+  animation: rotate 30s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Floating Particles */
+.floating-shapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.shape {
+  position: absolute;
+  background: var(--primary-gradient);
+  opacity: 0.1;
+  border-radius: 50%;
+  animation: float 20s infinite ease-in-out;
+}
+
+.shape-1 {
+  width: 80px;
+  height: 80px;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.shape-2 {
+  width: 120px;
+  height: 120px;
+  top: 60%;
+  right: 10%;
+  animation-delay: 7s;
+}
+
+.shape-3 {
+  width: 60px;
+  height: 60px;
+  bottom: 20%;
+  left: 50%;
+  animation-delay: 14s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-30px) rotate(120deg);
+  }
+  66% {
+    transform: translateY(30px) rotate(240deg);
+  }
+}
+
+/* ========================================
+   BUTTON EFFECTS
+   ======================================== */
+
+/* Ripple Effect */
+.qty-btn, .btn, button {
+  position: relative;
+  overflow: hidden;
+}
+
+.qty-btn::after, .btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.qty-btn:active::after, .btn:active::after {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(40);
+  transition: opacity 0s, transform 0s;
+}
+
+/* Pulse Animation for Active Elements */
+.fav.is-active {
+  animation: pulse 0.5s ease-out;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+/* ========================================
+   CHIP EFFECTS
+   ======================================== */
+
+.chip {
+  position: relative;
+  overflow: hidden;
+}
+
+.chip::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, 
+    rgba(99, 102, 241, 0.3) 0%, 
+    transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.3s ease;
+}
+
+.chip:hover::before {
+  transform: translate(-50%, -50%) scale(2);
+}
+
+.chip.is-active {
+  animation: chipGlow 2s ease-in-out infinite;
+}
+
+@keyframes chipGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(99, 102, 241, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
+  }
+}
+
+/* ========================================
+   LOADING ANIMATIONS
+   ======================================== */
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.loading-spinner::before,
+.loading-spinner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+.loading-spinner::before {
+  border-top-color: var(--primary);
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner::after {
+  border-bottom-color: var(--accent);
+  animation: spin 1s linear infinite reverse;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ========================================
+   SKELETON LOADING
+   ======================================== */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(99, 102, 241, 0.1) 50%, 
+    transparent 100%);
+  animation: skeleton 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* ========================================
+   BADGE ANIMATIONS
+   ======================================== */
+
+.badge {
+  animation: badgeBounce 0.5s ease-out;
+}
+
+@keyframes badgeBounce {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.discount-badge {
+  animation: discountShine 3s ease-in-out infinite;
+}
+
+@keyframes discountShine {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+  }
+}
+
+/* ========================================
+   SMOOTH SCROLL INDICATORS
+   ======================================== */
+
+.scroll-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(100px);
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.scroll-indicator.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-indicator:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* ========================================
+   PRODUCT IMAGE EFFECTS
+   ======================================== */
+
+.image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    transparent 100%);
+  transition: left 0.5s ease;
+}
+
+.card:hover .image-container::before {
+  left: 100%;
+}
+
+/* ========================================
+   TEXT ANIMATIONS
+   ======================================== */
+
+.gradient-text {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    filter: hue-rotate(10deg);
+  }
+}
+
+/* ========================================
+   MICRO INTERACTIONS
+   ======================================== */
+
+/* Icon Rotation on Hover */
+.icon-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.icon-btn:hover svg {
+  transform: rotate(10deg) scale(1.1);
+}
+
+/* Smooth Focus States */
+input:focus,
+select:focus,
+textarea:focus {
+  animation: focusPulse 0.3s ease-out;
+}
+
+@keyframes focusPulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--primary-light);
+  }
+  100% {
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
+}
+
+/* ========================================
+   PARALLAX EFFECTS
+   ======================================== */
+
+.parallax-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.parallax-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="%236366f1" opacity="0.1"/></svg>');
+  background-size: 50px 50px;
+  animation: parallaxDrift 20s linear infinite;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+@keyframes parallaxDrift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-50px, -50px);
+  }
+}
+
+/* ========================================
+   NOTIFICATION EFFECTS
+   ======================================== */
+
+.notification {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   PREMIUM SHADOWS
+   ======================================== */
+
+.shadow-premium {
+  box-shadow: 
+    0 2px 4px rgba(99, 102, 241, 0.1),
+    0 8px 16px rgba(99, 102, 241, 0.1),
+    0 16px 32px rgba(99, 102, 241, 0.1);
+}
+
+.shadow-premium-hover:hover {
+  box-shadow: 
+    0 4px 8px rgba(99, 102, 241, 0.15),
+    0 12px 24px rgba(99, 102, 241, 0.15),
+    0 24px 48px rgba(99, 102, 241, 0.15);
+}
+
+/* ========================================
+   SMOOTH TRANSITIONS
+   ======================================== */
+
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}

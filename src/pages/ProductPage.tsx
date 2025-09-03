@@ -181,8 +181,11 @@ const QuantityControl: React.FC<QuantityControlProps> = ({
         aria-label="Убрать одну штуку"
         onClick={handleDecrease}
         disabled={quantity === 0}
+        title="➖ Убрать"
       >
-        −
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
       </button>
       <span className="qty-count" aria-live="polite">
         {quantity}
@@ -191,8 +194,12 @@ const QuantityControl: React.FC<QuantityControlProps> = ({
         className="animated-qty-btn"
         aria-label="Добавить одну штуку"
         onClick={handleIncrease}
+        title="➕ Добавить"
       >
-        +
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
       </button>
     </div>
   );
@@ -207,20 +214,20 @@ interface ReviewsSectionProps {
 
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({ reviews }) => (
   <section id="reviews" className="panel" style={{ marginTop: 16 }}>
-    <h2 style={{ marginTop: 0 }}>Отзывы покупателей</h2>
+    <h2 style={{ marginTop: 0 }}>💬 Отзывы покупателей</h2>
     <div className="reviews">
       {reviews.map((review, index) => (
         <article key={index} className="review">
           <header>
-            <strong>{review.user}</strong>
+            <strong>👤 {review.user}</strong>
             <RatingStars
               rating={review.rating}
               size={14}
-              title={`${review.rating} из 5`}
+              title={`⭐ ${review.rating} из 5`}
               className="stars"
             />
           </header>
-          <p>{review.text}</p>
+          <p>💭 {review.text}</p>
         </article>
       ))}
     </div>
@@ -401,19 +408,13 @@ export default function ProductPage() {
 
           {/* Рейтинг кликабелен → к отзывам */}
           <div
+            className="product-rating"
             role="button"
             title="Перейти к отзывам"
             onClick={handleScrollToReviews}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              cursor: 'pointer',
-              color: 'var(--muted)',
-            }}
           >
             <RatingStars rating={product.rating} />
-            <strong>{product.rating.toFixed(1)}</strong>
+            <strong>⭐ {product.rating.toFixed(1)}</strong>
             <span>(отзывы)</span>
           </div>
 
@@ -428,17 +429,10 @@ export default function ProductPage() {
           </ul>
 
           {/* Действия: − qty +, Подробнее, Сердце */}
-          <div
-            style={{
-              display: 'flex',
-              gap: 12,
-              alignItems: 'center',
-              marginTop: 10,
-            }}
-          >
-            <strong className="cost" style={{ fontSize: '1.15rem' }}>
+          <div className="product-actions">
+            <div className="product-price">
               {fmtCurrency(product.price)}
-            </strong>
+            </div>
 
             <QuantityControl
               productId={product.id}
@@ -450,24 +444,21 @@ export default function ProductPage() {
             <button
               className="btn primary"
               onClick={handleScrollToSpecs}
-              title="К полным характеристикам"
+              title="📋 К полным характеристикам"
             >
-              Подробнее
+              📋 Подробнее
             </button>
 
             {/* Сердце-избранное: активная синяя заливка как в карточке */}
             <button
               className={`animated-fav${isFav ? ' is-active' : ''}`}
               aria-label="Добавить в избранное"
-              title="Добавить/убрать из избранного"
+              title={isFav ? '💔 Убрать из избранного' : '💖 Добавить в избранное'}
               onClick={handleToggleFav}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  className="heart-path"
-                  d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.65-7 10-7 10Z"
-                />
-              </svg>
+              <span style={{ fontSize: '18px' }}>
+                {isFav ? '💖' : '🤍'}
+              </span>
             </button>
           </div>
         </div>
@@ -475,8 +466,8 @@ export default function ProductPage() {
 
       {/* Полные характеристики */}
       <section ref={fullSpecsRef} id="full-specs">
-        <SpecificationsSection specs={details.fullSpecs} title="Характеристики" />
-        <h3>Описание</h3>
+        <SpecificationsSection specs={details.fullSpecs} title="📋 Характеристики" />
+        <h3>📝 Описание</h3>
         <p style={{ color: 'var(--muted)' }}>{details.description}</p>
       </section>
 

@@ -3,13 +3,13 @@
 :root{ 
     /* Основная цветовая палитра в стиле TechnoFame */
     --bg: #0a0a0a; 
-    --surface: #1a1a1a; 
-    --surface-2: #2a2a2a; 
-    --text: #ffffff; 
-    --muted: #b0b0b0; 
+    --surface: #ffffff; 
+    --surface-2: #ffffff; 
+    --text: #1f2937; 
+    --muted: #6b7280; 
     --primary: #d4af37; /* Золотой цвет как у TechnoFame */
     --accent: #e6c34a; 
-    --border: #333333;
+    --border: #e5e7eb;
     
     /* Дополнительные цвета для премиального дизайна */
     --gold-light: #f4d03f;
@@ -653,80 +653,9 @@ header{
     box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
     transform: translateY(-2px);
 }
-.empty{grid-column:1/-1; text-align:center; color:var(--muted); padding:40px 10px; font-weight:500; letter-spacing:0.02em; opacity:0.8;}
-.overlay{position:fixed; inset:0; background:rgba(0,0,0,.5); opacity:0; pointer-events:none; transition:.25s}
-.overlay.open{opacity:1; pointer-events:auto}
-.drawer{
-    position:fixed; 
-    top:0; 
-    right:0; 
-    height:100dvh; 
-    width:min(420px, 100%); 
-    background:linear-gradient(180deg, #1a1a1a, #0f0f0f); 
-    border-left:1px solid var(--border); 
-    transform: translateX(100%); 
-    transition:.3s; 
-    z-index:60; 
-    display:flex; 
-    flex-direction:column;
-    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
-}
-.drawer.open{transform:none}
-.drawer header{position:sticky; top:0; border-bottom:1px solid var(--border)}
-.drawer .body{padding:16px; overflow:auto; display:grid; gap:12px}
-.cart-item{
-    display:grid; 
-    grid-template-columns:64px 1fr auto; 
-    gap:12px; 
-    align-items:center; 
-    background:var(--surface-2); 
-    border:1px solid var(--border); 
-    border-radius:14px; 
-    padding:12px;
-    transition: all 0.3s ease;
-}
-
-.cart-item:hover {
-    border-color: var(--primary);
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);
-}
-.qty{display:inline-grid; grid-auto-flow:column; gap:6px; align-items:center}
-.qty button{
-    width:30px; 
-    height:30px; 
-    font-size: 18px; 
-    line-height: 1;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    transition: all 0.3s ease;
-}
-
-.qty button:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-    transform: scale(1.05);
-}
-.drawer .footer{margin-top:auto; padding:16px; border-top:1px solid var(--border); display:grid; gap:12px}
-.summary{display:flex; justify-content:space-between; color:var(--muted); font-weight:500; letter-spacing:0.02em;}
-.checkout{
-    padding:16px; 
-    border-radius:14px; 
-    background:linear-gradient(135deg, var(--primary), var(--accent)); 
-    border:1px solid var(--primary); 
-    color:#000; 
-    font-weight:700; 
-    letter-spacing:0.02em; 
-    text-shadow:0 1px 2px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-}
-
-.checkout:hover {
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
-    transform: translateY(-2px);
-}
+/* Empty and overlay styles moved to cart-drawer.css */
+/* Drawer styles moved to cart-drawer.css */
+/* All drawer/cart styles moved to cart-drawer.css */
 footer{
     margin:40px 0 60px; 
     color:var(--muted); 
@@ -963,24 +892,7 @@ footer{
 @media (max-width: 980px){
     .product-page .product-page-grid{ grid-template-columns: 1fr; }
 }
-.product-gallery{
-    background: linear-gradient(180deg, #1a1a1a, #0f0f0f);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    position: relative;
-    height: 500px; /* Увеличиваем высоту для лучшего отображения */
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.product-summary{
-    background: linear-gradient(180deg, #1a1a1a, #0f0f0f);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-}
+/* Product page styles moved to product-checkout.css */
 .specs-list{
     list-style: none; padding: 0; margin: 12px 0;
     display: grid; gap: 8px;
@@ -994,22 +906,11 @@ footer{
 .full-specs{
     display: grid; gap: 8px;
 }
-.full-specs .fs-row{
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px;
-}
+/* Full specs styles moved to product-checkout.css */
 .full-specs dt{ color: var(--muted); font-weight:600; letter-spacing:0.02em; }
 .full-specs dd{ margin: 0; font-weight:500; letter-spacing:0.01em; color:var(--text); }
 .reviews{ display: grid; gap: 10px; }
-.review{
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px;
-}
+/* Review styles moved to product-checkout.css */
 .review header{ display: inline-flex; align-items: center; }
 
 

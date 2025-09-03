@@ -3,14 +3,15 @@
 import { FormEvent, useState } from 'react'; // локальное состояние/типы формы
 import { useDispatch, useSelector } from 'react-redux'; // Redux-хуки
 import { useNavigate } from 'react-router-dom'; // навигация (Link удалён)
-import { selectCartDetailed } from '../features/catalog/selectors'; // строки корзины и сумма
+import { selectCartDetailed as selectCartDetailedApi } from '../features/catalog/apiSelectors'; // строки корзины и сумма
 import { clearCart } from '../features/cart/cartSlice'; // экшен очистки корзины
 import { fmtCurrency } from '../utils/format'; // форматирование суммы
 
 export default function Checkout() {
   const dispatch = useDispatch(); // отправка экшенов
   const navigate = useNavigate(); // переходы между страницами
-  const { rows, sum } = useSelector(selectCartDetailed); // данные корзины
+  
+  const { rows, sum } = useSelector(selectCartDetailedApi); // данные корзины
 
   // Простое состояние формы (валидация базовая на required)
   const [form, setForm] = useState({
@@ -41,55 +42,59 @@ export default function Checkout() {
   return (
     <main className="container checkout-page">
       {/* Заголовок страницы (кнопка «Назад в каталог» удалена по просьбе) */}
-      <h1 style={{ marginTop: 16 }}>Оформление заказа</h1>
+      <h1>Оформление заказа</h1>
 
       {/* Две колонки: форма (слева) + сводка (справа) */}
       <div className="checkout-grid">
         {/* Левая колонка — форма */}
-        <form className="panel" onSubmit={onSubmit}>
+        <form className="checkout-form" onSubmit={onSubmit}>
           <fieldset>
-            <legend>Контакты</legend>
-            <div className="two-col">
-              <label>
-                Имя*
+            <legend data-section="personal">Контакты</legend>
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="firstName">Имя*</label>
                 <input
+                  id="firstName"
                   required
                   value={form.firstName}
                   onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
                   placeholder="Иван"
                 />
-              </label>
-              <label>
-                Фамилия*
+              </div>
+              <div className="form-group">
+                <label htmlFor="lastName">Фамилия*</label>
                 <input
+                  id="lastName"
                   required
                   value={form.lastName}
                   onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
                   placeholder="Иванов"
                 />
-              </label>
+              </div>
             </div>
-            <div className="two-col">
-              <label>
-                Телефон*
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="phone">Телефон*</label>
                 <input
+                  id="phone"
                   required
                   type="tel"
                   value={form.phone}
                   onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
                   placeholder="+7 999 000-00-00"
                 />
-              </label>
-              <label>
-                Email*
+              </div>
+              <div className="form-group">
+                <label htmlFor="email">Email*</label>
                 <input
+                  id="email"
                   required
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                   placeholder="you@example.com"
                 />
-              </label>
+              </div>
             </div>
           </fieldset>
 

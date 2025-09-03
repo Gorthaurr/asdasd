@@ -43,7 +43,7 @@ export function useCatalogUrlActions(){
             if (chip && chip!=="Все") p.set("chip", chip); else p.delete("chip");
             p.delete("page"); // смена фильтра -> страница 1
         });
-        navigate({ pathname: "/", search: next }, { replace: false });
+        navigate("/" + next, { replace: false });
         // Скролл к началу страницы при смене фильтра
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [location, navigate]);
@@ -54,7 +54,7 @@ export function useCatalogUrlActions(){
             if (sort && sort!=="popular") p.set("sort", sort); else p.delete("sort");
             p.delete("page"); // смена сортировки -> страница 1
         });
-        navigate({ pathname: "/", search: next }, { replace: false });
+        navigate("/" + next, { replace: false });
         // Скролл к началу страницы при смене сортировки
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [location, navigate]);
@@ -65,18 +65,25 @@ export function useCatalogUrlActions(){
             const n = Math.max(1, page|0);
             if (n>1) p.set("page", String(n)); else p.delete("page");
         });
-        navigate({ pathname: "/", search: next }, { replace: false });
+        navigate("/" + next, { replace: false });
     }, [location, navigate]);
 
     const toggleFavorites = useCallback(()=>{
         // Всегда ведём на "/" с правильным fav, сохраняя q/chip/sort и сбрасывая page
         const base = location.pathname === "/" ? new URLSearchParams(location.search) : new URLSearchParams("");
         const isFav = base.get("fav")==="1";
+        console.log('toggleFavorites: current isFav:', isFav);
+        console.log('toggleFavorites: current URL:', location.pathname + location.search);
+        
         const next = withParams(base, p=>{
             if (isFav) p.delete("fav"); else p.set("fav","1");
             p.delete("page");
         });
-        navigate({ pathname: "/", search: next }, { replace: false });
+        
+        const newUrl = "/" + next;
+        console.log('toggleFavorites: navigating to:', newUrl);
+        
+        navigate("/" + next, { replace: false });
         // Скролл к началу страницы при переключении избранного
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [location, navigate]);

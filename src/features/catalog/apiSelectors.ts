@@ -59,27 +59,70 @@ export const selectTransformedProducts = createSelector(
     (apiProducts) => apiProducts.map(transformProduct)
 );
 
+// Фильтрованные товары с учетом избранного
+export const selectFilteredApiProducts = createSelector(
+    [selectTransformedProducts, selectCatalog, selectFavIds],
+    (products, catalog, favIds) => {
+        console.log('Filtering products:', {
+            totalProducts: products.length,
+            favoriteOnly: catalog.favoriteOnly,
+            favIds: favIds,
+            favCount: favIds.length
+        });
+        
+        if (!catalog.favoriteOnly) {
+            console.log('Showing all products:', products.length);
+            return products; // показываем все товары
+        }
+        // фильтруем только избранные
+        const filtered = products.filter(p => favIds.includes(p.id));
+        console.log('Showing only favorites:', filtered.length);
+        return filtered;
+    }
+);
+
 // Количество товаров в корзине (для бейджа)
 export const selectCartCount = createSelector(selectCartItems, (items) =>
     Object.values(items).reduce((a, b) => a + b, 0) // суммируем значения словаря
 );
 
-// Подробная корзина: строки и сумма (используем данные из API кэша)
+// Количество избранных товаров среди API товаров
+export const selectFavCount = createSelector(
+    [selectTransformedProducts, selectFavIds],
+    (products, favIds) => {
+        // Считаем сколько товаров из API находятся в избранном
+        return products.filter(p => favIds.includes(p.id)).length;
+    }
+);
+
+// Подробная корзина: строки и сумма (используем трансформированные данные)
 export const selectCartDetailed = createSelector(
     selectCartItems,
-    selectApiProducts,
-    (items, apiProducts) => {
+    selectTransformedProducts,
+    (items, transformedProducts) => {
         const rows = Object.entries(items).map(([id, qty]) => {
-            const product = apiProducts.find((p: any) => p.id === id);
-            if (!product) return null;
+            // Ищем по числовому ID (который создается в transformProduct)
+            const product = transformedProducts.find((p: any) => p.id === Number(id));
+            
+            if (!product) {
+                return {
+                    id: Number(id),
+                    name: 'Товар не найден',
+                    category: 'Неизвестно',
+                    price: 0,
+                    qty: qty as number
+                };
+            }
             
             return {
                 id: product.id,
                 name: product.name,
-                price: product.price_cents ? product.price_cents / 100 : 0,
+                category: product.category,
+                price: product.price,
+                images: product.images, // добавляем изображения
                 qty: qty as number
             };
-        }).filter(Boolean);
+        });
         
         const sum = rows.reduce((acc, r) => acc + r.price * r.qty, 0);
         return { rows, sum };

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useGetProductsQuery } from '../api/productsApi';
-import { selectTransformedProducts, selectApiMeta } from '../features/catalog/apiSelectors';
+import { selectFilteredApiProducts, selectApiMeta } from '../features/catalog/apiSelectors';
 import ProductCard from '../components/products/ProductCard';
 import PaginationApi from '../components/products/PaginationApi';
 import type { RootState } from '../app/store';
@@ -28,7 +28,7 @@ export default function ProductsGridApi() {
   );
 
   // Получаем данные через селекторы
-  const products = useSelector(selectTransformedProducts);
+  const products = useSelector(selectFilteredApiProducts);
   const meta = useSelector(selectApiMeta);
 
   if (isLoading) {

@@ -17,7 +17,20 @@ export default function ChipsApi() {
     setIsVisible(true);
   }, []);
 
-  // Добавляем "Все" в начало списка категорий
+  // Добавляем "Все" в начало списка категорий с иконками
+  const categoryIcons: { [key: string]: string } = {
+    'Все': '🏠',
+    'Холодильники': '❄️',
+    'Стиральные машины': '🌀',
+    'Посудомоечные машины': '🍽️',
+    'Плиты': '🔥',
+    'Духовые шкафы': '🥧',
+    'Микроволновые печи': '📡',
+    'Вытяжки': '💨',
+    'Кондиционеры': '❄️',
+    'Водонагреватели': '🚿'
+  };
+
   const allCategories = ['Все', ...categories.map((cat: any) => cat.slug)];
 
   if (isLoading) {
@@ -25,7 +38,7 @@ export default function ChipsApi() {
       <div className="chips animated-chips visible" id="chips" aria-label="Категории">
         <div className="loading-chips">
           <div className="loading-spinner"></div>
-          <span>Загружаем категории...</span>
+          <span>🔄 Загружаем категории...</span>
         </div>
       </div>
     );
@@ -45,7 +58,7 @@ export default function ChipsApi() {
           onClick={() => setChip(c)}
           style={{ animationDelay: `${index * 0.1}s` }}
         >
-          <span className="chip-text">{c}</span>
+          <span className="chip-text">{categoryIcons[c] || '📦'} {c}</span>
           <div className="chip-ripple"></div>
           <div className="chip-glow"></div>
         </button>

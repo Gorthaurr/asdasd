@@ -3,15 +3,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { closeDrawer } from '../../features/catalog/catalogSlice';
 import { changeQty } from '../../features/cart/cartSlice';
-import { selectCartDetailed } from '../../features/catalog/selectors';
+import { selectCartDetailed as selectCartDetailedApi } from '../../features/catalog/apiSelectors';
 import { fmtCurrency } from '../../utils/format';
 import type { RootState } from '../../app/store';
 
 export default function CartDrawer() {
   const dispatch = useDispatch();
   const open = useSelector((s: RootState) => s.catalog.drawerOpen);
-  const { rows, sum } = useSelector(selectCartDetailed);
+  const { rows, sum } = useSelector(selectCartDetailedApi);
   const [isVisible, setIsVisible] = useState(false);
+
+  // Отладка изображений
+  console.log('Cart items with images:', rows.map(r => ({
+    id: r.id, 
+    name: r.name, 
+    hasImages: !!r.images, 
+    imageCount: r.images?.length || 0,
+    firstImage: r.images?.[0]
+  })));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -79,15 +88,7 @@ export default function CartDrawer() {
         <div className="body" id="cartList">
           {rows.length === 0 ? (
             <div className="empty animated-empty">
-              <div className="empty-icon">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h9m-9 0a2 2 0 100 4 2 2 0 000-4zm9 0a2 2 0 100 4 2 2 0 000-4z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  />
-                </svg>
-              </div>
+              <p>🛒</p>
               <p>Корзина пуста</p>
               <small>Добавьте товары для продолжения покупок</small>
             </div>
@@ -100,10 +101,36 @@ export default function CartDrawer() {
                   data-id={it.id}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <div className="cart-thumb animated-thumb"></div>
+                  <div className="cart-thumb animated-thumb">
+                    {it.images && it.images.length > 0 ? (
+                      <img 
+                        src={it.images[0].url} 
+                        alt={it.name}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
+                        onError={(e) => {
+                          console.log('Image failed to load:', it.images[0]);
+                          const target = e.currentTarget;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = '<div class="no-image">📦</div>';
+                          }
+                        }}
+                        onLoad={() => {
+                          console.log('Image loaded successfully:', it.images[0].url);
+                        }}
+                      />
+                    ) : (
+                      <div className="no-image">📦</div>
+                    )}
+                  </div>
                   <div className="cart-content">
-                    <div className="cart-name">{it.name}</div>
-                    <div className="cart-category">{it.category}</div>
+                    <div className="cart-name">{it.name || 'Товар не найден'}</div>
+                    <div className="cart-category">{it.category || 'Без категории'}</div>
                     <div className="cart-price">{fmtCurrency(it.price)}</div>
                   </div>
                   <div className="qty animated-qty">
@@ -112,7 +139,9 @@ export default function CartDrawer() {
                       aria-label="Уменьшить"
                       onClick={() => dispatch(changeQty({ id: it.id, delta: -1 }))}
                     >
-                      <span>−</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
                       <div className="qty-btn-ripple"></div>
                       <div className="qty-btn-glow"></div>
                     </button>
@@ -122,7 +151,10 @@ export default function CartDrawer() {
                       aria-label="Увеличить"
                       onClick={() => dispatch(changeQty({ id: it.id, delta: +1 }))}
                     >
-                      <span>+</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
                       <div className="qty-btn-ripple"></div>
                       <div className="qty-btn-glow"></div>
                     </button>

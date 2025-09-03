@@ -15,14 +15,14 @@ function AnimatedSortSelect({ value, onChange }: { value: string; onChange: (v: 
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const options = useMemo(() => [
-        { value: 'popular', label: 'Сначала популярные' },
-        { value: 'priceAsc', label: 'Цена: по возрастанию' },
-        { value: 'priceDesc', label: 'Цена: по убыванию' },
-        { value: 'new', label: 'Новинки' },
-        { value: 'nameAsc', label: 'Название: А-Я' },
-        { value: 'nameDesc', label: 'Название: Я-А' },
-        { value: 'rating', label: 'По рейтингу' },
-        { value: 'discount', label: 'Со скидкой' }
+        { value: 'popular', label: '🔥 Сначала популярные' },
+        { value: 'priceAsc', label: '💰 Цена: по возрастанию' },
+        { value: 'priceDesc', label: '💎 Цена: по убыванию' },
+        { value: 'new', label: '✨ Новинки' },
+        { value: 'nameAsc', label: '🔤 Название: А-Я' },
+        { value: 'nameDesc', label: '🔡 Название: Я-А' },
+        { value: 'rating', label: '⭐ По рейтингу' },
+        { value: 'discount', label: '🏷️ Со скидкой' }
     ], []);
 
     // Обновляем позицию dropdown при открытии и прокрутке
@@ -260,56 +260,50 @@ export default function Hero(){
                 <ChipsApi />
                 <div className="hero-stats">
                     <div className="stat-row">
-                        <strong className="stat-number">4.9/5</strong>
-                        <span className="stat-label">по оценкам покупателей</span>
+                        <strong className="stat-number">⭐ 4.9/5</strong>
+                        <span className="stat-label">📊 по оценкам покупателей</span>
                     </div>
                     <div className="stat-row">
-                        <strong className="stat-number">24/7</strong>
-                        <span className="stat-label">поддержка</span>
+                        <strong className="stat-number">🕐 24/7</strong>
+                        <span className="stat-label">📞 поддержка клиентов</span>
                     </div>
                     <div className="stat-row">
-                        <strong className="stat-number">365</strong>
-                        <span className="stat-label">дней возврата</span>
+                        <strong className="stat-number">🔄 365</strong>
+                        <span className="stat-label">📅 дней возврата</span>
                     </div>
                     <div className="stat-row">
-                        <strong className="stat-number">10+</strong>
-                        <span className="stat-label">лет опыта</span>
+                        <strong className="stat-number">🏆 10+</strong>
+                        <span className="stat-label">🎯 лет опыта</span>
                     </div>
                 </div>
                 
                 <div className="hero-features">
                     <div className="feature-item">
                         <div className="feature-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
+                            ✅
                         </div>
                         <div className="feature-content">
-                            <h4 className="feature-title">Гарантия качества</h4>
+                            <h4 className="feature-title">🛡️ Гарантия качества</h4>
                             <p className="feature-description">Вся техника с официальной гарантией, в заводской упаковке</p>
                         </div>
                     </div>
                     
                     <div className="feature-item">
                         <div className="feature-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
+                            ⭐
                         </div>
                         <div className="feature-content">
-                            <h4 className="feature-title">Премиальные бренды</h4>
+                            <h4 className="feature-title">🏅 Премиальные бренды</h4>
                             <p className="feature-description">Сотрудничаем со всеми мировыми производителями</p>
                         </div>
                     </div>
                     
                     <div className="feature-item">
                         <div className="feature-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
+                            🚚
                         </div>
                         <div className="feature-content">
-                            <h4 className="feature-title">Быстрая доставка</h4>
+                            <h4 className="feature-title">⚡ Быстрая доставка</h4>
                             <p className="feature-description">Доставка в любой регион РФ с помощью транспортных компаний</p>
                         </div>
                     </div>

@@ -32,6 +32,9 @@ export default function ProductCard({ p }: { p: Product }) {
   const qty = cartItems[p.id] ?? 0;
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  
+  // Проверяем, находимся ли на странице избранного
+  const isOnFavoritesPage = window.location.search.includes('fav=1');
 
   useEffect(() => {
     setIsVisible(true);
@@ -67,34 +70,29 @@ export default function ProductCard({ p }: { p: Product }) {
 
   return (
     <article
-      className={`card animated-card ${isVisible ? 'visible' : ''} ${isHovered ? 'hovered' : ''}`}
+      className={`card animated-card enhanced-hover breathing stagger-animation ${isVisible ? 'visible' : ''} ${isHovered ? 'hovered' : ''}`}
       data-id={p.id}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="thumb">
         {/* Кнопка избранного — всегда сверху (см. overrides.css) */}
-        <button
-          className={`fav animated-fav${isFav ? ' is-active' : ''}`}
-          aria-pressed={isFav}
-          title={isFav ? 'Убрать из избранного' : 'В избранное'}
-          aria-label="Избранное"
-          onClick={() => dispatch(toggleFav(p.id))}
-        >
-          {/* Анимированное сердце */}
-          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              className="heart-path"
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <div className="fav-ripple"></div>
-        </button>
+                  <button
+            className={`fav animated-fav${isFav ? ' is-active' : ''}`}
+            aria-pressed={isFav}
+            title={isFav ? '💔 Убрать из избранного' : '💖 В избранное'}
+            aria-label="Избранное"
+            onClick={() => {
+              console.log('Toggling favorite for product:', p.id, 'current isFav:', isFav);
+              dispatch(toggleFav(p.id));
+            }}
+          >
+            {/* Эмодзи сердце */}
+            <span style={{ fontSize: '18px' }}>
+              {isFav ? '💖' : '🤍'}
+            </span>
+            <div className="fav-ripple"></div>
+          </button>
 
         {/* Превью — ссылка на страницу товара */}
         <Link
@@ -106,7 +104,7 @@ export default function ProductCard({ p }: { p: Product }) {
             {/* Бейдж скидки */}
             {p.oldPrice && (
               <div className="discount-badge">
-                <span>-{Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100)}%</span>
+                <span>🔥 -{Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100)}%</span>
               </div>
             )}
 
@@ -172,47 +170,54 @@ export default function ProductCard({ p }: { p: Product }) {
         </div>
 
         <div className="meta">
-          <span className="cat">{p.category}</span> • {ratingStars}
+          <span className="cat">📂 {p.category}</span> • {ratingStars}
           <span className="rating" style={{ marginLeft: 6 }}>
-            {p.rating.toFixed(1)}
+            ⭐ {p.rating.toFixed(1)}
           </span>
         </div>
 
         <div className="price" style={{ gap: 12 }}>
           <div className="price-info">
-            <strong className="cost">{fmtCurrency(p.price)}</strong>
-            {p.oldPrice && <span className="old-price">{fmtCurrency(p.oldPrice)}</span>}
+            <strong className="cost">💰 {fmtCurrency(p.price)}</strong>
+            {p.oldPrice && <span className="old-price">🏷️ {fmtCurrency(p.oldPrice)}</span>}
           </div>
 
-          {/* Контроль количества: − qty + */}
+          {/* Контроль количества: − qty + (скрываем на странице избранного) */}
+          {!isOnFavoritesPage && (
           <div className="qty-inline" aria-label="Количество в корзине">
             <button
-              className="qty-btn animated-qty-btn"
+              className="qty-btn animated-qty-btn magnetic-btn"
               aria-label="Убрать одну штуку"
-              title="Убрать"
+              title="➖ Убрать"
               onClick={() => qty > 0 && dispatch(changeQty({ id: p.id, delta: -1 }))}
               disabled={qty === 0}
             >
-              <span>−</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
               <div className="qty-btn-ripple"></div>
               <div className="qty-btn-glow"></div>
             </button>
 
-            <span className="qty-count" aria-live="polite">
+            <span className="qty-count gradient-text-primary" aria-live="polite">
               {qty}
             </span>
 
             <button
-              className="qty-btn animated-qty-btn"
+              className="qty-btn animated-qty-btn magnetic-btn"
               aria-label="Добавить одну штуку"
-              title="Добавить"
+              title="➕ Добавить"
               onClick={handleAddToCart}
             >
-              <span>+</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
               <div className="qty-btn-ripple"></div>
               <div className="qty-btn-glow"></div>
             </button>
           </div>
+          )}
         </div>
       </div>
 
@@ -223,6 +228,8 @@ export default function ProductCard({ p }: { p: Product }) {
         <div className="particle particle-2"></div>
         <div className="particle particle-3"></div>
       </div>
+      <div className="morphing-bg"></div>
+      <div className="parallax-bg"></div>
     </article>
   );
 }

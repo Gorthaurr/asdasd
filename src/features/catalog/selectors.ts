@@ -68,8 +68,15 @@ export const selectCartCount = createSelector(selectCartItems, (items)=>
 
 // Подробная корзина: строки и сумма
 export const selectCartDetailed = createSelector(selectCartItems, () => products as Product[], (items, list) => {
-    const rows = Object.entries(items).map(([id, qty]) => ({ ...list.find(p=>p.id===Number(id))!, qty })); // мердж по id
-    const sum = rows.reduce((acc, r) => acc + r.price * r.qty, 0); // общая сумма
+    const rows = Object.entries(items).map(([id, qty]) => {
+        // Пробуем найти товар по числовому или строковому ID
+        const product = list.find(p => p.id === Number(id) || p.id === id);
+        if (!product) {
+            return { id, name: 'Товар не найден', category: 'Неизвестно', price: 0, qty };
+        }
+        return { ...product, qty };
+    });
+    const sum = rows.reduce((acc, r) => acc + (r.price || 0) * (r.qty || 0), 0); // общая сумма
     return { rows, sum }; // возвращаем структуру для UI
 });
 

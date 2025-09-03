@@ -1,0 +1,74 @@
+/* ========================================
+   LIGHT THEME OVERRIDE
+   Replaces all dark elements with light ones
+   ======================================== */
+
+/* Override dark CSS variables */
+:root {
+  --surface-2: var(--bg-surface) !important;
+  --surface: var(--bg-surface) !important;
+  --bg: var(--bg-page) !important;
+}
+
+/* Force light backgrounds for all dark elements */
+.animated-cart-item,
+.cart-item,
+.order-row,
+.review,
+.full-specs .fs-row,
+.fs-row,
+.select-option,
+.animated-qty-btn,
+.qty-btn,
+.icon-btn {
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Ensure proper text colors */
+.animated-cart-item *,
+.cart-item *,
+.order-row *,
+.review *,
+.full-specs *,
+.fs-row * {
+  color: var(--text-primary) !important;
+}
+
+.animated-cart-item .cart-category,
+.cart-item .cart-category,
+.order-row .order-row-details,
+.review .review-meta,
+.full-specs dt,
+.fs-row dt {
+  color: var(--text-muted) !important;
+}
+
+/* Fix any remaining dark gradients */
+.animated-footer,
+.drawer .footer {
+  background: var(--bg-surface) !important;
+}
+
+/* Ensure quantity buttons are properly styled */
+.qty button,
+.qty-btn,
+.animated-qty-btn {
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-light) !important;
+}
+
+.qty button:hover,
+.qty-btn:hover,
+.animated-qty-btn:hover {
+  background: var(--primary) !important;
+  color: var(--text-white) !important;
+}
+
+/* Fix any dark overlays */
+.card-overlay,
+.image-overlay {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: var(--text-primary) !important;
+}
