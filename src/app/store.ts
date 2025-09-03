@@ -5,6 +5,7 @@ import favsReducer from '../features/favs/favsSlice'; // слайс избран
 import cartReducer from '../features/cart/cartSlice'; // слайс корзины
 // import enhancedCartReducer from '../features/cart/enhancedCartSlice'; // временно отключено
 import { productsApi } from '../api/productsApi'; // RTK Query API сервис
+import { addressApi } from '../api/addressApi'; // API для автодополнения адресов
 import { setJSON } from '../utils/storage'; // утилита записи JSON в localStorage
 
 
@@ -25,10 +26,11 @@ export const store = configureStore({
         cart: cartReducer, // редьюсер корзины
         // enhancedCart: enhancedCartReducer, // временно отключено
         [productsApi.reducerPath]: productsApi.reducer, // RTK Query API
+        [addressApi.reducerPath]: addressApi.reducer, // API автодополнения адресов
     },
     middleware: (gdm) => {
         const base = gdm(); // базовые middleware RTK
-        return base.concat(productsApi.middleware, persistMiddleware); // с RTK Query
+        return base.concat(productsApi.middleware, addressApi.middleware, persistMiddleware); // с RTK Query
     }
 });
 

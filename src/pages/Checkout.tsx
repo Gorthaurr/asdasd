@@ -8,6 +8,7 @@ import { clearCart } from '../features/cart/cartSlice'; // экшен очист
 import { fmtCurrency } from '../utils/format';
 import { toast } from '../utils/toast'; // форматирование суммы
 import { useGetProductsQuery } from '../api/productsApi'; // хук для загрузки товаров
+import AddressAutocomplete from '../components/forms/AddressAutocomplete'; // компонент автодополнения адресов
 
 export default function Checkout() {
   const dispatch = useDispatch(); // отправка экшенов
@@ -36,9 +37,7 @@ export default function Checkout() {
     lastName: '',
     phone: '',
     email: '',
-    address: '',
-    city: '',
-    zip: '',
+    address: '', // Полный адрес в одном поле
     payment: 'card', // способ оплаты: card | cod
     comment: '',
   });
@@ -56,8 +55,6 @@ export default function Checkout() {
     if (!form.email.trim()) newErrors.email = 'Укажите email адрес';
     else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = 'Некорректный email адрес';
     if (!form.address.trim()) newErrors.address = 'Укажите адрес доставки';
-    if (!form.city.trim()) newErrors.city = 'Укажите город';
-    if (!form.zip.trim()) newErrors.zip = 'Укажите почтовый индекс';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -74,9 +71,7 @@ export default function Checkout() {
       lastName: '👥 Пожалуйста, укажите вашу фамилию', 
       phone: '📱 Пожалуйста, укажите номер телефона',
       email: '📧 Пожалуйста, укажите корректный email',
-      address: '🏠 Пожалуйста, укажите адрес доставки',
-      city: '🏙️ Пожалуйста, укажите город',
-      zip: '📮 Пожалуйста, укажите почтовый индекс'
+      address: '🏠 Пожалуйста, укажите адрес доставки'
     };
 
     setErrors(prev => ({ ...prev, [field]: customMessages[field] || 'Заполните это поле' }));
@@ -202,36 +197,33 @@ export default function Checkout() {
             <legend data-section="delivery">Доставка</legend>
             <div className="form-group">
               <label htmlFor="address">Адрес*</label>
-              <input
+              <AddressAutocomplete
                 id="address"
-                required
                 value={form.address}
-                onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-                placeholder="Улица, дом, квартира"
+                onChange={(value) => setForm((f) => ({ ...f, address: value }))}
+                onAddressSelect={(suggestion) => {
+                  // Используем полный адрес в одном поле
+                  setForm(prev => ({
+                    ...prev,
+                    address: suggestion.value,
+                    // Очищаем город и индекс, так как они уже включены в полный адрес
+                    city: '',
+                    zip: ''
+                  }));
+                  // Очищаем ошибки
+                  setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors.address;
+                    delete newErrors.city;
+                    delete newErrors.zip;
+                    return newErrors;
+                  });
+                }}
+                placeholder="г Москва, ул Тверская, д 1..."
+                required
               />
             </div>
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="city">Город*</label>
-                <input
-                  id="city"
-                  required
-                  value={form.city}
-                  onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
-                  placeholder="Москва"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="zip">Индекс*</label>
-                <input
-                  id="zip"
-                  required
-                  value={form.zip}
-                  onChange={(e) => setForm((f) => ({ ...f, zip: e.target.value }))}
-                  placeholder="101000"
-                />
-              </div>
-            </div>
+            {/* Город и индекс включены в полный адрес */}
             <div className="form-group">
               <label htmlFor="comment">Комментарий к заказу</label>
               <textarea
