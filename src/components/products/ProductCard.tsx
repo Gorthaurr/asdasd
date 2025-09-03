@@ -136,7 +136,7 @@ export default function ProductCard({ p }: { p: Product }) {
                     left: 0,
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover'
+                    objectFit: 'contain'
                   }}
                   onError={(e) => {
                     // Fallback к SVG если изображение не загрузилось
