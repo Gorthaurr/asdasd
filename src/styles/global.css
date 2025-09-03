@@ -890,9 +890,13 @@ footer{
     display: grid;
     grid-template-columns: 1.1fr 1fr; /* слева шире под фото */
     gap: 16px;
+    align-items: start; /* Предотвращает расширение при смене изображений */
 }
 @media (max-width: 980px){
-    .product-page .product-page-grid{ grid-template-columns: 1fr; }
+    .product-page .product-page-grid{ 
+        grid-template-columns: 1fr; 
+        align-items: start;
+    }
 }
 /* Product page styles moved to product-checkout.css */
 .specs-list{

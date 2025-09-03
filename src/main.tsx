@@ -9,6 +9,7 @@ import './styles/cart-drawer.css';
 import './styles/product-checkout.css';
 import './styles/alerts.css';
 import './styles/light-override.css';
+import './styles/product-gallery.css';
 import './styles/admin.css';
 import './styles/admin-modern.css';
 import ErrorBoundary from './components/common/ErrorBoundary';

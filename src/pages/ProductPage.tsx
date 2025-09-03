@@ -18,6 +18,7 @@ import { fmtCurrency } from '../utils/format';
 import { selectCartItems, selectFavIds } from '../features/catalog/selectors';
 import { addToCart, changeQty } from '../features/cart/cartSlice';
 import { toggleFav } from '../features/favs/favsSlice';
+import { ProductImageGallery } from '../components/product/ProductImageGallery';
 
 // Типы для внутренних компонентов
 interface ProductSpec {
@@ -83,66 +84,7 @@ const RatingStars: React.FC<RatingStarsProps> = ({
   );
 };
 
-/**
- * Компонент для отображения изображения товара с fallback
- */
-interface ProductImageProps {
-  product: Product;
-}
 
-const ProductImage: React.FC<ProductImageProps> = ({ product }) => {
-  const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
-    const target = e.target as HTMLImageElement;
-    target.style.display = 'none';
-    const svg = target.previousElementSibling as SVGElement;
-    if (svg) svg.style.display = 'block';
-  }, []);
-
-  const handleImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
-    const svg = (e.target as HTMLImageElement).previousElementSibling as SVGElement;
-    if (svg) svg.style.display = 'none';
-  }, []);
-
-  const hasImages = product.images && product.images.length > 0;
-
-  return (
-    <div className="product-gallery">
-      {/* SVG placeholder (fallback) */}
-      <svg
-        viewBox="0 0 800 600"
-        xmlns="http://www.w3.org/2000/svg"
-        role="img"
-        aria-label={`Изображение: ${product.name}`}
-        style={{ display: hasImages ? 'none' : 'block' }}
-      >
-        <defs>
-          <linearGradient id={`pg${product.id}`} x1="0" x2="1">
-            <stop offset="0%" stopColor="#1c2340" />
-            <stop offset="100%" stopColor="#0f1428" />
-          </linearGradient>
-        </defs>
-        <rect width="800" height="600" fill={`url(#pg${product.id})`} />
-        <g fill="#6ea8fe" opacity="0.9">
-          <rect x="220" y="140" width="360" height="260" rx="24" />
-          <rect x="250" y="170" width="300" height="200" rx="12" fill="#182039" />
-          <rect x="370" y="460" width="60" height="14" rx="7" fill="#7cf3d0" />
-        </g>
-      </svg>
-
-      {/* Изображение товара */}
-      {hasImages && product.images && (
-        <img
-          src={product.images[0].url}
-          alt={product.images[0].alt_text || product.name}
-          className="product-main-image"
-          loading="eager"
-          onError={handleImageError}
-          onLoad={handleImageLoad}
-        />
-      )}
-    </div>
-  );
-};
 
 /**
  * Компонент для управления количеством товара
@@ -409,8 +351,8 @@ export default function ProductPage() {
   return (
     <main className="container product-page" style={{ padding: '16px 0 40px' }}>
       <section className="product-page-grid">
-        {/* Фото товара */}
-        <ProductImage product={product} />
+        {/* Галерея изображений товара */}
+        <ProductImageGallery product={product} />
 
         {/* Сводка и действия */}
         <div className="product-summary">
