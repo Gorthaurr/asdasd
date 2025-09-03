@@ -125,6 +125,14 @@ export default function ProductCard({ p }: { p: Product }) {
                 alt={p.images[0].alt_text || p.name}
                 className="product-image"
                 loading="lazy"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }}
                 onError={(e) => {
                   // Fallback к SVG если изображение не загрузилось
                   const target = e.target as HTMLImageElement;
@@ -146,7 +154,14 @@ export default function ProductCard({ p }: { p: Product }) {
               xmlns="http://www.w3.org/2000/svg"
               role="img"
               aria-label="Изображение товара"
-              style={{ display: p.images && p.images.length > 0 ? 'none' : 'block' }}
+              style={{ 
+                display: p.images && p.images.length > 0 ? 'none' : 'block',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%'
+              }}
             >
               <defs>
                 <linearGradient id={`g${p.id}`} x1="0" x2="1">

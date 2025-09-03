@@ -320,7 +320,7 @@ export default function ProductPage() {
 
     const reviews: ProductReview[] = [
       { user: 'Алексей', rating: 5, text: 'Качество отличное, пользуемся каждый день.' },
-      { user: 'Мария', rating: 4, text: 'Хорошая модель, доставка быстрая.' },
+      { user: 'Мария', rating: 4, text: 'Хорошая модель, качество на высоте.' },
       { user: 'Иван', rating: 4, text: 'Цена/качество на уровне, рекомендую.' },
     ];
 

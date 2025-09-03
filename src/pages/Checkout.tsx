@@ -38,7 +38,6 @@ export default function Checkout() {
     phone: '',
     email: '',
     address: '', // Полный адрес в одном поле
-    payment: 'card', // способ оплаты: card | cod
     comment: '',
   });
 
@@ -54,7 +53,7 @@ export default function Checkout() {
     if (!form.phone.trim()) newErrors.phone = 'Укажите номер телефона';
     if (!form.email.trim()) newErrors.email = 'Укажите email адрес';
     else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = 'Некорректный email адрес';
-    if (!form.address.trim()) newErrors.address = 'Укажите адрес доставки';
+    if (!form.address.trim()) newErrors.address = 'Укажите адрес';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -71,7 +70,7 @@ export default function Checkout() {
       lastName: '👥 Пожалуйста, укажите вашу фамилию', 
       phone: '📱 Пожалуйста, укажите номер телефона',
       email: '📧 Пожалуйста, укажите корректный email',
-      address: '🏠 Пожалуйста, укажите адрес доставки'
+      address: '🏠 Пожалуйста, укажите адрес'
     };
 
     setErrors(prev => ({ ...prev, [field]: customMessages[field] || 'Заполните это поле' }));
@@ -194,7 +193,6 @@ export default function Checkout() {
           </fieldset>
 
           <fieldset>
-            <legend data-section="delivery">Доставка</legend>
             <div className="form-group">
               <label htmlFor="address">Адрес*</label>
               <AddressAutocomplete
@@ -219,7 +217,7 @@ export default function Checkout() {
                     return newErrors;
                   });
                 }}
-                placeholder="г Москва, ул Тверская, д 1..."
+                placeholder="г Москва, ул Тверская, д 1"
                 required
               />
             </div>
@@ -231,36 +229,12 @@ export default function Checkout() {
                 rows={3}
                 value={form.comment}
                 onChange={(e) => setForm((f) => ({ ...f, comment: e.target.value }))}
-                placeholder="Например: позвоните за 30 минут до доставки"
+                placeholder="Например: укажите предпочтительное время получения"
               />
             </div>
           </fieldset>
 
-          <fieldset>
-            <legend data-section="payment">Оплата</legend>
-            <div className="payment-options">
-              <div className="payment-option">
-                <input
-                  type="radio"
-                  id="card"
-                  name="payment"
-                  checked={form.payment === 'card'}
-                  onChange={() => setForm((f) => ({ ...f, payment: 'card' }))}
-                />
-                <label htmlFor="card" data-payment="card">Картой онлайн</label>
-              </div>
-              <div className="payment-option">
-                <input
-                  type="radio"
-                  id="cod"
-                  name="payment"
-                  checked={form.payment === 'cod'}
-                  onChange={() => setForm((f) => ({ ...f, payment: 'cod' }))}
-                />
-                <label htmlFor="cod" data-payment="cod">Наличными/картой при получении</label>
-              </div>
-            </div>
-          </fieldset>
+
 
           <button className="checkout-submit" type="submit" disabled={!rows.length}>
             Подтвердить заказ
@@ -330,15 +304,7 @@ export default function Checkout() {
           </div>
           <div className="sepline" />
           <div className="totals">
-            <div>Товары</div>
-            <div>
-              <strong>{fmtCurrency(sum)}</strong>
-            </div>
-            <div>Доставка</div>
-            <div>
-              <strong>{rows.length ? 'Бесплатно' : '—'}</strong>
-            </div>
-            <div className="total-line">Итого</div>
+            <div className="total-line">💎 Итого</div>
             <div className="total-line">
               <strong>{fmtCurrency(sum)}</strong>
             </div>

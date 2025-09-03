@@ -171,10 +171,6 @@ export default function CartDrawer() {
             <span>Товары</span>
             <strong id="sumItems">{fmtCurrency(sum)}</strong>
           </div>
-          <div className="summary animated-summary">
-            <span>Доставка</span>
-            <strong id="sumShip">{rows.length ? 'Бесплатно' : '—'}</strong>
-          </div>
           <div className="summary animated-summary total">
             <span>Итого</span>
             <strong id="sumTotal">{fmtCurrency(sum)}</strong>

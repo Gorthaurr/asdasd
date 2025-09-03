@@ -300,11 +300,11 @@ export default function Hero(){
                     
                     <div className="feature-item">
                         <div className="feature-icon">
-                            🚚
+                            📦
                         </div>
                         <div className="feature-content">
-                            <h4 className="feature-title">⚡ Быстрая доставка</h4>
-                            <p className="feature-description">Доставка в любой регион РФ с помощью транспортных компаний</p>
+                            <h4 className="feature-title">🛍️ Широкий ассортимент</h4>
+                            <p className="feature-description">Тысячи товаров от ведущих производителей электроники</p>
                         </div>
                     </div>
                 </div>

@@ -105,7 +105,7 @@ export default function Footer() {
               Каталог
             </Link>
             <a href="#" className="footer-link">
-              Доставка
+              Гарантия
             </a>
             <a href="#" className="footer-link">
               Поддержка

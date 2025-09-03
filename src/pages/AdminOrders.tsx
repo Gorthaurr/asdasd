@@ -300,7 +300,7 @@ const AdminOrders = () => {
 
               {selectedOrder.shipping_address && (
                 <div style={{ marginTop: '1.5rem' }}>
-                  <h4>🚚 Адрес доставки</h4>
+                  <h4>🏠 Адрес</h4>
                   <div style={{ display: 'grid', gap: '0.5rem' }}>
                     <div><strong>Адрес:</strong> {selectedOrder.shipping_address}</div>
                     {selectedOrder.shipping_city && (
