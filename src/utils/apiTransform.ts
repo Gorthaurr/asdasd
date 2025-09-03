@@ -22,7 +22,7 @@ export function transformProduct(apiProduct: ProductApi): Product {
         originalId: apiProduct.id, // сохраняем оригинальный ID из API
         name: apiProduct.name,
         category: getCategoryFromAttributes(apiProduct.attributes) || 'Другое',
-        price: apiProduct.price_cents ? apiProduct.price_cents / 100 : 0, // конвертируем центы в евро
+        price: apiProduct.price_cents ? apiProduct.price_cents / 100 : 0, // конвертируем центы в рубли
         oldPrice: getOldPriceFromAttributes(apiProduct.attributes),
         rating: getRatingFromAttributes(apiProduct.attributes) || 4.5, // дефолтный рейтинг
         images: apiProduct.images, // передаем изображения
