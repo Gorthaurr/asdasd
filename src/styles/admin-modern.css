@@ -1046,3 +1046,254 @@
     padding: var(--admin-spacing-xs);
   }
 }
+
+/* ========================================
+   PRODUCT IMAGE GALLERY
+   ======================================== */
+
+.product-image-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-spacing);
+  background: var(--admin-card-bg);
+  border-radius: var(--admin-radius);
+  padding: var(--admin-spacing);
+  border: 1px solid var(--admin-border);
+}
+
+/* Главное изображение */
+.gallery-main-image {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: var(--admin-secondary-light);
+  border-radius: var(--admin-radius);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: var(--admin-radius);
+}
+
+.primary-badge {
+  position: absolute;
+  top: var(--admin-spacing-sm);
+  right: var(--admin-spacing-sm);
+  background: var(--admin-success);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--admin-radius);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--admin-shadow);
+}
+
+/* Галерея миниатюр */
+.gallery-thumbnails {
+  width: 100%;
+}
+
+.thumbnails-scroll {
+  display: flex;
+  gap: var(--admin-spacing-sm);
+  overflow-x: auto;
+  padding: var(--admin-spacing-sm) 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--admin-border) transparent;
+}
+
+.thumbnails-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.thumbnails-scroll::-webkit-scrollbar-track {
+  background: var(--admin-secondary-light);
+  border-radius: 3px;
+}
+
+.thumbnails-scroll::-webkit-scrollbar-thumb {
+  background: var(--admin-border);
+  border-radius: 3px;
+}
+
+.thumbnails-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--admin-secondary);
+}
+
+.thumbnail-item {
+  position: relative;
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: var(--admin-radius);
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  background: var(--admin-secondary-light);
+}
+
+.thumbnail-item:hover {
+  border-color: var(--admin-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--admin-shadow-lg);
+}
+
+.thumbnail-item.selected {
+  border-color: var(--admin-primary);
+  box-shadow: 0 0 0 3px var(--admin-primary-light);
+}
+
+.thumbnail-item.primary {
+  border-color: var(--admin-success);
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.thumbnail-item:hover .thumbnail-image {
+  transform: scale(1.05);
+}
+
+.thumbnail-primary-indicator {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: var(--admin-success);
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  box-shadow: var(--admin-shadow);
+}
+
+.thumbnail-actions {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.thumbnail-item:hover .thumbnail-actions {
+  opacity: 1;
+}
+
+.thumbnail-actions .btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 0.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Информация об изображении */
+.gallery-info {
+  padding: var(--admin-spacing-sm);
+  background: var(--admin-secondary-light);
+  border-radius: var(--admin-radius);
+}
+
+.image-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.image-filename {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--admin-text);
+  word-break: break-all;
+}
+
+.image-meta {
+  display: flex;
+  gap: var(--admin-spacing-sm);
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  color: var(--admin-text-muted);
+}
+
+.image-dimensions,
+.image-size,
+.image-status,
+.image-order {
+  padding: 0.25rem 0.5rem;
+  background: var(--admin-bg);
+  border-radius: 4px;
+  border: 1px solid var(--admin-border);
+}
+
+/* Пустое состояние галереи */
+.product-gallery-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--admin-spacing-xl);
+  background: var(--admin-secondary-light);
+  border: 2px dashed var(--admin-border);
+  border-radius: var(--admin-radius);
+  color: var(--admin-text-muted);
+  text-align: center;
+}
+
+.gallery-empty-icon {
+  font-size: 3rem;
+  margin-bottom: var(--admin-spacing);
+}
+
+.gallery-empty-text {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Drag and Drop стили */
+.thumbnail-item[draggable="true"] {
+  cursor: grab;
+}
+
+.thumbnail-item[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.thumbnail-item.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .gallery-main-image {
+    height: 300px;
+  }
+  
+  .thumbnail-item {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .thumbnails-scroll {
+    gap: var(--admin-spacing-xs);
+  }
+}

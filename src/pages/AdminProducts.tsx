@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { adminApi } from '../api/adminApi';
 import AdminLayout from '../components/admin/AdminLayout';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import ProductImageGallery from '../components/admin/ProductImageGallery';
 
 interface Product {
   id: string;
@@ -11,7 +12,6 @@ interface Product {
   price_raw?: string;
   price_cents?: number;
   description?: string;
-  product_url?: string;
   images_count: number;
   has_images: boolean;
 }
@@ -29,6 +29,52 @@ const AdminProducts = () => {
   const [editFormData, setEditFormData] = useState<any>({});
   const [categories, setCategories] = useState<any[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [pendingImageChanges, setPendingImageChanges] = useState<{
+    uploaded: File[];
+    deleted: number[];
+    primaryImageId: number | null;
+    reordered: boolean;
+  }>({
+    uploaded: [],
+    deleted: [],
+    primaryImageId: null,
+    reordered: false
+  });
+
+  const resetImageChanges = () => {
+    setPendingImageChanges({
+      uploaded: [],
+      deleted: [],
+      primaryImageId: null,
+      reordered: false
+    });
+  };
+
+  // Получаем изображения с учетом pending изменений
+  const getImagesWithPendingChanges = () => {
+    if (!selectedProduct?.images) return [];
+
+    let images = [...selectedProduct.images];
+
+    // Удаляем изображения, помеченные для удаления
+    images = images.filter(img => !pendingImageChanges.deleted.includes(img.id));
+
+    // Добавляем заглушки для новых изображений
+    const newImagesCount = pendingImageChanges.uploaded.length;
+    for (let i = 0; i < newImagesCount; i++) {
+      images.push({
+        id: -1 - i, // Временный отрицательный ID для новых изображений
+        path: '',
+        filename: pendingImageChanges.uploaded[i].name,
+        url: URL.createObjectURL(pendingImageChanges.uploaded[i]),
+        is_primary: false,
+        sort_order: images.length,
+        status: 'pending'
+      });
+    }
+
+    return images;
+  };
 
   const fetchProducts = async (page = 1, search = '') => {
     try {
@@ -80,6 +126,32 @@ const AdminProducts = () => {
     }
   }, [selectedProduct, showCreateForm]);
 
+  // Синхронизируем высоту блока атрибутов с блоком изображений
+  React.useEffect(() => {
+    const syncHeight = () => {
+      const imagesSection = document.querySelector('.modal-section:has(.product-image-gallery)') as HTMLElement;
+      const attributesSection = document.querySelector('.modal-section:has([data-attributes-content])') as HTMLElement;
+      
+      if (imagesSection && attributesSection) {
+        const imagesHeight = imagesSection.offsetHeight;
+        attributesSection.style.height = `${imagesHeight}px`;
+        
+        // Настраиваем скролл для атрибутов
+        const attributesContent = attributesSection.querySelector('[data-attributes-content]') as HTMLElement;
+        if (attributesContent) {
+          const headerHeight = 60; // Высота заголовка
+          attributesContent.style.maxHeight = `${imagesHeight - headerHeight}px`;
+          attributesContent.style.overflowY = 'auto';
+        }
+      }
+    };
+
+    if (selectedProduct) {
+      const timer = setTimeout(syncHeight, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedProduct, getImagesWithPendingChanges().length]);
+
   const closeModal = () => {
     setSelectedProduct(null);
     setIsEditing(false);
@@ -107,6 +179,14 @@ const AdminProducts = () => {
   const handleViewProduct = async (productId: string) => {
     try {
       const product = await adminApi.getProduct(productId);
+             console.log('Product data received:', product);
+       console.log('Product images:', product.images);
+       console.log('First image details:', product.images?.[0]);
+       if (product.images?.[0]) {
+         console.log('First image URL:', product.images[0].url);
+         console.log('First image path:', product.images[0].path);
+         console.log('Constructed fallback URL:', `http://localhost:8000/static/${product.images[0].path}`);
+       }
       setSelectedProduct(product);
       setIsEditing(false);
       setEditFormData({
@@ -115,7 +195,7 @@ const AdminProducts = () => {
         price_raw: product.price_raw,
         price_cents: product.price_cents ? product.price_cents / 100 : '', // Конвертируем в рубли для редактирования
         description: product.description,
-        product_url: product.product_url,
+
       });
     } catch (err) {
       console.error('Error fetching product:', err);
@@ -124,11 +204,15 @@ const AdminProducts = () => {
   };
 
   const handleStartEdit = () => {
+    // Сбрасываем изменения изображений при начале редактирования
+    resetImageChanges();
     setIsEditing(true);
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
+    // Сбрасываем изменения изображений
+    resetImageChanges();
     // Восстанавливаем оригинальные данные
     if (selectedProduct) {
       setEditFormData({
@@ -137,7 +221,7 @@ const AdminProducts = () => {
         price_raw: selectedProduct.price_raw,
         price_cents: selectedProduct.price_cents ? selectedProduct.price_cents / 100 : '', // Конвертируем в рубли
         description: selectedProduct.description,
-        product_url: selectedProduct.product_url,
+
       });
     }
   };
@@ -153,6 +237,10 @@ const AdminProducts = () => {
       };
       
       await adminApi.updateProduct(selectedProduct.id, dataToSave);
+
+      // Применяем изменения изображений
+      await applyImageChanges();
+
       setIsEditing(false);
       fetchProducts(currentPage, searchQuery);
       // Обновляем данные в модальном окне
@@ -165,11 +253,62 @@ const AdminProducts = () => {
         price_raw: updatedProduct.price_raw,
         price_cents: updatedProduct.price_cents ? updatedProduct.price_cents / 100 : '',
         description: updatedProduct.description,
-        product_url: updatedProduct.product_url,
+
       });
+
+      // Сбрасываем изменения изображений после успешного сохранения
+      resetImageChanges();
+
     } catch (err) {
       console.error('Error updating product:', err);
       alert('Ошибка обновления продукта');
+    }
+  };
+
+  const applyImageChanges = async () => {
+    if (!selectedProduct) return;
+
+    // Применяем загрузку новых изображений
+    for (const file of pendingImageChanges.uploaded) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('alt_text', `Изображение для ${selectedProduct.name}`);
+      formData.append('sort_order', '0');
+      formData.append('is_primary', 'false');
+
+      const token = localStorage.getItem('admin_token');
+      const response = await fetch(`http://localhost:8000/api/v1/admin/products/${selectedProduct.id}/images/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to upload image: ${response.status}`);
+      }
+    }
+
+    // Применяем установку главного изображения
+    if (pendingImageChanges.primaryImageId) {
+      await adminApi.setPrimaryImage(selectedProduct.id, pendingImageChanges.primaryImageId);
+    }
+
+    // Применяем удаление изображений
+    for (const imageId of pendingImageChanges.deleted) {
+      await adminApi.deleteProductImage(selectedProduct.id, imageId);
+    }
+
+    // Применяем изменение порядка (если нужно)
+    if (pendingImageChanges.reordered) {
+      // Получаем текущий порядок изображений из галереи
+      const currentImages = getImagesWithPendingChanges();
+      // Для reorder используем только существующие изображения (id > 0)
+      const existingImageIds = currentImages
+        .filter(img => img.id > 0)
+        .map(img => img.id);
+      await adminApi.reorderProductImages(selectedProduct.id, existingImageIds);
     }
   };
 
@@ -195,35 +334,17 @@ const AdminProducts = () => {
     
     try {
       setUploadingImage(true);
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('alt_text', `Изображение для ${selectedProduct.name}`);
-      formData.append('sort_order', '0');
-      formData.append('is_primary', 'false');
 
-      // Используем админский эндпоинт для загрузки с авторизацией
-      const token = localStorage.getItem('admin_token');
-      const response = await fetch(`http://localhost:8000/api/v1/admin/products/${selectedProduct.id}/images/upload`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      // Вместо немедленной загрузки, сохраняем файл в локальном состоянии
+      setPendingImageChanges(prev => ({
+        ...prev,
+        uploaded: [...prev.uploaded, file]
+      }));
 
-      if (response.ok) {
-        // Обновляем данные продукта
-        const updatedProduct = await adminApi.getProduct(selectedProduct.id);
-        setSelectedProduct(updatedProduct);
-        alert('Изображение успешно загружено!');
-      } else {
-        const errorText = await response.text();
-        console.error('Upload response:', response.status, errorText);
-        throw new Error(`Ошибка загрузки: ${response.status} - ${errorText}`);
-      }
+      alert('Изображение добавлено к загрузке. Сохраните товар для применения изменений.');
     } catch (err) {
-      console.error('Error uploading image:', err);
-      alert('Ошибка загрузки изображения');
+      console.error('Error preparing image for upload:', err);
+      alert('Ошибка подготовки изображения');
     } finally {
       setUploadingImage(false);
     }
@@ -233,16 +354,50 @@ const AdminProducts = () => {
     if (!selectedProduct) return;
     
     try {
-      await adminApi.setPrimaryImage(selectedProduct.id, imageId);
-      
-      // Обновляем данные продукта
-      const updatedProduct = await adminApi.getProduct(selectedProduct.id);
-      setSelectedProduct(updatedProduct);
-      
-      alert('Главное изображение установлено!');
+      // Сохраняем изменение в локальном состоянии вместо немедленного применения
+      setPendingImageChanges(prev => ({
+        ...prev,
+        primaryImageId: imageId
+      }));
+
+      alert('Главное изображение изменено. Сохраните товар для применения изменений.');
     } catch (err) {
-      console.error('Error setting primary image:', err);
-      alert('Ошибка установки главного изображения');
+      console.error('Error preparing primary image change:', err);
+      alert('Ошибка изменения главного изображения');
+    }
+  };
+
+  const handleDeleteImage = async (imageId: number) => {
+    if (!selectedProduct) return;
+
+    try {
+      // Сохраняем изменение в локальном состоянии вместо немедленного применения
+      setPendingImageChanges(prev => ({
+        ...prev,
+        deleted: [...prev.deleted, imageId]
+      }));
+
+      alert('Изображение добавлено к удалению. Сохраните товар для применения изменений.');
+    } catch (err) {
+      console.error('Error preparing image deletion:', err);
+      alert('Ошибка подготовки удаления изображения');
+    }
+  };
+
+    const handleReorderImages = async (imageIds: number[]) => {
+    if (!selectedProduct) return;
+
+    try {
+      // Сохраняем изменение в локальном состоянии вместо немедленного применения
+      setPendingImageChanges(prev => ({
+        ...prev,
+        reordered: true
+      }));
+
+      alert('Порядок изображений изменен. Сохраните товар для применения изменений.');
+    } catch (err) {
+      console.error('Error preparing image reordering:', err);
+      alert('Ошибка изменения порядка изображений');
     }
   };
 
@@ -540,50 +695,14 @@ const AdminProducts = () => {
                 </div>
               </div>
 
-              {/* Ссылка на товар - на всю ширину */}
-              <div className="modal-section modal-full-width">
-                <h4>🔗 Ссылка на товар</h4>
-                <div className="modal-field">
-                  {isEditing ? (
-                    <input
-                      type="url"
-                      value={editFormData.product_url || ''}
-                      onChange={(e) => handleInputChange('product_url', e.target.value)}
-                      className="form-input"
-                      placeholder="https://example.com/product"
-                      style={{ width: '100%' }}
-                    />
-                  ) : (
-                    selectedProduct.product_url ? (
-                      <div className="modal-field-value">
-                        <a 
-                          href={selectedProduct.product_url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="btn btn-primary btn-sm"
-                          style={{ textDecoration: 'none' }}
-                        >
-                          🌐 Открыть на сайте
-                        </a>
-                        <span style={{ marginLeft: '1rem', fontSize: '0.875rem', color: 'var(--admin-text-muted)' }}>
-                          {selectedProduct.product_url}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="modal-field-value">
-                        <span className="modal-field-empty">Ссылка не указана</span>
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
+
 
               {/* Изображения и атрибуты */}
-              <div className="modal-grid-2">
+              <div className="modal-grid-2" style={{ display: 'flex', gap: '1.5rem' }}>
                 {/* Изображения */}
-                <div className="modal-section">
+                <div className="modal-section" style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <h4 style={{ margin: 0 }}>🖼️ Изображения ({selectedProduct.images?.length || 0})</h4>
+                    <h4 style={{ margin: 0 }}>🖼️ Изображения ({getImagesWithPendingChanges().length})</h4>
                     {isEditing && (
                       <div>
                         <input
@@ -603,94 +722,23 @@ const AdminProducts = () => {
                     )}
                   </div>
                   
-                  {selectedProduct.images && selectedProduct.images.length > 0 ? (
-                    <div style={{ display: 'grid', gap: '0.75rem', maxHeight: '300px', overflowY: 'auto' }}>
-                      {selectedProduct.images.map((img: any) => (
-                        <div key={img.id} style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.75rem',
-                          padding: '0.75rem',
-                          background: 'var(--admin-secondary-light)',
-                          border: `2px solid ${img.is_primary ? 'var(--admin-success)' : 'var(--admin-border)'}`,
-                          borderRadius: 'var(--admin-radius)'
-                        }}>
-                          <div style={{
-                            width: '40px',
-                            height: '40px',
-                            background: img.is_primary ? 'var(--admin-success)' : 'var(--admin-primary)',
-                            borderRadius: 'var(--admin-radius)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '1.25rem',
-                            color: 'white'
-                          }}>
-                            {img.is_primary ? '⭐' : '🖼️'}
-                          </div>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontWeight: '600', fontSize: '0.875rem', color: 'var(--admin-text)' }}>
-                              {img.filename}
-                            </div>
-                            <div style={{ fontSize: '0.75rem', color: 'var(--admin-text-muted)' }}>
-                              Порядок: {img.sort_order} • {img.status}
-                            </div>
-                          </div>
-                          <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            {img.is_primary ? (
-                              <span className="status-badge status-completed">Главное</span>
-                            ) : (
-                              isEditing && (
-                                <button
-                                  className="btn btn-sm btn-success"
-                                  onClick={() => handleSetPrimaryImage(img.id)}
-                                  title="Сделать главным"
-                                >
-                                  ⭐ Главное
-                                </button>
-                              )
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div style={{ 
-                      padding: 'var(--admin-spacing-xl)', 
-                      textAlign: 'center',
-                      background: 'var(--admin-secondary-light)',
-                      borderRadius: 'var(--admin-radius)',
-                      border: '2px dashed var(--admin-border)',
-                      color: 'var(--admin-text-muted)'
-                    }}>
-                      <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📷</div>
-                      <div>Изображения не загружены</div>
-                      {isEditing && (
-                        <div style={{ marginTop: '1rem' }}>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) handleImageUpload(file);
-                            }}
-                            style={{ display: 'none' }}
-                            id="image-upload-empty"
-                          />
-                          <label htmlFor="image-upload-empty" className="btn btn-primary" style={{ cursor: 'pointer' }}>
-                            📤 Загрузить первое изображение
-                          </label>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  <ProductImageGallery
+                    images={getImagesWithPendingChanges()}
+                    isEditing={isEditing}
+                    onSetPrimary={handleSetPrimaryImage}
+                    onDeleteImage={handleDeleteImage}
+                    onReorderImages={handleReorderImages}
+                  />
                 </div>
 
                 {/* Атрибуты */}
-                <div className="modal-section">
-                  <h4>🏷️ Атрибуты ({selectedProduct.attributes?.length || 0})</h4>
+                <div className="modal-section" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h4 style={{ margin: 0 }}>🏷️ Атрибуты ({selectedProduct.attributes?.length || 0})</h4>
+                    <div style={{ width: '140px' }}></div>
+                  </div>
                   {selectedProduct.attributes && selectedProduct.attributes.length > 0 ? (
-                    <div style={{ display: 'grid', gap: '0.75rem', maxHeight: '300px', overflowY: 'auto' }}>
+                    <div data-attributes-content style={{ display: 'grid', gap: '0.75rem' }}>
                       {selectedProduct.attributes.map((attr: any) => (
                         <div key={attr.id} style={{ 
                           padding: '0.75rem',

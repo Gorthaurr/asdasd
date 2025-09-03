@@ -224,7 +224,7 @@ export const adminApi = {
     price_raw?: string;
     price_cents?: number;
     description?: string;
-    product_url?: string;
+
   }): Promise<any> {
     const response = await adminApiClient.post('/admin/products', productData);
     return response.data;
@@ -247,6 +247,16 @@ export const adminApi = {
 
   async setPrimaryImage(productId: string, imageId: number): Promise<{ message: string }> {
     const response = await adminApiClient.put(`/admin/products/${productId}/images/${imageId}/primary`);
+    return response.data;
+  },
+
+  async deleteProductImage(productId: string, imageId: number): Promise<{ message: string }> {
+    const response = await adminApiClient.delete(`/admin/products/${productId}/images/${imageId}`);
+    return response.data;
+  },
+
+  async reorderProductImages(productId: string, imageIds: number[]): Promise<{ message: string }> {
+    const response = await adminApiClient.put(`/admin/products/${productId}/images/reorder`, { image_ids: imageIds });
     return response.data;
   },
 
