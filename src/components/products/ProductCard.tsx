@@ -119,34 +119,40 @@ export default function ProductCard({ p }: { p: Product }) {
             )}
 
             {/* Изображение товара */}
-            {p.images && p.images.length > 0 ? (
-              <img
-                src={p.images[0].url}
-                alt={p.images[0].alt_text || p.name}
-                className="product-image"
-                loading="lazy"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover'
-                }}
-                onError={(e) => {
-                  // Fallback к SVG если изображение не загрузилось
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const svg = target.nextElementSibling as SVGElement;
-                  if (svg) svg.style.display = 'block';
-                }}
-                onLoad={(e) => {
-                  // Скрываем SVG placeholder когда изображение загрузилось
-                  const svg = (e.target as HTMLImageElement).nextElementSibling as SVGElement;
-                  if (svg) svg.style.display = 'none';
-                }}
-              />
-            ) : null}
+            {(() => {
+              // Находим главное изображение или берем первое
+              const primaryImage = p.images?.find(img => img.is_primary);
+              const displayImage = primaryImage || (p.images && p.images.length > 0 ? p.images[0] : null);
+
+              return displayImage ? (
+                <img
+                  src={displayImage.url}
+                  alt={displayImage.alt_text || p.name}
+                  className="product-image"
+                  loading="lazy"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                  onError={(e) => {
+                    // Fallback к SVG если изображение не загрузилось
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const svg = target.nextElementSibling as SVGElement;
+                    if (svg) svg.style.display = 'block';
+                  }}
+                  onLoad={(e) => {
+                    // Скрываем SVG placeholder когда изображение загрузилось
+                    const svg = (e.target as HTMLImageElement).nextElementSibling as SVGElement;
+                    if (svg) svg.style.display = 'none';
+                  }}
+                />
+              ) : null;
+            })()}
 
             {/* SVG placeholder (fallback) */}
             <svg

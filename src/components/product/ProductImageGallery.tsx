@@ -11,7 +11,14 @@ interface ProductImageGalleryProps {
 }
 
 export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({ product }) => {
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  // Находим индекс главного изображения или используем 0
+  const getInitialImageIndex = () => {
+    if (!product.images || product.images.length === 0) return 0;
+    const primaryIndex = product.images.findIndex(img => img.is_primary);
+    return primaryIndex >= 0 ? primaryIndex : 0;
+  };
+
+  const [selectedImageIndex, setSelectedImageIndex] = useState(getInitialImageIndex());
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
 
   const hasImages = product.images && product.images.length > 0;
