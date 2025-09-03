@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit'; // фабрика стора
 import catalogReducer from '../features/catalog/catalogSlice'; // слайс каталога
 import favsReducer from '../features/favs/favsSlice'; // слайс избранного
 import cartReducer from '../features/cart/cartSlice'; // слайс корзины
+// import enhancedCartReducer from '../features/cart/enhancedCartSlice'; // временно отключено
 import { productsApi } from '../api/productsApi'; // RTK Query API сервис
 import { setJSON } from '../utils/storage'; // утилита записи JSON в localStorage
 
@@ -22,6 +23,7 @@ export const store = configureStore({
         catalog: catalogReducer, // регистрируем редьюсер каталога
         favs: favsReducer, // редьюсер избранного
         cart: cartReducer, // редьюсер корзины
+        // enhancedCart: enhancedCartReducer, // временно отключено
         [productsApi.reducerPath]: productsApi.reducer, // RTK Query API
     },
     middleware: (gdm) => {

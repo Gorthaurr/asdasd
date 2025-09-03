@@ -7,6 +7,7 @@ import './styles/modern-user.css';
 import './styles/user-effects.css';
 import './styles/cart-drawer.css';
 import './styles/product-checkout.css';
+import './styles/alerts.css';
 import './styles/light-override.css';
 import './styles/admin.css';
 import './styles/admin-modern.css';

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Storage</title>
+</head>
+<body>
+    <h1>Очистка localStorage</h1>
+    <button onclick="clearAll()">Очистить все данные</button>
+    <div id="result"></div>
+    
+    <script>
+        function clearAll() {
+            // Очищаем все данные приложения
+            localStorage.removeItem('techhome_favs');
+            localStorage.removeItem('techhome_cart');
+            localStorage.removeItem('needs_fav_clearing');
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_login_time');
+            
+            // Очищаем весь localStorage от приложения
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('techhome_') || key.startsWith('admin_')) {
+                    localStorage.removeItem(key);
+                }
+            });
+            
+            document.getElementById('result').innerHTML = 
+                '<p style="color: green;">✅ Все данные очищены! Теперь откройте <a href="http://localhost:5173">приложение</a></p>';
+        }
+        
+        // Показываем текущие данные
+        window.onload = function() {
+            const favs = localStorage.getItem('techhome_favs');
+            const cart = localStorage.getItem('techhome_cart');
+            
+            document.getElementById('result').innerHTML = `
+                <h3>Текущие данные:</h3>
+                <p><strong>Избранное:</strong> ${favs || 'пусто'}</p>
+                <p><strong>Корзина:</strong> ${cart || 'пусто'}</p>
+            `;
+        }
+    </script>
+</body>
+</html>

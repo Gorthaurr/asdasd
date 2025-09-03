@@ -46,7 +46,7 @@ export const productsApi = createApi({
                     : [{ type: 'Products', id: 'LIST' }]
         }),
 
-        // GET /api/v1/products/{id} - один продукт
+// GET /api/v1/products/{id} - один продукт
         getProduct: builder.query<ProductApi, string>({
             query: (id) => ({ 
                 url: `/api/v1/products/${id}`,

@@ -9,6 +9,9 @@ import type { RootState } from '../app/store';
 
 export default function ProductsGridApi() {
   const catalog = useSelector((s: RootState) => s.catalog);
+  
+  // Проверяем, находимся ли на странице избранного
+  const isOnFavoritesPage = catalog.favoriteOnly;
 
   // Запрос к API с параметрами из состояния каталога
   const { data, isLoading, error, refetch } = useGetProductsQuery(
@@ -84,7 +87,7 @@ export default function ProductsGridApi() {
           </div>
         )}
       </div>
-      {meta && <PaginationApi meta={meta} />}
+      {meta && meta.total_pages > 1 && products.length > 0 && !isOnFavoritesPage && <PaginationApi meta={meta} />}
     </section>
   );
 }

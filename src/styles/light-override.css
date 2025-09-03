@@ -62,7 +62,8 @@
 .qty button:hover,
 .qty-btn:hover,
 .animated-qty-btn:hover {
-  background: var(--primary) !important;
+  background: var(--primary-gradient) !important;
+  filter: brightness(1.1) !important;
   color: var(--text-white) !important;
 }
 

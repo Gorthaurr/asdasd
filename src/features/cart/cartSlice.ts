@@ -40,6 +40,12 @@ const cartSlice = createSlice({
             const next = Math.max(0, cur + delta); // не уходим в минус
             if (next === 0) {
                 delete s.items[id]; // 0 — удаляем ключ
+                // Удаляем также из сохраненных данных
+                if (typeof window !== 'undefined') {
+                    const cartProducts = JSON.parse(localStorage.getItem('techhome_cart_products') || '{}');
+                    delete cartProducts[id];
+                    localStorage.setItem('techhome_cart_products', JSON.stringify(cartProducts));
+                }
             } else {
                 s.items[id] = next; // иначе записываем
             }
@@ -49,14 +55,24 @@ const cartSlice = createSlice({
          * Удалить позицию из корзины
          */
         remove: (s, a: PayloadAction<number>) => { 
-            delete s.items[a.payload]; 
+            delete s.items[a.payload];
+            // Удаляем также из сохраненных данных
+            if (typeof window !== 'undefined') {
+                const cartProducts = JSON.parse(localStorage.getItem('techhome_cart_products') || '{}');
+                delete cartProducts[a.payload];
+                localStorage.setItem('techhome_cart_products', JSON.stringify(cartProducts));
+            }
         },
         
         /**
          * Очистить корзину полностью
          */
         clear: (s) => { 
-            s.items = {}; 
+            s.items = {};
+            // Очищаем также сохраненные данные товаров
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('techhome_cart_products');
+            }
         }
     }
 });

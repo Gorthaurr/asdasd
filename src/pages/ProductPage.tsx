@@ -340,6 +340,16 @@ export default function ProductPage() {
   const handleAddToCart = useCallback(() => {
     if (product) {
       dispatch(addToCart(product.id));
+      // Сохраняем минимальные данные о товаре в localStorage для Checkout
+      const cartProducts = JSON.parse(localStorage.getItem('techhome_cart_products') || '{}');
+      cartProducts[product.id] = {
+        id: product.id,
+        name: product.name,
+        category: product.category,
+        price: product.price,
+        images: product.images
+      };
+      localStorage.setItem('techhome_cart_products', JSON.stringify(cartProducts));
     }
   }, [dispatch, product]);
 

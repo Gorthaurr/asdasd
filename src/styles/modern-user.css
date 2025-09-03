@@ -10,7 +10,7 @@
   --primary-hover: #4f46e5;
   --primary-dark: #4338ca;
   --primary-light: #e0e7ff;
-  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
   --primary-glow: 0 0 30px rgba(99, 102, 241, 0.3);
   
   /* Accent Colors */
@@ -775,13 +775,14 @@ select:focus, .select:focus {
 }
 
 .btn.primary, button.primary {
-  background: var(--primary);
+  background: var(--primary-gradient);
   color: var(--text-white);
   box-shadow: var(--shadow-md);
 }
 
 .btn.primary:hover, button.primary:hover {
-  background: var(--primary-hover);
+  background: var(--primary-gradient);
+  filter: brightness(1.1);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg), var(--primary-glow);
 }
@@ -1056,4 +1057,64 @@ h2::after {
     padding: var(--space-8);
     margin: var(--space-4) auto;
   }
+}
+
+/* ========================================
+   FOOTER FIXES
+   ======================================== */
+
+.footer-link {
+  color: var(--text-muted) !important;
+  text-decoration: none !important;
+  font-weight: 500;
+  transition: var(--transition);
+  position: relative;
+  border-bottom: none !important;
+}
+
+.footer-link::after {
+  display: none !important;
+}
+
+.footer-link:hover {
+  color: var(--primary) !important;
+  text-decoration: none !important;
+}
+
+/* ========================================
+   HERO SECTION HOVER EFFECTS
+   ======================================== */
+
+.stat-row {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.stat-row:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-light);
+  background: var(--bg-surface);
+}
+
+.feature-item {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.feature-item:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-light);
+  background: var(--bg-surface);
+}
+
+.feature-item:hover .feature-icon {
+  transform: scale(1.1);
+  background: var(--primary);
+  color: var(--text-white);
+}
+
+.stat-row:hover .stat-number {
+  transform: scale(1.05);
 }

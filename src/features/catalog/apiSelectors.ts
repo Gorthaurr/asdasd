@@ -95,14 +95,46 @@ export const selectFavCount = createSelector(
     }
 );
 
-// Подробная корзина: строки и сумма (используем трансформированные данные)
+// Селектор для получения ВСЕХ товаров из всех кэшированных запросов API
+export const selectAllCachedProducts = createSelector(
+    [(state: RootState) => state.productsApi.queries],
+    (queries) => {
+        const allProducts: any[] = [];
+        const seenIds = new Set<string>();
+        
+        // Собираем товары из всех успешных запросов
+        Object.values(queries).forEach((query: any) => {
+            if (query?.status === 'fulfilled' && query?.data?.items) {
+                query.data.items.forEach((product: any) => {
+                    // Избегаем дубликатов по UUID
+                    if (!seenIds.has(product.id)) {
+                        seenIds.add(product.id);
+                        allProducts.push(transformProduct(product));
+                    }
+                });
+            }
+        });
+        
+        return allProducts;
+    }
+);
+
+// Подробная корзина: строки и сумма (используем ВСЕ кэшированные товары + localStorage)
 export const selectCartDetailed = createSelector(
     selectCartItems,
-    selectTransformedProducts,
-    (items, transformedProducts) => {
+    selectAllCachedProducts,
+    (items, allProducts) => {
+        // Загружаем сохраненные данные товаров из localStorage
+        const savedProducts = JSON.parse(localStorage.getItem('techhome_cart_products') || '{}');
+        
         const rows = Object.entries(items).map(([id, qty]) => {
-            // Ищем по числовому ID (который создается в transformProduct)
-            const product = transformedProducts.find((p: any) => p.id === Number(id));
+            // Сначала ищем в кэше API
+            let product = allProducts.find((p: any) => p.id === Number(id));
+            
+            // Если не нашли в кэше, ищем в localStorage
+            if (!product && savedProducts[id]) {
+                product = savedProducts[id];
+            }
             
             if (!product) {
                 return {
@@ -110,7 +142,8 @@ export const selectCartDetailed = createSelector(
                     name: 'Товар не найден',
                     category: 'Неизвестно',
                     price: 0,
-                    qty: qty as number
+                    qty: qty as number,
+                    images: []
                 };
             }
             
@@ -119,7 +152,7 @@ export const selectCartDetailed = createSelector(
                 name: product.name,
                 category: product.category,
                 price: product.price,
-                images: product.images, // добавляем изображения
+                images: product.images || [],
                 qty: qty as number
             };
         });

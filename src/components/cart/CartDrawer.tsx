@@ -180,16 +180,26 @@ export default function CartDrawer() {
             <strong id="sumTotal">{fmtCurrency(sum)}</strong>
           </div>
           {/* ✅ Переход к оформлению: закрываем дровер и уходим на /checkout */}
-          <Link
-            className="checkout animated-checkout"
-            id="checkoutBtn"
-            to="/checkout"
-            onClick={() => dispatch(closeDrawer())}
-          >
-            <span>Оформить заказ</span>
-            <div className="checkout-ripple"></div>
-            <div className="checkout-glow"></div>
-          </Link>
+          {rows.length > 0 ? (
+            <Link
+              className="checkout animated-checkout"
+              id="checkoutBtn"
+              to="/checkout"
+              onClick={() => dispatch(closeDrawer())}
+            >
+              <span>💳 Оформить заказ</span>
+              <div className="checkout-ripple"></div>
+              <div className="checkout-glow"></div>
+            </Link>
+          ) : (
+            <button
+              className="checkout animated-checkout"
+              disabled
+              style={{ opacity: 0.5, cursor: 'not-allowed' }}
+            >
+              <span>🛒 Корзина пуста</span>
+            </button>
+          )}
         </div>
       </aside>
     </>

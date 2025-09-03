@@ -63,6 +63,16 @@ export default function ProductCard({ p }: { p: Product }) {
   const handleAddToCart = () => {
     if (qty === 0) {
       dispatch(addToCart(p.id));
+      // Сохраняем минимальные данные о товаре в localStorage для Checkout
+      const cartProducts = JSON.parse(localStorage.getItem('techhome_cart_products') || '{}');
+      cartProducts[p.id] = {
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        price: p.price,
+        images: p.images
+      };
+      localStorage.setItem('techhome_cart_products', JSON.stringify(cartProducts));
     } else {
       dispatch(changeQty({ id: p.id, delta: +1 }));
     }

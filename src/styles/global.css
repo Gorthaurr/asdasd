@@ -650,6 +650,8 @@ header{
 }
 
 .btn.primary:hover {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    filter: brightness(1.1);
     box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
     transform: translateY(-2px);
 }
@@ -1013,8 +1015,7 @@ footer{
     border-color: var(--primary-strong);
     color: #0b0c0f;                         /* тёмный текст на ярлом фоне для контраста */
 }
-.btn.primary:hover, .checkout:hover{ filter: brightness(1.05); }
-.btn.primary:active, .checkout:active{ filter: brightness(0.98); }
+/* Hover effects handled in modern-user.css and cart-drawer.css */
 
 /* Ссылки — делаем чётче видимые на тёмном фоне */
 a{
