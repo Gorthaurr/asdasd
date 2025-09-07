@@ -86,15 +86,6 @@ export const selectCartCount = createSelector(selectCartItems, (items) =>
     Object.values(items).reduce((a, b) => a + b, 0) // суммируем значения словаря
 );
 
-// Количество избранных товаров среди API товаров
-export const selectFavCount = createSelector(
-    [selectTransformedProducts, selectFavIds],
-    (products, favIds) => {
-        // Считаем сколько товаров из API находятся в избранном
-        return products.filter(p => favIds.includes(p.id)).length;
-    }
-);
-
 // Селектор для получения ВСЕХ товаров из всех кэшированных запросов API
 export const selectAllCachedProducts = createSelector(
     [(state: RootState) => state.productsApi.queries],
@@ -116,6 +107,19 @@ export const selectAllCachedProducts = createSelector(
         });
         
         return allProducts;
+    }
+);
+
+// Количество избранных товаров среди API товаров
+export const selectFavCount = createSelector(
+    [selectAllCachedProducts, selectFavIds],
+    (allProducts, favIds) => {
+        // Считаем сколько товаров из всех кэшированных API запросов находятся в избранном
+        // Если товары еще не загружены, возвращаем 0
+        if (!allProducts || allProducts.length === 0) {
+            return 0;
+        }
+        return allProducts.filter(p => favIds.includes(p.id)).length;
     }
 );
 

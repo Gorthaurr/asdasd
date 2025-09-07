@@ -3,15 +3,19 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { openDrawer } from '../../features/catalog/catalogSlice';
 import { selectCartCount } from '../../features/catalog/apiSelectors';
-import { selectFavIds } from '../../features/catalog/selectors';
+import { selectFavCount } from '../../features/catalog/apiSelectors';
 import type { RootState } from '../../app/store';
 import { useCatalogUrlActions } from '../../routing/useCatalogUrlActions';
 
 export default function Header() {
   const dispatch = useDispatch();
   const cartCount = useSelector(selectCartCount);
-  const favIds = useSelector(selectFavIds);
-  const favCount = favIds.length;
+  const favCount = useSelector(selectFavCount);
+  
+  // Отладочная информация
+  useEffect(() => {
+    console.log('Header favCount:', favCount);
+  }, [favCount]);
   
   // Принудительно очищаем избранное при первой загрузке
   useEffect(() => {
