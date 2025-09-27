@@ -86,7 +86,7 @@ const TopProducts = () => {
               <div className="product-stats">
                 <span className="product-price">
                   {product.price_cents 
-                    ? (product.price_cents / 100).toLocaleString('ru-RU') + ' ₽'
+                    ? (product.price_cents).toLocaleString('ru-RU') + ' ₽'
                     : 'Цена не указана'
                   }
                 </span>

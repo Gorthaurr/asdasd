@@ -186,7 +186,7 @@ const AdminProducts = () => {
        if (product.images?.[0]) {
          console.log('First image URL:', product.images[0].url);
          console.log('First image path:', product.images[0].path);
-         console.log('Constructed fallback URL:', `http://localhost:8000/static/${product.images[0].path}`);
+         console.log('Constructed fallback URL:', `${(import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8000'}/static/${product.images[0].path}`);
        }
       setSelectedProduct(product);
       setIsEditing(false);
@@ -194,7 +194,7 @@ const AdminProducts = () => {
         name: product.name,
         category_id: product.category_id,
         price_raw: product.price_raw,
-        price_cents: product.price_cents ? product.price_cents / 100 : '', // Конвертируем в рубли для редактирования
+        price_cents: product.price_cents ? product.price_cents : '', // Конвертируем в рубли для редактирования
         description: product.description,
 
       });
@@ -234,7 +234,7 @@ const AdminProducts = () => {
       // Конвертируем цену из рублей в копейки перед отправкой
       const dataToSave = {
         ...editFormData,
-        price_cents: editFormData.price_cents ? Math.round(editFormData.price_cents * 100) : null
+        price_cents: editFormData.price_cents ? Math.round(editFormData.price_cents) : null
       };
       
       await adminApi.updateProduct(selectedProduct.id, dataToSave);
@@ -252,7 +252,7 @@ const AdminProducts = () => {
         name: updatedProduct.name,
         category_id: updatedProduct.category_id,
         price_raw: updatedProduct.price_raw,
-        price_cents: updatedProduct.price_cents ? updatedProduct.price_cents / 100 : '',
+        price_cents: updatedProduct.price_cents ? updatedProduct.price_cents : '',
         description: updatedProduct.description,
 
       });
@@ -278,7 +278,7 @@ const AdminProducts = () => {
       formData.append('is_primary', 'false');
 
       const token = localStorage.getItem('admin_token');
-      const response = await fetch(`http://localhost:8000/api/v1/admin/products/${selectedProduct.id}/images/upload`, {
+      const response = await fetch(`${(import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/v1/admin/products/${selectedProduct.id}/images/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -479,7 +479,7 @@ const AdminProducts = () => {
                   <td>{product.category_name || 'Без категории'}</td>
                   <td>
                     {product.price_cents 
-                      ? (product.price_cents / 100).toLocaleString('ru-RU') + ' ₽'
+                      ? (product.price_cents).toLocaleString('ru-RU') + ' ₽'
                       : 'Не указана'
                     }
                   </td>
@@ -642,7 +642,7 @@ const AdminProducts = () => {
                         justifyContent: 'center'
                       }}>
                         {selectedProduct.price_cents 
-                          ? (selectedProduct.price_cents / 100).toLocaleString('ru-RU') + ' ₽'
+                          ? (selectedProduct.price_cents).toLocaleString('ru-RU') + ' ₽'
                           : <span className="modal-field-empty">Не указана</span>
                         }
                       </div>
