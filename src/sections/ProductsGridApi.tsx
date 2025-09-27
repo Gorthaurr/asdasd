@@ -13,7 +13,7 @@ export default function ProductsGridApi() {
   // Проверяем, находимся ли на странице избранного
   const isOnFavoritesPage = catalog.favoriteOnly;
 
-  // Запрос к API с параметрами из состояния каталога
+  // Запрос к API с параметрами из состояния каталога - ОПТИМИЗИРОВАННЫЙ
   const { data, isLoading, error, refetch } = useGetProductsQuery(
     {
       page: catalog.page,
@@ -27,6 +27,10 @@ export default function ProductsGridApi() {
     {
       // Принудительно перезапрашиваем данные при изменении параметров
       refetchOnMountOrArgChange: true,
+      // Кэшируем на 2 минуты для быстрой навигации
+      staleTime: 2 * 60 * 1000,
+      // Не блокируем загрузку категорий
+      refetchOnWindowFocus: false,
     }
   );
 
@@ -68,9 +72,13 @@ export default function ProductsGridApi() {
   return (
     <section className="grid animated-grid" aria-live="polite">
       <div id="products" className="products">
-        {products.map((p: any) => (
-          <ProductCard key={p.id} p={p} />
-        ))}
+        {products
+          .filter((p: any, index: number, arr: any[]) => 
+            arr.findIndex(item => item.id === p.id) === index
+          )
+          .map((p: any) => (
+            <ProductCard key={p.id} p={p} />
+          ))}
         {products.length === 0 && (
           <div id="empty" className="empty animated-empty-state">
             <div className="empty-icon">

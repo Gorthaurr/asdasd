@@ -82,7 +82,7 @@ const AdminProducts = () => {
       setIsLoading(true);
       const response = await adminApi.getProducts({
         page,
-        page_size: 20,
+        page_size: 100,
         q: search || undefined,
       });
       setProducts(response.items);

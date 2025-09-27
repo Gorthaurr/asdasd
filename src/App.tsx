@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useGetCategoriesQuery } from "./api/productsApi";
 import Header from "./components/layout/Header";
 import Home from "./pages/Home";
 import ProductPage from "./pages/ProductPage";
@@ -20,6 +21,15 @@ import LocationSync from "./routing/urlSync";
 const ConditionalLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
+
+    // ПРЕДЗАГРУЖАЕМ категории сразу при старте приложения
+    useGetCategoriesQuery(undefined, {
+        staleTime: 10 * 60 * 1000, // 10 минут
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        cacheTime: Infinity,
+    });
 
     return (
         <>

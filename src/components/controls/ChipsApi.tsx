@@ -10,8 +10,19 @@ export default function ChipsApi() {
   const chip = useSelector((s: RootState) => s.catalog.chip); // выбранная категория
   const [isVisible, setIsVisible] = useState(false);
 
-  // Запрос категорий из API
-  const { data: categories = [], isLoading } = useGetCategoriesQuery();
+  // Запрос категорий из API - МАКСИМАЛЬНО БЫСТРЫЙ
+  const { data: categories = [], isLoading } = useGetCategoriesQuery(undefined, {
+    // Кэшируем на 10 минут для быстрой повторной загрузки
+    staleTime: 10 * 60 * 1000,
+    // Загружаем сразу при монтировании
+    refetchOnMount: false,
+    // Не блокируем другие запросы
+    refetchOnWindowFocus: false,
+    // Приоритет для загрузки
+    refetchOnReconnect: false,
+    // Кэш навсегда если успешно загрузились
+    cacheTime: Infinity,
+  });
 
   useEffect(() => {
     setIsVisible(true);
@@ -31,6 +42,7 @@ export default function ChipsApi() {
     'Водонагреватели': '🚿'
   };
 
+  // Добавляем "Все" в начало списка категорий
   const allCategories = ['Все', ...categories.map((cat: any) => cat.slug)];
 
   if (isLoading) {

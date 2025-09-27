@@ -59,7 +59,7 @@ export const selectTransformedProducts = createSelector(
     (apiProducts) => apiProducts.map(transformProduct)
 );
 
-// Фильтрованные товары с учетом избранного
+// Фильтрованные товары с учетом избранного и дедупликацией
 export const selectFilteredApiProducts = createSelector(
     [selectTransformedProducts, selectCatalog, selectFavIds],
     (products, catalog, favIds) => {
@@ -70,12 +70,22 @@ export const selectFilteredApiProducts = createSelector(
             favCount: favIds.length
         });
         
+        // ДЕДУПЛИКАЦИЯ товаров по ID
+        const uniqueProducts = products.filter((p: any, index: number, arr: any[]) => 
+            arr.findIndex(item => item.id === p.id) === index
+        );
+        
+        console.log('After deduplication:', {
+            original: products.length,
+            unique: uniqueProducts.length
+        });
+        
         if (!catalog.favoriteOnly) {
-            console.log('Showing all products:', products.length);
-            return products; // показываем все товары
+            console.log('Showing all products:', uniqueProducts.length);
+            return uniqueProducts; // показываем все товары
         }
         // фильтруем только избранные
-        const filtered = products.filter(p => favIds.includes(p.id));
+        const filtered = uniqueProducts.filter(p => favIds.includes(p.id));
         console.log('Showing only favorites:', filtered.length);
         return filtered;
     }

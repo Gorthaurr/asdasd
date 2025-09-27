@@ -29,7 +29,7 @@ const catalogSlice = createSlice({
         setChip: (s, a: PayloadAction<string>) => { s.chip = a.payload; s.page = 1; },
         setSort: (s, a: PayloadAction<string>) => { s.sort = a.payload; s.page = 1; },
         setPage: (s, a: PayloadAction<number>) => { s.page = Math.max(1, a.payload); },
-        setPageSize: (s, a: PayloadAction<number>) => { s.pageSize = Math.max(1, a.payload); s.page = 1; },
+        setPageSize: (s, a: PayloadAction<number>) => { s.pageSize = Math.max(1, Math.min(50, a.payload)); s.page = 1; },
         toggleFavoriteOnly: (s) => { s.favoriteOnly = !s.favoriteOnly; s.page = 1; },
         setFavoriteOnly: (s, a: PayloadAction<boolean>) => { s.favoriteOnly = !!a.payload; s.page = 1; },
 
