@@ -260,6 +260,28 @@ export const adminApi = {
     return response.data;
   },
 
+  async uploadProductImage(productId: string, formData: FormData): Promise<any> {
+    const response = await adminApiClient.post(`/admin/products/${productId}/images/upload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  async addProductAttribute(productId: string, attributeData: { attr_key: string, value: string }): Promise<any> {
+    const formData = new FormData();
+    formData.append('attr_key', attributeData.attr_key);
+    formData.append('value', attributeData.value);
+    
+    const response = await adminApiClient.post(`/admin/products/${productId}/attributes`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
 
 
   // Управление категориями

@@ -42,6 +42,11 @@ const AdminProducts = () => {
     reordered: false
   });
 
+  // Состояния для создания нового продукта
+  const [newAttributes, setNewAttributes] = useState<Array<{key: string, value: string}>>([]);
+  const [newAttributeKey, setNewAttributeKey] = useState('');
+  const [newAttributeValue, setNewAttributeValue] = useState('');
+
   const resetImageChanges = () => {
     setPendingImageChanges({
       uploaded: [],
@@ -266,6 +271,72 @@ const AdminProducts = () => {
     }
   };
 
+  const handleSaveProduct = async () => {
+    try {
+      // Проверяем обязательные поля
+      if (!editFormData.name || !editFormData.category_id || !editFormData.price_cents) {
+        alert('Пожалуйста, заполните все обязательные поля');
+        return;
+      }
+
+      // Конвертируем цену из рублей в копейки перед отправкой
+      const dataToSave = {
+        ...editFormData,
+        price_cents: editFormData.price_cents ? Math.round(editFormData.price_cents) : null
+      };
+      
+      console.log('Creating product with data:', dataToSave);
+      
+      // Создаем продукт
+      const createdProduct = await adminApi.createProduct(dataToSave);
+      console.log('Product created:', createdProduct);
+
+      // Добавляем изображения если есть
+      if (pendingImageChanges.uploaded.length > 0) {
+        console.log(`Uploading ${pendingImageChanges.uploaded.length} images...`);
+        for (const file of pendingImageChanges.uploaded) {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('product_id', createdProduct.id);
+          console.log('Uploading image:', file.name);
+          await adminApi.uploadProductImage(createdProduct.id, formData);
+        }
+        console.log('All images uploaded successfully');
+      }
+
+      // Добавляем атрибуты если есть
+      if (newAttributes.length > 0) {
+        console.log(`Adding ${newAttributes.length} attributes...`);
+        for (const attr of newAttributes) {
+          console.log('Adding attribute:', attr.key, '=', attr.value);
+          try {
+            await adminApi.addProductAttribute(createdProduct.id, {
+              attr_key: attr.key,
+              value: attr.value
+            });
+            console.log('Attribute added successfully:', attr.key);
+          } catch (attrErr) {
+            console.error('Error adding attribute:', attr.key, attrErr);
+            // Продолжаем добавлять остальные атрибуты
+          }
+        }
+        console.log('All attributes processed');
+      }
+
+      // Очищаем формы и закрываем модальное окно
+      setNewAttributes([]);
+      setNewAttributeKey('');
+      setNewAttributeValue('');
+      resetImageChanges();
+      closeModal();
+      fetchProducts(currentPage, searchQuery);
+      alert('Продукт успешно создан с изображениями и атрибутами!');
+    } catch (err) {
+      console.error('Error creating product:', err);
+      alert('Ошибка создания продукта: ' + err.message);
+    }
+  };
+
   const applyImageChanges = async () => {
     if (!selectedProduct) return;
 
@@ -431,7 +502,20 @@ const AdminProducts = () => {
       <div className="admin-actions">
         <button 
           className="btn btn-primary"
-          onClick={() => setShowCreateForm(true)}
+          onClick={() => {
+            setEditFormData({
+              name: '',
+              category_id: '',
+              price_raw: '',
+              price_cents: '',
+              description: ''
+            });
+            setNewAttributes([]);
+            setNewAttributeKey('');
+            setNewAttributeValue('');
+            resetImageChanges();
+            setShowCreateForm(true);
+          }}
         >
           ➕ Добавить продукт
         </button>
@@ -803,8 +887,377 @@ const AdminProducts = () => {
           </div>
         </div>
       )}
+
+      {/* Модальное окно создания продукта */}
+      {showCreateForm && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '900px' }}>
+            <div className="modal-header">
+              <h3>➕ Создание нового продукта</h3>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button className="btn btn-sm btn-primary" onClick={handleSaveProduct}>
+                  💾 Сохранить
+                </button>
+                <button className="btn btn-sm btn-secondary" onClick={closeModal}>
+                  ✕ Закрыть
+                </button>
+              </div>
+            </div>
+            <div className="modal-body">
+              <div className="modal-sections">
+                {/* Основная информация */}
+                <div className="modal-section">
+                  <h4>📋 Основная информация</h4>
+                  <div className="form-grid">
+                    <div className="form-group">
+                      <label>Название продукта *</label>
+                      <input
+                        type="text"
+                        value={editFormData.name || ''}
+                        onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                        placeholder="Введите название продукта"
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Категория *</label>
+                      <select
+                        value={editFormData.category_id || ''}
+                        onChange={(e) => setEditFormData({ ...editFormData, category_id: e.target.value })}
+                        required
+                      >
+                        <option value="">Выберите категорию</option>
+                        {categories.map(cat => (
+                          <option key={cat.id} value={cat.id}>{cat.slug}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label>Цена (руб.) *</label>
+                      <input
+                        type="number"
+                        value={editFormData.price_cents || ''}
+                        onChange={(e) => setEditFormData({ ...editFormData, price_cents: e.target.value })}
+                        placeholder="Введите цену в рублях"
+                        min="0"
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Описание</label>
+                      <textarea
+                        value={editFormData.description || ''}
+                        onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                        placeholder="Описание продукта"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Изображения */}
+                <div className="modal-section">
+                  <h4>🖼️ Изображения</h4>
+                  <div className="image-upload-area">
+                    <input
+                      type="file"
+                      id="create-image-upload"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          const files = Array.from(e.target.files);
+                          setPendingImageChanges({
+                            ...pendingImageChanges,
+                            uploaded: [...pendingImageChanges.uploaded, ...files]
+                          });
+                        }
+                      }}
+                      style={{ display: 'none' }}
+                    />
+                    <label htmlFor="create-image-upload" className="upload-button">
+                      📷 Загрузить изображения
+                    </label>
+                    
+                    {pendingImageChanges.uploaded.length > 0 && (
+                      <div className="uploaded-images">
+                        <h5>Загруженные изображения:</h5>
+                        {pendingImageChanges.uploaded.map((file, index) => (
+                          <div key={index} className="uploaded-image-item">
+                            <span>{file.name}</span>
+                            <button
+                              onClick={() => {
+                                setPendingImageChanges({
+                                  ...pendingImageChanges,
+                                  uploaded: pendingImageChanges.uploaded.filter((_, i) => i !== index)
+                                });
+                              }}
+                              className="btn btn-sm btn-danger"
+                            >
+                              ❌
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Атрибуты */}
+                <div className="modal-section">
+                  <h4>🏷️ Атрибуты</h4>
+                  <div className="attributes-section">
+                    <div className="add-attribute-form">
+                      <input
+                        type="text"
+                        placeholder="Ключ атрибута (например: brand)"
+                        value={newAttributeKey}
+                        onChange={(e) => setNewAttributeKey(e.target.value)}
+                        className="attribute-key-input"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Значение атрибута (например: Samsung)"
+                        value={newAttributeValue}
+                        onChange={(e) => setNewAttributeValue(e.target.value)}
+                        className="attribute-value-input"
+                      />
+                      <button
+                        onClick={() => {
+                          if (newAttributeKey && newAttributeValue) {
+                            setNewAttributes([...newAttributes, { key: newAttributeKey, value: newAttributeValue }]);
+                            setNewAttributeKey('');
+                            setNewAttributeValue('');
+                          }
+                        }}
+                        className="btn btn-sm btn-primary"
+                      >
+                        ➕ Добавить
+                      </button>
+                    </div>
+                    
+                    {newAttributes.length > 0 && (
+                      <div className="attributes-list">
+                        <h5>Атрибуты для добавления:</h5>
+                        {newAttributes.map((attr, index) => (
+                          <div key={index} className="attribute-item">
+                            <span><strong>{attr.key}:</strong> {attr.value}</span>
+                            <button
+                              onClick={() => {
+                                setNewAttributes(newAttributes.filter((_, i) => i !== index));
+                              }}
+                              className="btn btn-sm btn-danger"
+                            >
+                              ❌
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 };
 
 export default AdminProducts;
+
+// Стили для модального окна создания продукта
+const modalStyles = `
+  .modal-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .modal-section {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+  
+  .modal-section h4 {
+    margin: 0 0 1rem 0;
+    color: #2d3748;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 0.5rem;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  .image-upload-area {
+    border: 2px dashed #cbd5e0;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    background: white;
+    transition: border-color 0.2s;
+  }
+  
+  .image-upload-area:hover {
+    border-color: #667eea;
+  }
+  
+  .upload-button {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  
+  .upload-button:hover {
+    background: #5a67d8;
+  }
+  
+  .uploaded-images {
+    margin-top: 1rem;
+    text-align: left;
+  }
+  
+  .uploaded-images h5 {
+    margin: 0 0 0.5rem 0;
+    color: #4a5568;
+    font-size: 0.9rem;
+  }
+  
+  .uploaded-image-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+  }
+  
+  .uploaded-image-item span {
+    font-size: 0.85rem;
+    color: #4a5568;
+  }
+  
+  .attributes-section {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 1rem;
+  }
+  
+  .add-attribute-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .attribute-key-input,
+  .attribute-value-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+  
+  .attributes-list {
+    background: #f7fafc;
+    border-radius: 4px;
+    padding: 0.75rem;
+  }
+  
+  .attributes-list h5 {
+    margin: 0 0 0.5rem 0;
+    color: #4a5568;
+    font-size: 0.9rem;
+  }
+  
+  .attribute-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+  }
+  
+  .attribute-item span {
+    font-size: 0.85rem;
+    color: #4a5568;
+  }
+  
+  @media (max-width: 768px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .add-attribute-form {
+      flex-direction: column;
+    }
+    
+    .attribute-key-input,
+    .attribute-value-input {
+      min-width: auto;
+    }
+  }
+`;
+
+// Добавляем стили в head
+if (typeof document !== 'undefined') {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = modalStyles;
+  document.head.appendChild(styleElement);
+}
