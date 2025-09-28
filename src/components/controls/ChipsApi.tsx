@@ -13,15 +13,13 @@ export default function ChipsApi() {
   // Запрос категорий из API - МАКСИМАЛЬНО БЫСТРЫЙ
   const { data: categories = [], isLoading } = useGetCategoriesQuery(undefined, {
     // Кэшируем на 10 минут для быстрой повторной загрузки
-    staleTime: 10 * 60 * 1000,
+    keepUnusedDataFor: 10 * 60,
     // Загружаем сразу при монтировании
     refetchOnMount: false,
     // Не блокируем другие запросы
     refetchOnWindowFocus: false,
     // Приоритет для загрузки
     refetchOnReconnect: false,
-    // Кэш навсегда если успешно загрузились
-    cacheTime: Infinity,
   });
 
   useEffect(() => {
