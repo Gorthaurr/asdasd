@@ -1,0 +1,67 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'vite.config.*'
+      - '.github/workflows/deploy-frontend.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      
+      - name: Create production environment file
+        run: |
+          echo "VITE_API_URL=https://api.technofame.store" >> .env.production
+          echo "REACT_APP_API_URL=https://api.technofame.store" >> .env.production
+          echo "NEXT_PUBLIC_API_URL=https://api.technofame.store" >> .env.production
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+      
+      - name: Build application
+        run: pnpm run build
+      
+      - name: Copy files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "dist/*"
+          target: "/home/deploy/frontend_dist"
+      
+      - name: Deploy to web server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            sudo mkdir -p /var/www/frontend
+            sudo rm -rf /var/www/frontend/*
+            sudo cp -a /home/deploy/frontend_dist/. /var/www/frontend/
+            sudo chown -R www-data:www-data /var/www/frontend
+            sudo systemctl reload caddy
