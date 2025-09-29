@@ -468,8 +468,75 @@ header{
 .categories-subtitle {
     font-size: 1rem;
     color: var(--muted);
-    margin: 0;
+    margin: 0 0 30px 0;
     font-weight: 500;
+}
+
+.categories-stats {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 48px;
+    margin: 24px 0;
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(230, 195, 74, 0.05));
+    border-radius: 16px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.categories-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin: 32px 0;
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), rgba(230, 195, 74, 0.02));
+    border-radius: 16px;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.categories-features .feature-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.categories-features .feature-item:hover {
+    background: rgba(212, 175, 55, 0.1);
+    transform: translateY(-2px);
+}
+
+.categories-features .feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #d4af37, #e6c34a);
+    border-radius: 50%;
+    font-size: 1.5rem;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.categories-features .feature-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.categories-features .feature-description {
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.4;
+    margin: 0;
 }
 
 .categories-grid {
@@ -897,6 +964,18 @@ header{
 
     .categories-subtitle {
         font-size: 0.85rem;
+    }
+
+    .categories-stats {
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .categories-features {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px;
     }
 
     .categories-grid {

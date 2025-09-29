@@ -244,12 +244,12 @@ export default function Hero(){
         <section className={`hero animated-hero ${isVisible ? 'visible' : ''}`} aria-label="Промо">
             <div className="hero-card">
                 <h1 className="hero-title">
-                    <span className="title-line">Премиальная техника</span>
-                    <span className="title-line highlight">для вашего дома</span>
+                    <span className="title-line">Товары категории</span>
+                    <span className="title-line highlight">{selectedCategory}</span>
                 </h1>
                 <p className="hero-description">
-                    <span className="description-line">Бытовая, цифровая, садовая и аудио техника широкого сегмента</span>
-                    <span className="description-line">от ведущих мировых производителей. Умные фильтры, быстрый поиск, корзина и избранное — всё в одном месте.</span>
+                    <span className="description-line">Лучшие товары выбранной категории</span>
+                    <span className="description-line">с быстрым поиском и удобной сортировкой</span>
                 </p>
 
                 {showBackToCategories && (
@@ -278,57 +278,6 @@ export default function Hero(){
                         value={sort} 
                         onChange={(value) => setSort(value)} 
                     />
-                </div>
-                <ChipsApi />
-                <div className="hero-stats">
-                    <div className="stat-row">
-                        <strong className="stat-number">⭐ 4.9/5</strong>
-                        <span className="stat-label">📊 по оценкам покупателей</span>
-                    </div>
-                    <div className="stat-row">
-                        <strong className="stat-number">🕐 24/7</strong>
-                        <span className="stat-label">📞 поддержка клиентов</span>
-                    </div>
-                    <div className="stat-row">
-                        <strong className="stat-number">🔄 365</strong>
-                        <span className="stat-label">📅 дней возврата</span>
-                    </div>
-                    <div className="stat-row">
-                        <strong className="stat-number">🏆 10+</strong>
-                        <span className="stat-label">🎯 лет опыта</span>
-                    </div>
-                </div>
-                
-                <div className="hero-features">
-                    <div className="feature-item">
-                        <div className="feature-icon">
-                            ✅
-                        </div>
-                        <div className="feature-content">
-                            <h4 className="feature-title">🛡️ Гарантия качества</h4>
-                            <p className="feature-description">Вся техника с официальной гарантией, в заводской упаковке</p>
-                        </div>
-                    </div>
-                    
-                    <div className="feature-item">
-                        <div className="feature-icon">
-                            ⭐
-                        </div>
-                        <div className="feature-content">
-                            <h4 className="feature-title">🏅 Премиальные бренды</h4>
-                            <p className="feature-description">Сотрудничаем со всеми мировыми производителями</p>
-                        </div>
-                    </div>
-                    
-                    <div className="feature-item">
-                        <div className="feature-icon">
-                            📦
-                        </div>
-                        <div className="feature-content">
-                            <h4 className="feature-title">🛍️ Широкий ассортимент</h4>
-                            <p className="feature-description">Тысячи товаров от ведущих производителей электроники</p>
-                        </div>
-                    </div>
                 </div>
                 <div className="hero-background">
                     <div className="floating-shapes">

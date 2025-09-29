@@ -176,6 +176,51 @@ export default function CategoriesGrid() {
           <span className="title-line highlight">по категориям</span>
         </h1>
         <p className="categories-subtitle">Выберите категорию для просмотра лучших товаров</p>
+        
+        <div className="categories-stats">
+          <div className="stat-row">
+            <strong className="stat-number">⭐ 4.9/5</strong>
+            <span className="stat-label">📊 по оценкам покупателей</span>
+          </div>
+          <div className="stat-row">
+            <strong className="stat-number">🕐 24/7</strong>
+            <span className="stat-label">📞 поддержка клиентов</span>
+          </div>
+          <div className="stat-row">
+            <strong className="stat-number">🔄 365</strong>
+            <span className="stat-label">📅 дней возврата</span>
+          </div>
+          <div className="stat-row">
+            <strong className="stat-number">🏆 10+</strong>
+            <span className="stat-label">🎯 лет опыта</span>
+          </div>
+        </div>
+        
+        <div className="categories-features">
+          <div className="feature-item">
+            <div className="feature-icon">✅</div>
+            <div className="feature-content">
+              <h4 className="feature-title">🛡️ Гарантия качества</h4>
+              <p className="feature-description">Вся техника с официальной гарантией, в заводской упаковке</p>
+            </div>
+          </div>
+          
+          <div className="feature-item">
+            <div className="feature-icon">⭐</div>
+            <div className="feature-content">
+              <h4 className="feature-title">🏅 Премиальные бренды</h4>
+              <p className="feature-description">Сотрудничаем со всеми мировыми производителями</p>
+            </div>
+          </div>
+          
+          <div className="feature-item">
+            <div className="feature-icon">📦</div>
+            <div className="feature-content">
+              <h4 className="feature-title">🛍️ Широкий ассортимент</h4>
+              <p className="feature-description">Тысячи товаров от ведущих производителей электроники</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="categories-grid">
