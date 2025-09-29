@@ -24,34 +24,41 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PNPM via Corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@10.17.1 --activate
-          pnpm -v
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
+      - name: Setup PNPM via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.17.1 --activate
+          pnpm -v
+          node -v
+
       - name: Install deps
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build
         env:
           VITE_API_URL: https://api.technofame.store
         run: pnpm run build
 
+      - name: List build artifacts
+        run: |
+          echo "== dist tree =="
+          ls -la dist || true
+          find dist -maxdepth 2 -type f | head -50 || true
+
       - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}     # deploy
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "dist/*"
+          source: "dist/**"
           target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
           overwrite: true
 
@@ -59,7 +66,7 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}     # deploy
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
