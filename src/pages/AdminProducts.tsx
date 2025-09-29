@@ -191,7 +191,7 @@ const AdminProducts = () => {
        if (product.images?.[0]) {
          console.log('First image URL:', product.images[0].url);
          console.log('First image path:', product.images[0].path);
-         console.log('Constructed fallback URL:', `${(import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8000'}/static/${product.images[0].path}`);
+         console.log('Constructed fallback URL:', `${(import.meta as any).env.VITE_API_URL || 'https://api.technofame.store'}/static/${product.images[0].path}`);
        }
       setSelectedProduct(product);
       setIsEditing(false);
@@ -349,7 +349,7 @@ const AdminProducts = () => {
       formData.append('is_primary', 'false');
 
       const token = localStorage.getItem('admin_token');
-      const response = await fetch(`${(import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/v1/admin/products/${selectedProduct.id}/images/upload`, {
+      const response = await fetch(`${(import.meta as any).env.VITE_API_URL || 'https://api.technofame.store'}/api/v1/admin/products/${selectedProduct.id}/images/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

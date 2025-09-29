@@ -19,7 +19,7 @@ export interface ProductsQueryParams {
 export const productsApi = createApi({
     reducerPath: 'productsApi', // ключ в сторе
     baseQuery: fetchBaseQuery({ 
-        baseUrl: (import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8000',
+        baseUrl: (import.meta as any).env.VITE_API_URL || 'https://api.technofame.store',
         prepareHeaders: (headers) => {
             headers.set('Content-Type', 'application/json');
             return headers;

@@ -16,7 +16,7 @@ import axios from 'axios';
  * - Готовность для добавления интерцепторов
  */
 const http = axios.create({
-    baseURL: (import.meta as any).env.VITE_API_BASE_URL, // базовый URL из .env
+    baseURL: (import.meta as any).env.VITE_API_URL || 'https://api.technofame.store', // базовый URL из .env
     timeout: 10000, // таймаут 10 секунд
 });
 

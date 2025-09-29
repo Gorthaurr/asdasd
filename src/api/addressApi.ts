@@ -24,7 +24,7 @@ export interface AddressSuggestionsResponse {
 export const addressApi = createApi({
   reducerPath: 'addressApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: (import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8000',
+    baseUrl: (import.meta as any).env.VITE_API_URL || 'https://api.technofame.store',
     prepareHeaders: (headers) => {
       headers.set('Content-Type', 'application/json');
       return headers;
