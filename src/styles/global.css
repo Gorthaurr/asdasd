@@ -482,7 +482,7 @@ header{
     padding: 24px;
     background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(230, 195, 74, 0.05));
     border-radius: 16px;
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .categories-features {
@@ -493,7 +493,7 @@ header{
     padding: 24px;
     background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), rgba(230, 195, 74, 0.02));
     border-radius: 16px;
-    border: 1px solid rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .categories-features .feature-item {
