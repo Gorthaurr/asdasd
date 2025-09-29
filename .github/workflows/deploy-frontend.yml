@@ -4,60 +4,64 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'src/**'
-      - 'public/**'
-      - 'index.html'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - 'vite.config.*'
-      - '.github/workflows/deploy-frontend.yml'
-
-defaults:
-  run:
-    shell: bash
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "**/*.js"
+      - "**/*.jsx"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "vite.config.*"
+      - ".github/workflows/deploy-frontend.yml"
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    env:
+      # URL твоего API, попадёт в сборку Vite
+      VITE_API_URL: https://api.technofame.store
+      # при необходимости добавь ещё публичные переменные Vite:
+      # VITE_CDN_URL: https://s3.technofame.store
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js 20 + pnpm (corepack)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      # УСТАНОВКА PNPM «ВРУЧНУЮ» + ДОБАВЛЕНИЕ В PATH
-      - name: Install pnpm (standalone) and add to PATH
-        run: |
-          set -euxo pipefail
-          curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=10.17.1 sh -
-          # PNPM_HOME по умолчанию: $HOME/.local/share/pnpm
-          echo "$HOME/.local/share/pnpm" >> "$GITHUB_PATH"
-          # На всякий случай добавим и /usr/local/bin (если npm -g туда кладёт)
-          echo "/usr/local/bin" >> "$GITHUB_PATH"
-          hash -r
-          echo "PATH=$PATH"
-          which pnpm || true
-          pnpm -v || true
-          node -v
-
-      - name: Create .env.production
-        run: |
-          printf "VITE_API_URL=https://api.technofame.store\n" > .env.production
-          printf "REACT_APP_API_URL=https://api.technofame.store\n" >> .env.production
-          printf "NEXT_PUBLIC_API_URL=https://api.technofame.store\n" >> .env.production
+          node-version: "20"
+          cache: "pnpm"
+      - run: corepack enable
+      - run: corepack prepare pnpm@latest --activate
+      - run: pnpm --version
 
       - name: Install deps
-        run: |
-          pnpm install --frozen-lockfile || pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm run build
 
-      - name: Upload dist to server
+      # 1) Готовим целевую директорию на сервере и даём права пользователю (SSH_USER)
+      - name: Prepare target dir on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -euxo pipefail
+            sudo mkdir -p /var/www/frontend_tmp
+            sudo chown -R "${USER}:${USER}" /var/www/frontend_tmp
+            # rsync ускорит активацию, если его нет — поставим
+            if ! command -v rsync >/dev/null 2>&1; then
+              sudo apt-get update -y
+              sudo apt-get install -y rsync
+            fi
+
+      # 2) Копируем собранный dist на сервер (во временную папку)
+      - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -67,6 +71,7 @@ jobs:
           source: "dist/*"
           target: "/var/www/frontend_tmp"
 
+      # 3) Активация билда атомарно: перенос в /var/www/frontend и reload Caddy
       - name: Activate new build
         uses: appleboy/ssh-action@v1.0.3
         with:
