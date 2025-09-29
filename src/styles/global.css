@@ -412,9 +412,30 @@ header{
    ======================================== */
 
 .categories-section {
-    padding: 40px 0;
-    max-width: 1200px;
+    min-height: 100vh;
+    padding: 80px 20px 40px;
+    max-width: 1400px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--bg);
+    position: relative;
+}
+
+.categories-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 30% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(230, 195, 74, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(192, 192, 192, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
 }
 
 .categories-header {
@@ -423,10 +444,20 @@ header{
 }
 
 .categories-title {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
     font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px 0;
+    text-align: center;
+}
+
+.categories-title .title-line {
+    display: block;
     color: var(--text);
-    margin: 0 0 12px 0;
+}
+
+.categories-title .highlight {
     background: linear-gradient(135deg, var(--primary), var(--accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -812,6 +843,42 @@ header{
     .current-category {
         width: 100%;
         justify-content: center;
+    }
+
+    /* Мобильная адаптивность для каталога категорий */
+    .categories-section {
+        padding: 60px 16px 20px;
+        min-height: auto;
+    }
+
+    .categories-header {
+        margin-bottom: 30px;
+    }
+
+    .categories-title {
+        font-size: 2.2rem;
+        margin-bottom: 12px;
+    }
+
+    .categories-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .categories-grid {
+        gap: 16px;
+    }
+
+    .category-card {
+        padding: 24px;
+        min-height: 160px;
+    }
+
+    .category-icon {
+        font-size: 2.5rem;
+    }
+
+    .category-name {
+        font-size: 1.3rem;
     }
 }
 .card{

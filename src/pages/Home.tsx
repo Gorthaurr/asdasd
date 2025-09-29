@@ -12,9 +12,13 @@ export default function Home() {
   const showCategories = selectedCategory === 'Все' || !selectedCategory;
 
   return (
-    <main className="container" style={{ padding: '16px 0 0' }}>
-      <Hero />
-      {showCategories ? <CategoriesGrid /> : <ProductsGridApi />}
+    <main className="container" style={{ padding: showCategories ? '0' : '16px 0 0' }}>
+      {showCategories ? <CategoriesGrid /> : (
+        <>
+          <Hero />
+          <ProductsGridApi />
+        </>
+      )}
     </main>
   );
 }

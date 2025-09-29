@@ -21,27 +21,29 @@ export default function CategoriesGrid() {
   }, []);
 
   // Иконки для категорий
-  const categoryIcons: { [key: string]: string } = {
-    'Холодильники': '❄️',
-    'Стиральные машины': '🌀',
-    'Посудомоечные машины': '🍽️',
-    'Плиты': '🔥',
-    'Духовые шкафы': '🥧',
-    'Микроволновые печи': '📡',
-    'Вытяжки': '💨',
-    'Кондиционеры': '❄️',
-    'Водонагреватели': '🚿',
-    'Телевизоры': '📺',
-    'Ноутбуки': '💻',
-    'Смартфоны': '📱',
-    'Планшеты': '📱',
-    'Кофемашины': '☕',
-    'Блендеры': '🥤',
-    'Мультиварки': '🍲',
-    'Пароварки': '🍽️',
-    'Утюги': '👔',
-    'Пылесосы': '🧹',
-    'Стиральные машины': '🌀',
+  const getCategoryIcon = (categoryName: string) => {
+    switch (categoryName) {
+      case 'Холодильники': return '❄️';
+      case 'Стиральные машины': return '🌀';
+      case 'Посудомоечные машины': return '🍽️';
+      case 'Плиты': return '🔥';
+      case 'Духовые шкафы': return '🥧';
+      case 'Микроволновые печи': return '📡';
+      case 'Вытяжки': return '💨';
+      case 'Кондиционеры': return '❄️';
+      case 'Водонагреватели': return '🚿';
+      case 'Телевизоры': return '📺';
+      case 'Ноутбуки': return '💻';
+      case 'Смартфоны': return '📱';
+      case 'Планшеты': return '📱';
+      case 'Кофемашины': return '☕';
+      case 'Блендеры': return '🥤';
+      case 'Мультиварки': return '🍲';
+      case 'Пароварки': return '🍽️';
+      case 'Утюги': return '👔';
+      case 'Пылесосы': return '🧹';
+      default: return '📦';
+    }
   };
 
   // Цвета для категорий
@@ -101,8 +103,11 @@ export default function CategoriesGrid() {
   return (
     <section className="categories-section" aria-live="polite">
       <div className="categories-header">
-        <h2 className="categories-title">🏪 Каталог категорий</h2>
-        <p className="categories-subtitle">Выберите категорию для просмотра товаров</p>
+        <h1 className="categories-title">
+          <span className="title-line">🏪 Премиальная техника</span>
+          <span className="title-line highlight">по категориям</span>
+        </h1>
+        <p className="categories-subtitle">Выберите категорию для просмотра лучших товаров</p>
       </div>
 
       <div className="categories-grid">
@@ -125,7 +130,7 @@ export default function CategoriesGrid() {
             }}
           >
             <div className="category-icon">
-              {categoryIcons[category.slug] || '📦'}
+              {getCategoryIcon(category.slug)}
             </div>
             <div className="category-content">
               <h3 className="category-name">{category.slug}</h3>
