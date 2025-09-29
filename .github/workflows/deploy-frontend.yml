@@ -4,63 +4,48 @@ on:
   push:
     branches: [ main ]
     paths:
-      - "**/*.ts"
-      - "**/*.tsx"
-      - "**/*.js"
-      - "**/*.jsx"
-      - "package.json"
-      - "pnpm-lock.yaml"
-      - "vite.config.*"
-      - ".github/workflows/deploy-frontend.yml"
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'vite.config.*'
+      - 'tsconfig*.json'
+      - 'src/**'
+      - 'public/**'
+      - '.github/workflows/deploy-frontend.yml'
+
+concurrency:
+  group: deploy-frontend-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    env:
-      # URL твоего API, попадёт в сборку Vite
-      VITE_API_URL: https://api.technofame.store
-      # при необходимости добавь ещё публичные переменные Vite:
-      # VITE_CDN_URL: https://s3.technofame.store
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20 + pnpm (corepack)
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "pnpm"
-      - run: corepack enable
-      - run: corepack prepare pnpm@latest --activate
-      - run: pnpm --version
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+          run_install: false
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
 
       - name: Build
+        env:
+          VITE_API_URL: https://api.technofame.store
         run: pnpm run build
 
-      # 1) Готовим целевую директорию на сервере и даём права пользователю (SSH_USER)
-      - name: Prepare target dir on server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            set -euxo pipefail
-            sudo mkdir -p /var/www/frontend_tmp
-            sudo chown -R "${USER}:${USER}" /var/www/frontend_tmp
-            # rsync ускорит активацию, если его нет — поставим
-            if ! command -v rsync >/dev/null 2>&1; then
-              sudo apt-get update -y
-              sudo apt-get install -y rsync
-            fi
-
-      # 2) Копируем собранный dist на сервер (во временную папку)
+      # Загружаем сборку на сервер в домашнюю директорию deploy,
+      # чтобы потом уже там, под sudo, перенести в /var/www/frontend
       - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -69,10 +54,11 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "dist/*"
-          target: "/var/www/frontend_tmp"
+          target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
+          overwrite: true
+          strip_components: 0
 
-      # 3) Активация билда атомарно: перенос в /var/www/frontend и reload Caddy
-      - name: Activate new build
+      - name: Atomic deploy on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -80,15 +66,20 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            set -euxo pipefail
-            sudo mkdir -p /var/www/frontend /var/www/frontend_tmp
-            if command -v rsync >/dev/null 2>&1; then
-              sudo rsync -a --delete /var/www/frontend_tmp/ /var/www/frontend/
-              sudo rm -rf /var/www/frontend_tmp/*
-            else
-              sudo rm -rf /var/www/frontend/*
-              sudo cp -a /var/www/frontend_tmp/. /var/www/frontend/
-              sudo rm -rf /var/www/frontend_tmp/*
+            set -euo pipefail
+            # Готовим временную папку и rsync
+            sudo mkdir -p /var/www/frontend_tmp
+            sudo apt-get update -y
+            sudo apt-get install -y rsync
+            # Копируем с удалением лишнего
+            sudo rsync -a --delete "/home/${USER}/frontend_upload/" "/var/www/frontend_tmp/"
+            sudo chown -R www-data:www-data /var/www/frontend_tmp
+            # Резервная копия текущей и атомарная замена
+            if [ -d /var/www/frontend ]; then
+              sudo mv /var/www/frontend "/var/www/frontend_$(date +%s).bak"
             fi
-            sudo chown -R www-data:www-data /var/www/frontend
-            sudo systemctl reload caddy || true
+            sudo mv /var/www/frontend_tmp /var/www/frontend
+            # Перезапуск Caddy
+            sudo systemctl reload caddy || sudo systemctl restart caddy
+            # Убираем временную выгрузку
+            rm -rf "/home/${USER}/frontend_upload"
