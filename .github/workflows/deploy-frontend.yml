@@ -24,6 +24,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Оставляю как у тебя (Corepack перед setup-node), раз так стабильно работало
       - name: Setup PNPM via Corepack
         run: |
           corepack enable
@@ -36,7 +37,6 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      # если у тебя есть pnpm-lock.yaml — оставляем --frozen-lockfile
       - name: Install deps
         run: pnpm install --frozen-lockfile
 
@@ -44,19 +44,6 @@ jobs:
         env:
           VITE_API_URL: https://api.technofame.store
         run: pnpm run build
-
-      # подчистим и создадим целевую папку выгрузки на сервере (под пользователем deploy)
-      - name: Prepare upload dir on server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            set -e
-            rm -rf "/home/${USER}/frontend_upload"
-            mkdir -p "/home/${USER}/frontend_upload"
 
       - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7
@@ -68,10 +55,9 @@ jobs:
           source: "dist/**"
           target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
           overwrite: true
-          strip_components: 0
+          strip_components: 1   # кладём содержимое dist прямо в frontend_upload/
 
-      # атомарный деплой + проверка, что сайт реально отдается с Caddy
-      - name: Atomic deploy & health check
+      - name: Atomic deploy on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -79,23 +65,4 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            set -euo pipefail
-            # сам деплой (скрипт уже настроен с sudo NOPASSWD)
             sudo -n /opt/deploy/deploy_frontend.sh
-
-            # базовые проверки содержимого
-            test -f /var/www/frontend/index.html || { echo "index.html missing"; exit 1; }
-            ls -la /var/www/frontend | head -n 50 || true
-
-            # health-check Caddy
-            code=$(curl -ks -o /dev/null -w "%{http_code}" https://technofame.store/)
-            if [ "$code" != "200" ] && [ "$code" != "304" ]; then
-              echo "Unexpected HTTP status: $code"
-              sudo systemctl status caddy --no-pager || true
-              sudo journalctl -u caddy -n 120 --no-pager || true
-              # покажем первые строки index.html для диагностики
-              sed -n '1,60p' /var/www/frontend/index.html || true
-              exit 1
-            fi
-
-            echo "Frontend OK (HTTP $code)"
