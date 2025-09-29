@@ -245,10 +245,15 @@ export default function CategoriesGrid() {
         </div>
       </div>
 
-      <div className="categories-grid">
-        {categories.map((category: any, index: number) => {
-          console.log('Rendering category:', category.slug, 'with image:', getCategoryImage(category.slug));
-          return (
+       <div className="categories-header-section">
+         <h2 className="categories-section-title">Категории товаров</h2>
+         <p className="categories-section-subtitle">Выберите интересующую вас категорию</p>
+       </div>
+
+       <div className="categories-grid">
+         {categories.map((category: any, index: number) => {
+           console.log('Rendering category:', category.slug, 'with image:', getCategoryImage(category.slug));
+           return (
             <div
               key={category.id}
               className={`category-card animated-category ${isVisible ? 'visible' : ''}`}
