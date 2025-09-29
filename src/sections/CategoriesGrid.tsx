@@ -20,17 +20,17 @@ export default function CategoriesGrid() {
     setIsVisible(true);
   }, []);
 
-  // Иконки для категорий
+  // Иконки для категорий - более подходящие
   const getCategoryIcon = (categoryName: string) => {
     switch (categoryName) {
-      case 'Холодильники': return '❄️';
-      case 'Стиральные машины': return '🌀';
-      case 'Посудомоечные машины': return '🍽️';
-      case 'Плиты': return '🔥';
-      case 'Духовые шкафы': return '🥧';
-      case 'Микроволновые печи': return '📡';
+      case 'Холодильники': return '🏠';
+      case 'Стиральные машины': return '👕';
+      case 'Посудомоечные машины': return '🧽';
+      case 'Плиты': return '🍳';
+      case 'Духовые шкафы': return '🔥';
+      case 'Микроволновые печи': return '⚡';
       case 'Вытяжки': return '💨';
-      case 'Кондиционеры': return '❄️';
+      case 'Кондиционеры': return '🌡️';
       case 'Водонагреватели': return '🚿';
       case 'Телевизоры': return '📺';
       case 'Ноутбуки': return '💻';
@@ -132,14 +132,12 @@ export default function CategoriesGrid() {
             <div className="category-icon">
               {getCategoryIcon(category.slug)}
             </div>
-            <div className="category-content">
-              <h3 className="category-name">{category.slug}</h3>
-              <p className="category-description">
-                Лучшие товары категории {category.slug.toLowerCase()}
-              </p>
-            </div>
+            <h3 className="category-name">{category.slug}</h3>
+            <p className="category-description">
+              Лучшие товары категории
+            </p>
             <div className="category-arrow">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M9 18l6-6-6-6"
                   stroke="currentColor"
