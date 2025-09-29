@@ -1,4 +1,3 @@
-
 name: Deploy Frontend
 
 on:
@@ -25,24 +24,32 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PNPM via Corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@10.17.1 --activate
-          pnpm -v
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
+      - name: Setup PNPM via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.17.1 --activate
+          pnpm -v
+          node -v
+
       - name: Install deps
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build
         env:
           VITE_API_URL: https://api.technofame.store
         run: pnpm run build
+
+      - name: List build artifacts (debug)
+        run: |
+          echo "== dist tree =="
+          ls -la dist || true
+          find dist -maxdepth 2 -type f | head -50 || true
 
       - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7
@@ -51,11 +58,11 @@ jobs:
           username: ${{ secrets.SSH_USER }}     # deploy
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "dist/*"
+          source: "dist/**"
           target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
           overwrite: true
 
-      - name: Atomic deploy on server
+      - name: Atomic deploy on server + health check
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -63,4 +70,21 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            set -euo pipefail
+            # раскатка (скрипт уже делает rsync -> /var/www/frontend и reload caddy)
             sudo -n /opt/deploy/deploy_frontend.sh
+
+            # быстрая проверка, что сайт отдается
+            status=$(curl -ks -o /dev/null -w "%{http_code}" https://technofame.store)
+            case "$status" in
+              200|301|302|304|308)
+                echo "Frontend OK (HTTP $status)"
+                ;;
+              *)
+                echo "Unexpected status: $status"
+                # немного диагностической инфы
+                sudo systemctl status caddy --no-pager || true
+                sudo journalctl -u caddy -n 100 --no-pager || true
+                exit 1
+                ;;
+            esac
