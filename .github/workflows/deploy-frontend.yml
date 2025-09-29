@@ -19,24 +19,35 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 20 (без автокэша pnpm)
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'  # кэшируется pnpm-lock.yaml
+          # ВАЖНО: не используем cache: 'pnpm', иначе он ищет pnpm заранее
 
-      # Критично: включаем Corepack и активируем нужную версию pnpm
-      - name: Enable Corepack & pnpm
+      - name: Enable Corepack & activate pnpm
         run: |
           corepack enable
           corepack prepare pnpm@10.17.1 --activate
+          echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
           pnpm -v
           node -v
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PNPM_STORE_PATH }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
