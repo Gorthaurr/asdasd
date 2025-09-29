@@ -66,7 +66,7 @@ export default function Header() {
               window.location.href = "/?fav=1";
             }}
           >
-            <span style={{ fontSize: '24px', lineHeight: 1 }}>💖</span>
+            <span className="icon-emoji">💖</span>
             {favCount > 0 && (
               <span className="badge animated-badge">
                 <span className="badge-text">{favCount}</span>
@@ -82,7 +82,7 @@ export default function Header() {
             aria-label="Открыть корзину"
             onClick={() => dispatch(openDrawer())}
           >
-            <span style={{ fontSize: '24px', lineHeight: 1 }}>🛒</span>
+            <span className="icon-emoji">🛒</span>
             {cartCount > 0 && (
               <span className="badge animated-badge cart-badge">
                 <span className="badge-text">{cartCount}</span>
