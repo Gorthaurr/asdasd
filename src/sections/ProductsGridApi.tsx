@@ -1,5 +1,5 @@
 // Грид товаров + пагинация с реальным API
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { useGetProductsQuery } from '../api/productsApi';
 import { selectFilteredApiProducts, selectApiMeta } from '../features/catalog/apiSelectors';
@@ -7,118 +7,11 @@ import ProductCard from '../components/products/ProductCard';
 import PaginationApi from '../components/products/PaginationApi';
 import type { RootState } from '../app/store';
 
-const productsGridStyles = `
-  .grid{
-    display:grid; 
-    grid-template-columns:repeat(12, 1fr); 
-    gap:16px
-  }
-
-  .card{
-    background:linear-gradient(180deg, #1a1a1a, #0f0f0f); 
-    border:1px solid #e5e7eb; 
-    border-radius:16px; 
-    overflow:hidden; 
-    display:flex; 
-    flex-direction:column;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-  }
-
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    border-color: #d4af37;
-  }
-
-  .thumb{
-    position:relative; 
-    height: 280px; 
-    background:linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 100%); 
-    border-radius: 12px; 
-    overflow: hidden
-  }
-
-  /* Стили для изображений товаров */
-  .image-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
-    overflow: hidden;
-    display: block;
-    background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 100%);
-  }
-
-  .product-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-    border-radius: 0;
-  }
-
-  .product-image:hover {
-    transform: scale(1.05);
-  }
-
-  /* Стили для SVG placeholder */
-  .placeholder-svg {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80px;
-    height: 80px;
-    opacity: 0.3;
-    color: #6b7280;
-  }
-
-  /* Мобильные стили */
-  @media (max-width: 768px) {
-    .grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-    
-    .thumb {
-      height: 200px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .grid {
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-    
-    .thumb {
-      height: 180px;
-    }
-  }
-`;
-
 export default function ProductsGridApi() {
   const catalog = useSelector((s: RootState) => s.catalog);
   
   // Проверяем, находимся ли на странице избранного
   const isOnFavoritesPage = catalog.favoriteOnly;
-
-  // Добавляем стили в head
-  useEffect(() => {
-    const styleElement = document.createElement('style');
-    styleElement.textContent = productsGridStyles;
-    document.head.appendChild(styleElement);
-    
-    return () => {
-      document.head.removeChild(styleElement);
-    };
-  }, []);
 
   // Запрос к API с параметрами из состояния каталога - ОПТИМИЗИРОВАННЫЙ
   const { data, isLoading, error, refetch } = useGetProductsQuery(
