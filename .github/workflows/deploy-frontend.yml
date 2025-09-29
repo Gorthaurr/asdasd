@@ -30,13 +30,20 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      - name: Setup PNPM via Corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@10.17.1 --activate
-          pnpm -v
-          node -v
+      # ВОТ ЗДЕСЬ PNPM, КАК ТЫ ХОТЕЛ
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+          run_install: false
 
+      - name: Show tool versions
+        run: |
+          node -v
+          pnpm -v
+          which pnpm
+
+      # Если у тебя есть pnpm-lock.yaml — можно вернуть --frozen-lockfile
       - name: Install deps
         run: pnpm install --no-frozen-lockfile
 
@@ -44,12 +51,6 @@ jobs:
         env:
           VITE_API_URL: https://api.technofame.store
         run: pnpm run build
-
-      - name: List build artifacts (debug)
-        run: |
-          echo "== dist tree =="
-          ls -la dist || true
-          find dist -maxdepth 2 -type f | head -50 || true
 
       - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7
@@ -71,20 +72,9 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -euo pipefail
-            # раскатка (скрипт уже делает rsync -> /var/www/frontend и reload caddy)
             sudo -n /opt/deploy/deploy_frontend.sh
-
-            # быстрая проверка, что сайт отдается
-            status=$(curl -ks -o /dev/null -w "%{http_code}" https://technofame.store)
-            case "$status" in
-              200|301|302|304|308)
-                echo "Frontend OK (HTTP $status)"
-                ;;
-              *)
-                echo "Unexpected status: $status"
-                # немного диагностической инфы
-                sudo systemctl status caddy --no-pager || true
-                sudo journalctl -u caddy -n 100 --no-pager || true
-                exit 1
-                ;;
+            code=$(curl -ks -o /dev/null -w "%{http_code}" https://technofame.store)
+            case "$code" in
+              200|301|302|304|308) echo "Frontend OK (HTTP $code)";;
+              *) echo "Unexpected status: $code"; sudo systemctl status caddy --no-pager || true; sudo journalctl -u caddy -n 100 --no-pager || true; exit 1;;
             esac
