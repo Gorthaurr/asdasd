@@ -19,37 +19,43 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 20 (без автокэша pnpm)
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          # ВАЖНО: не используем cache: 'pnpm', иначе он ищет pnpm заранее
 
-      - name: Setup PNPM via Corepack
+      - name: Enable Corepack & activate pnpm
         run: |
           corepack enable
           corepack prepare pnpm@10.17.1 --activate
+          echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
           pnpm -v
           node -v
 
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PNPM_STORE_PATH }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
+
       - name: Install deps
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         env:
           VITE_API_URL: https://api.technofame.store
         run: pnpm run build
-
-      - name: List build artifacts
-        run: |
-          echo "== dist tree =="
-          ls -la dist || true
-          find dist -maxdepth 2 -type f | head -50 || true
 
       - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7
@@ -58,9 +64,10 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "dist/**"
+          source: "dist/*"
           target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
           overwrite: true
+          strip_components: 0
 
       - name: Atomic deploy on server
         uses: appleboy/ssh-action@v1.0.3
@@ -70,4 +77,15 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            sudo -n /opt/deploy/deploy_frontend.sh
+            set -euo pipefail
+            sudo mkdir -p /var/www/frontend_tmp
+            sudo apt-get update -y
+            sudo apt-get install -y rsync
+            sudo rsync -a --delete "/home/${USER}/frontend_upload/" "/var/www/frontend_tmp/"
+            sudo chown -R www-data:www-data /var/www/frontend_tmp
+            if [ -d /var/www/frontend ]; then
+              sudo mv /var/www/frontend "/var/www/frontend_$(date +%s).bak"
+            fi
+            sudo mv /var/www/frontend_tmp /var/www/frontend
+            sudo systemctl reload caddy || sudo systemctl restart caddy
+            rm -rf "/home/${USER}/frontend_upload"
