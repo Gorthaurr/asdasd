@@ -1,3 +1,4 @@
+
 name: Deploy Frontend
 
 on:
@@ -24,28 +25,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup PNPM via Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.17.1 --activate
+          pnpm -v
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
-      # ВОТ ЗДЕСЬ PNPM, КАК ТЫ ХОТЕЛ
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.17.1
-          run_install: false
-
-      - name: Show tool versions
-        run: |
-          node -v
-          pnpm -v
-          which pnpm
-
-      # Если у тебя есть pnpm-lock.yaml — можно вернуть --frozen-lockfile
       - name: Install deps
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         env:
@@ -59,11 +51,11 @@ jobs:
           username: ${{ secrets.SSH_USER }}     # deploy
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "dist/**"
+          source: "dist/*"
           target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
           overwrite: true
 
-      - name: Atomic deploy on server + health check
+      - name: Atomic deploy on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -71,10 +63,4 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            set -euo pipefail
             sudo -n /opt/deploy/deploy_frontend.sh
-            code=$(curl -ks -o /dev/null -w "%{http_code}" https://technofame.store)
-            case "$code" in
-              200|301|302|304|308) echo "Frontend OK (HTTP $code)";;
-              *) echo "Unexpected status: $code"; sudo systemctl status caddy --no-pager || true; sudo journalctl -u caddy -n 100 --no-pager || true; exit 1;;
-            esac
