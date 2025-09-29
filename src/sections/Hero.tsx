@@ -227,10 +227,14 @@ function AnimatedSearch({ value, onChange }: { value: string; onChange: (v: stri
 
 
 export default function Hero(){
-    const { setQ, setSort } = useCatalogUrlActions(); // используем URL-действия
+    const { setQ, setSort, setChip } = useCatalogUrlActions(); // используем URL-действия
     const q = useSelector((s:RootState)=>s.catalog.q); // строка поиска из стора
     const sort = useSelector((s:RootState)=>s.catalog.sort); // текущая сортировка
+    const selectedCategory = useSelector((s:RootState)=>s.catalog.chip); // выбранная категория
     const [isVisible, setIsVisible] = useState(false);
+
+    // Показываем ли кнопку "Вернуться к категориям"
+    const showBackToCategories = selectedCategory && selectedCategory !== 'Все';
 
     useEffect(() => {
         setIsVisible(true);
@@ -247,6 +251,24 @@ export default function Hero(){
                     <span className="description-line">Бытовая, цифровая, садовая и аудио техника широкого сегмента</span>
                     <span className="description-line">от ведущих мировых производителей. Умные фильтры, быстрый поиск, корзина и избранное — всё в одном месте.</span>
                 </p>
+
+                {showBackToCategories && (
+                    <div className="back-to-categories">
+                        <button
+                            className="btn secondary back-btn"
+                            onClick={() => setChip('Все')}
+                            aria-label="Вернуться к каталогу категорий"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            Вернуться к категориям
+                        </button>
+                        <div className="current-category">
+                            <span className="category-badge">{selectedCategory}</span>
+                        </div>
+                    </div>
+                )}
                 <div className="search-row">
                     <AnimatedSearch 
                         value={q} 
