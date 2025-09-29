@@ -82,6 +82,9 @@ export default function CategoriesGrid() {
 
   // Получение изображения или иконки для категории
   const getCategoryImage = (categoryName: string) => {
+    // Отладочная информация
+    console.log('Category name:', categoryName);
+    
     // Маппинг названий категорий на файлы изображений
     const imageMapping: { [key: string]: string } = {
       'варочные-панели': '/icons/Варочные панели.png',
@@ -97,6 +100,8 @@ export default function CategoriesGrid() {
       'сушильные-машины': '/icons/Сушильные машины.png',
       'холодильники': '/icons/Холодильники.png'
     };
+    
+    console.log('Image mapping for', categoryName, ':', imageMapping[categoryName]);
     
     // Если есть изображение для категории, возвращаем его
     if (imageMapping[categoryName]) {
@@ -150,6 +155,9 @@ export default function CategoriesGrid() {
     'Утюги': 'linear-gradient(135deg, #a16207, #854d0e)',
     'Пылесосы': 'linear-gradient(135deg, #7c2d12, #9a3412)',
   };
+
+  // Отладочная информация
+  console.log('Categories from API:', categories);
 
   if (isLoading) {
     return (
@@ -238,45 +246,45 @@ export default function CategoriesGrid() {
       </div>
 
       <div className="categories-grid">
-        {categories.map((category: any, index: number) => (
-          <div
-            key={category.id}
-            className={`category-card animated-category ${isVisible ? 'visible' : ''}`}
-            style={{
-              animationDelay: `${index * 0.1}s`,
-              background: categoryColors[category.slug] || 'linear-gradient(135deg, #374151, #1f2937)'
-            }}
-            onClick={() => setChip(category.slug)}
-            role="button"
-            tabIndex={0}
-            aria-label={`Перейти к категории ${category.slug}`}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                setChip(category.slug);
-              }
-            }}
-          >
-            <div className="category-icon">
-              {getCategoryImage(category.slug)}
+        {categories.map((category: any, index: number) => {
+          console.log('Rendering category:', category.slug, 'with image:', getCategoryImage(category.slug));
+          return (
+            <div
+              key={category.id}
+              className={`category-card animated-category ${isVisible ? 'visible' : ''}`}
+              style={{
+                animationDelay: `${index * 0.1}s`,
+                background: categoryColors[category.slug] || 'linear-gradient(135deg, #374151, #1f2937)'
+              }}
+              onClick={() => setChip(category.slug)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Перейти к категории ${category.slug}`}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setChip(category.slug);
+                }
+              }}
+            >
+              <div className="category-icon">
+                {getCategoryImage(category.slug)}
+              </div>
+              <h3 className="category-name">{category.slug}</h3>
+              <div className="category-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M9 18l6-6-6-6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <div className="category-overlay"></div>
             </div>
-            <h3 className="category-name">{category.slug}</h3>
-            <p className="category-description">
-              Лучшие товары категории
-            </p>
-            <div className="category-arrow">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M9 18l6-6-6-6"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <div className="category-overlay"></div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
