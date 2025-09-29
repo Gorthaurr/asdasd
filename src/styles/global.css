@@ -642,11 +642,17 @@ header{
     image-rendering: crisp-edges;
   }
 
-  /* Специальные стили для холодильников, кофемашин, стиральных и сушильных машин - уменьшаем картинки */
+  /* Специальные стили для холодильников, стиральных и сушильных машин - вся картинка помещается */
   .category-card:has([src*="Холодильники"]) .category-image img,
-  .category-card:has([src*="Встраиваемые-кофемашины"]) .category-image img,
   .category-card:has([src*="Стиральные машины"]) .category-image img,
   .category-card:has([src*="Сушильные машины"]) .category-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Для кофемашин только уменьшаем размер */
+  .category-card:has([src*="Встраиваемые-кофемашины"]) .category-image img {
     width: 75%;
     height: 75%;
   }
