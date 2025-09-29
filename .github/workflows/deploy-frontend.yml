@@ -37,7 +37,6 @@ jobs:
           node -v
           pnpm -v
 
-      # Если нужно пробросить адрес API в build (Vite):
       - name: Create .env.production
         run: |
           printf "VITE_API_URL=https://api.technofame.store\n" > .env.production
@@ -45,13 +44,11 @@ jobs:
           printf "NEXT_PUBLIC_API_URL=https://api.technofame.store\n" >> .env.production
 
       - name: Install deps
-        run: |
-          pnpm install --frozen-lockfile || pnpm install
+        run: pnpm install --frozen-lockfile || pnpm install
 
       - name: Build
         run: pnpm run build
 
-      # Копируем собранный dist/ на сервер
       - name: Upload dist to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -61,7 +58,6 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           source: "dist/*"
           target: "/var/www/frontend_tmp"
-          strip_components: 0
 
       - name: Activate new build
         uses: appleboy/ssh-action@v1.0.3
@@ -71,9 +67,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            sudo mkdir -p /var/www/frontend_tmp
-            sudo mkdir -p /var/www/frontend
-            # Перемещаем загруженные файлы из временной папки в боевую (атомарно через rsync, если есть)
+            sudo mkdir -p /var/www/frontend /var/www/frontend_tmp
             if command -v rsync >/dev/null 2>&1; then
               sudo rsync -a --delete /var/www/frontend_tmp/ /var/www/frontend/
               sudo rm -rf /var/www/frontend_tmp/*
@@ -83,5 +77,4 @@ jobs:
               sudo rm -rf /var/www/frontend_tmp/*
             fi
             sudo chown -R www-data:www-data /var/www/frontend
-            # Caddy читает статику напрямую, просто перезагрузим (на самом деле не обязательно)
             sudo systemctl reload caddy || true
