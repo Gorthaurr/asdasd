@@ -21,12 +21,28 @@ export function transformProduct(apiProduct: ProductApi): Product {
         id: numericId,
         originalId: apiProduct.id, // сохраняем оригинальный ID из API
         name: apiProduct.name,
-        category: getCategoryFromAttributes(apiProduct.attributes) || 'Другое',
+        category: getCategoryFromApi(apiProduct) || 'Другое',
         price: apiProduct.price_cents ? apiProduct.price_cents : 0, // конвертируем центы в рубли
         oldPrice: getOldPriceFromAttributes(apiProduct.attributes),
         rating: getRatingFromAttributes(apiProduct.attributes) || 4.5, // дефолтный рейтинг
         images: apiProduct.images, // передаем изображения
     };
+}
+
+/**
+ * Получает категорию из API данных продукта
+ */
+function getCategoryFromApi(apiProduct: ProductApi): string | null {
+    // Сначала пытаемся получить категорию из атрибутов
+    const categoryFromAttributes = getCategoryFromAttributes(apiProduct.attributes);
+    if (categoryFromAttributes) {
+        return categoryFromAttributes;
+    }
+    
+    // Если в атрибутах нет, используем category_id для определения категории
+    // Это нужно будет дополнить маппингом category_id -> название категории
+    // Пока возвращаем null, чтобы использовался fallback
+    return null;
 }
 
 /**

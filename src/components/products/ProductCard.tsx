@@ -97,10 +97,16 @@ export default function ProductCard({ p }: { p: Product }) {
               dispatch(toggleFav(p.id));
             }}
           >
-            {/* Эмодзи сердце */}
-            <span style={{ fontSize: '18px' }}>
-              {isFav ? '💖' : '🤍'}
-            </span>
+            {/* Иконка избранного */}
+            <img 
+              src="/icons/Избранное.png" 
+              alt="Избранное"
+              style={{ 
+                width: '18px', 
+                height: '18px',
+                filter: isFav ? 'none' : 'grayscale(100%) opacity(0.5)'
+              }}
+            />
             <div className="fav-ripple"></div>
           </button>
 

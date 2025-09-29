@@ -244,12 +244,12 @@ export default function Hero(){
         <section className={`hero animated-hero ${isVisible ? 'visible' : ''}`} aria-label="Промо">
             <div className="hero-card">
                 <h1 className="hero-title">
-                    <span className="title-line">Товары категории</span>
-                    <span className="title-line highlight">{selectedCategory}</span>
+                    <span className="title-line">Каталог товаров</span>
+                    <span className="title-line highlight">с поиском и сортировкой</span>
                 </h1>
                 <p className="hero-description">
-                    <span className="description-line">Лучшие товары выбранной категории</span>
-                    <span className="description-line">с быстрым поиском и удобной сортировкой</span>
+                    <span className="description-line">Найдите нужный товар</span>
+                    <span className="description-line">с помощью поиска и фильтров</span>
                 </p>
 
                 {showBackToCategories && (

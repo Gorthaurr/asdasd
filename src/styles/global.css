@@ -480,9 +480,9 @@ header{
     gap: 48px;
     margin: 24px 0;
     padding: 24px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(230, 195, 74, 0.05));
+    background: linear-gradient(135deg, #374151, #1f2937);
     border-radius: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .categories-features {
@@ -491,9 +491,9 @@ header{
     gap: 24px;
     margin: 32px 0;
     padding: 24px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), rgba(230, 195, 74, 0.02));
+    background: linear-gradient(135deg, #374151, #1f2937);
     border-radius: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .categories-features .feature-item {
@@ -605,14 +605,12 @@ header{
 }
 
   .category-image img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     border-radius: 12px;
     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
     transition: transform 0.3s ease;
-    width: 100%;
-    height: 100%;
     background: transparent;
     mix-blend-mode: multiply;
     image-rendering: -webkit-optimize-contrast;

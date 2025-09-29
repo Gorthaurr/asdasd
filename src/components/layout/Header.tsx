@@ -66,7 +66,14 @@ export default function Header() {
               window.location.href = "/?fav=1";
             }}
           >
-            <span style={{ fontSize: '24px', lineHeight: 1 }}>💖</span>
+            <img 
+              src="/icons/Избранное.png" 
+              alt="Избранное"
+              style={{ 
+                width: '24px', 
+                height: '24px'
+              }}
+            />
             {favCount > 0 && (
               <span className="badge animated-badge">
                 <span className="badge-text">{favCount}</span>

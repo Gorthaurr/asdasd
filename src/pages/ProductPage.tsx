@@ -408,9 +408,15 @@ export default function ProductPage() {
               title={isFav ? '💔 Убрать из избранного' : '💖 Добавить в избранное'}
               onClick={handleToggleFav}
             >
-              <span style={{ fontSize: '18px' }}>
-                {isFav ? '💖' : '🤍'}
-              </span>
+              <img 
+                src="/icons/Избранное.png" 
+                alt="Избранное"
+                style={{ 
+                  width: '18px', 
+                  height: '18px',
+                  filter: isFav ? 'none' : 'grayscale(100%) opacity(0.5)'
+                }}
+              />
             </button>
           </div>
         </div>
