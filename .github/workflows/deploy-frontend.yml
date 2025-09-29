@@ -28,13 +28,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: 'pnpm'  # кэшируется pnpm-lock.yaml
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.17.1
-          run_install: false
+      # Критично: включаем Corepack и активируем нужную версию pnpm
+      - name: Enable Corepack & pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.17.1 --activate
+          pnpm -v
+          node -v
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
@@ -44,8 +46,6 @@ jobs:
           VITE_API_URL: https://api.technofame.store
         run: pnpm run build
 
-      # Загружаем сборку на сервер в домашнюю директорию deploy,
-      # чтобы потом уже там, под sudo, перенести в /var/www/frontend
       - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -67,19 +67,14 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -euo pipefail
-            # Готовим временную папку и rsync
             sudo mkdir -p /var/www/frontend_tmp
             sudo apt-get update -y
             sudo apt-get install -y rsync
-            # Копируем с удалением лишнего
             sudo rsync -a --delete "/home/${USER}/frontend_upload/" "/var/www/frontend_tmp/"
             sudo chown -R www-data:www-data /var/www/frontend_tmp
-            # Резервная копия текущей и атомарная замена
             if [ -d /var/www/frontend ]; then
               sudo mv /var/www/frontend "/var/www/frontend_$(date +%s).bak"
             fi
             sudo mv /var/www/frontend_tmp /var/www/frontend
-            # Перезапуск Caddy
             sudo systemctl reload caddy || sudo systemctl restart caddy
-            # Убираем временную выгрузку
             rm -rf "/home/${USER}/frontend_upload"
