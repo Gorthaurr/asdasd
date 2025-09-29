@@ -20,29 +20,174 @@ export default function CategoriesGrid() {
     setIsVisible(true);
   }, []);
 
-  // Иконки для категорий - более подходящие
+  // Иконки для категорий - SVG иконки вместо эмодзи
   const getCategoryIcon = (categoryName: string) => {
     switch (categoryName) {
-      case 'Холодильники': return '🏠';
-      case 'Стиральные машины': return '👕';
-      case 'Посудомоечные машины': return '🧽';
-      case 'Плиты': return '🍳';
-      case 'Духовые шкафы': return '🔥';
-      case 'Микроволновые печи': return '⚡';
-      case 'Вытяжки': return '💨';
-      case 'Кондиционеры': return '🌡️';
-      case 'Водонагреватели': return '🚿';
-      case 'Телевизоры': return '📺';
-      case 'Ноутбуки': return '💻';
-      case 'Смартфоны': return '📱';
-      case 'Планшеты': return '📱';
-      case 'Кофемашины': return '☕';
-      case 'Блендеры': return '🥤';
-      case 'Мультиварки': return '🍲';
-      case 'Пароварки': return '🍽️';
-      case 'Утюги': return '👔';
-      case 'Пылесосы': return '🧹';
-      default: return '📦';
+      case 'Холодильники':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M5 3h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <path d="M9 7h6M9 12h6M9 17h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="7" cy="9" r="1" fill="currentColor"/>
+            <circle cx="7" cy="14" r="1" fill="currentColor"/>
+          </svg>
+        );
+      case 'Стиральные машины':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+            <path d="M12 3v6M21 12h-6M3 12h6M12 21v-6" stroke="currentColor" strokeWidth="2"/>
+          </svg>
+        );
+      case 'Посудомоечные машины':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="9" cy="10" r="1" fill="currentColor"/>
+            <circle cx="15" cy="10" r="1" fill="currentColor"/>
+            <circle cx="9" cy="14" r="1" fill="currentColor"/>
+            <circle cx="15" cy="14" r="1" fill="currentColor"/>
+          </svg>
+        );
+      case 'Плиты':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="8" cy="11" r="2" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="16" cy="11" r="2" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="8" cy="16" r="2" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="16" cy="16" r="2" stroke="currentColor" strokeWidth="2"/>
+          </svg>
+        );
+      case 'Духовые шкафы':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <path d="M7 10h2M15 10h2M7 14h2M15 14h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="12" cy="18" r="1" fill="currentColor"/>
+          </svg>
+        );
+      case 'Микроволновые печи':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="8" cy="11" r="1" fill="currentColor"/>
+            <circle cx="12" cy="11" r="1" fill="currentColor"/>
+            <circle cx="16" cy="11" r="1" fill="currentColor"/>
+            <path d="M6 15h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        );
+      case 'Вытяжки':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2v8M8 6l4 4 4-4M3 14h18a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <path d="M7 18h2M11 18h2M15 18h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        );
+      case 'Кондиционеры':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <path d="M7 10h10M7 14h10M12 8v8" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="9" cy="12" r="1" fill="currentColor"/>
+            <circle cx="15" cy="12" r="1" fill="currentColor"/>
+          </svg>
+        );
+      case 'Водонагреватели':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2v6M8 4h8M3 14h18a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="8" cy="18" r="1" fill="currentColor"/>
+            <circle cx="12" cy="18" r="1" fill="currentColor"/>
+            <circle cx="16" cy="18" r="1" fill="currentColor"/>
+          </svg>
+        );
+      case 'Телевизоры':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="9" cy="15" r="1" fill="currentColor"/>
+            <path d="M7 18h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        );
+      case 'Ноутбуки':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2"/>
+            <line x1="2" y1="16" x2="22" y2="16" stroke="currentColor" strokeWidth="2"/>
+          </svg>
+        );
+      case 'Смартфоны':
+      case 'Планшеты':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <rect x="5" y="2" width="14" height="20" rx="2" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="12" cy="18" r="1" fill="currentColor"/>
+            <path d="M9 6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        );
+      case 'Кофемашины':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M6 2h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <path d="M4 8h16v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8z" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="8" cy="18" r="1" fill="currentColor"/>
+            <path d="M16 8v4" stroke="currentColor" strokeWidth="2"/>
+          </svg>
+        );
+      case 'Блендеры':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <path d="M7 10v4M11 10v4M15 10v4" stroke="currentColor" strokeWidth="2"/>
+            <path d="M9 18h6a2 2 0 0 0 2-2v-2H7v2a2 2 0 0 0 2 2z" stroke="currentColor" strokeWidth="2"/>
+          </svg>
+        );
+      case 'Мультиварки':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="9" cy="12" r="1" fill="currentColor"/>
+            <circle cx="12" cy="12" r="1" fill="currentColor"/>
+            <circle cx="15" cy="12" r="1" fill="currentColor"/>
+            <path d="M7 16h10" stroke="currentColor" strokeWidth="2"/>
+          </svg>
+        );
+      case 'Пароварки':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <path d="M7 10h10M7 14h10" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="9" cy="18" r="1" fill="currentColor"/>
+            <circle cx="15" cy="18" r="1" fill="currentColor"/>
+          </svg>
+        );
+      case 'Утюги':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2l8 4v6c0 4-4 8-8 8s-8-4-8-8V6l8-4z" stroke="currentColor" strokeWidth="2"/>
+            <path d="M8 10h8M10 14h4" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="16" cy="18" r="2" stroke="currentColor" strokeWidth="2"/>
+          </svg>
+        );
+      case 'Пылесосы':
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <path d="M7 10v4M11 10v4M15 10v4" stroke="currentColor" strokeWidth="2"/>
+            <path d="M5 18h14a2 2 0 0 0 2-2v-2H3v2a2 2 0 0 0 2 2z" stroke="currentColor" strokeWidth="2"/>
+            <circle cx="19" cy="16" r="2" stroke="currentColor" strokeWidth="2"/>
+          </svg>
+        );
+      default:
+        return (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" stroke="currentColor" strokeWidth="2"/>
+            <path d="M9 10h6M9 14h6" stroke="currentColor" strokeWidth="2"/>
+          </svg>
+        );
     }
   };
 
