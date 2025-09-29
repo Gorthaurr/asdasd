@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -32,17 +32,26 @@ jobs:
           version: 10
           run_install: false
 
-      - name: Install deps
-        run: pnpm install --frozen-lockfile || pnpm install
+      - name: Show versions
+        run: |
+          node -v
+          pnpm -v
 
-      - name: Prepare .env.production
+      # Если нужно пробросить адрес API в build (Vite):
+      - name: Create .env.production
         run: |
           printf "VITE_API_URL=https://api.technofame.store\n" > .env.production
+          printf "REACT_APP_API_URL=https://api.technofame.store\n" >> .env.production
+          printf "NEXT_PUBLIC_API_URL=https://api.technofame.store\n" >> .env.production
+
+      - name: Install deps
+        run: |
+          pnpm install --frozen-lockfile || pnpm install
 
       - name: Build
         run: pnpm run build
 
-      # Копируем сборку на сервер во временную директорию
+      # Копируем собранный dist/ на сервер
       - name: Upload dist to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -51,12 +60,10 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "dist/*"
-          target: "/tmp/frontend_dist_${{ github.sha }}/"
-          strip_components: 1
-          overwrite: true
+          target: "/var/www/frontend_tmp"
+          strip_components: 0
 
-      # Атомарно выкладываем в /var/www/frontend и перезагружаем Caddy
-      - name: Publish on server
+      - name: Activate new build
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -64,10 +71,17 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            set -e
-            sudo apt-get update -y
-            sudo apt-get install -y rsync
+            sudo mkdir -p /var/www/frontend_tmp
             sudo mkdir -p /var/www/frontend
-            sudo rsync -a --delete "/tmp/frontend_dist_${{ github.sha }}/" /var/www/frontend/
+            # Перемещаем загруженные файлы из временной папки в боевую (атомарно через rsync, если есть)
+            if command -v rsync >/dev/null 2>&1; then
+              sudo rsync -a --delete /var/www/frontend_tmp/ /var/www/frontend/
+              sudo rm -rf /var/www/frontend_tmp/*
+            else
+              sudo rm -rf /var/www/frontend/*
+              sudo cp -a /var/www/frontend_tmp/. /var/www/frontend/
+              sudo rm -rf /var/www/frontend_tmp/*
+            fi
             sudo chown -R www-data:www-data /var/www/frontend
-            sudo systemctl reload caddy
+            # Caddy читает статику напрямую, просто перезагрузим (на самом деле не обязательно)
+            sudo systemctl reload caddy || true
