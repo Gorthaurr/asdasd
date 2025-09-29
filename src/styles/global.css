@@ -512,6 +512,85 @@ header{
     .product-main-image {
         padding: 0;
     }
+
+    /* Мобильные улучшения для удобства */
+    .nav {
+        padding: 8px 0;
+        gap: 8px;
+    }
+
+    .brand {
+        gap: 6px;
+    }
+
+    .logo {
+        width: 32px;
+        height: 32px;
+    }
+
+    .title {
+        font-size: 1.1rem;
+    }
+
+    .title small {
+        font-size: 0.7rem;
+    }
+
+    .actions {
+        gap: 4px;
+    }
+
+    .icon-btn {
+        padding: 8px 10px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .badge {
+        top: 2px;
+        right: 2px;
+        min-width: 16px;
+        height: 16px;
+        font-size: 0.65rem;
+    }
+
+    .content {
+        padding: 10px;
+    }
+
+    .name {
+        font-size: 0.95rem;
+        line-height: 1.2;
+    }
+
+    .meta {
+        font-size: 0.75rem;
+        gap: 6px;
+    }
+
+    .price {
+        gap: 6px;
+    }
+
+    .cost {
+        font-size: 0.95rem;
+    }
+
+    .qty-inline {
+        gap: 4px;
+    }
+
+    .qty-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+
+    .qty-count {
+        min-width: 16px;
+        height: 24px;
+        font-size: 0.75rem;
+    }
 }
 .card{
     background:linear-gradient(180deg, #1a1a1a, #0f0f0f); 
