@@ -81,3 +81,4 @@ technofame.store {
 - Проверьте логи Caddy: `sudo journalctl -u caddy -f`
 - Проверьте права на файлы: `ls -la /var/www/frontend/`
 - Проверьте конфигурацию Caddy: `sudo caddy validate --config /etc/caddy/Caddyfile`
+
