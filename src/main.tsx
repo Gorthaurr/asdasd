@@ -2,7 +2,6 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import App from './App';
-import './styles/global.css';
 import './styles/modern-user.css';
 import './styles/user-effects.css';
 import './styles/cart-drawer.css';
