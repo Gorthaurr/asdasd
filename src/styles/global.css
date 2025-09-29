@@ -541,19 +541,20 @@ header{
 
 .categories-header-section {
     text-align: center;
-    margin: 40px 0 30px 0;
+    margin: 20px 0 30px 0;
     padding: 0 20px;
 }
 
 .categories-section-title {
     font-size: 2rem;
     font-weight: 700;
-    color: #1f2937;
+    color: #d4af37;
     margin: 0 0 8px 0;
-    background: linear-gradient(135deg, #d4af37, #e6c34a);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    position: relative;
+}
+
+.categories-section-title::after {
+    display: none;
 }
 
 .categories-section-subtitle {
@@ -639,6 +640,20 @@ header{
     mix-blend-mode: multiply;
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
+  }
+
+  /* Специальные стили для холодильников, кофемашин, стиральных и сушильных машин - уменьшаем картинки */
+  .category-card:has([src*="Холодильники"]) .category-image img,
+  .category-card:has([src*="Встраиваемые-кофемашины"]) .category-image img,
+  .category-card:has([src*="Стиральные машины"]) .category-image img,
+  .category-card:has([src*="Сушильные машины"]) .category-image img {
+    width: 75%;
+    height: 75%;
+  }
+
+  /* Поднимаем текст у встраиваемых кофемашин */
+  .category-card:has([src*="Встраиваемые-кофемашины"]) .category-name {
+    margin-top: -10px;
   }
 
 .category-card:hover .category-image img {
