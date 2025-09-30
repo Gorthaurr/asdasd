@@ -489,7 +489,7 @@ header{
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
-    margin: 32px 0;
+    margin: 22px 0;
     padding: 24px;
     background: linear-gradient(135deg, #374151, #1f2937);
     border-radius: 16px;
@@ -548,9 +548,13 @@ header{
 .categories-section-title {
     font-size: 2rem;
     font-weight: 700;
-    color: #d4af37;
+    color: #1f2937;
     margin: 0 0 8px 0;
     position: relative;
+    background: linear-gradient(135deg, #d4af37, #e6c34a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .categories-section-title::after {
