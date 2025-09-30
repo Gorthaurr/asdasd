@@ -19,6 +19,7 @@ import { selectCartItems, selectFavIds } from '../features/catalog/selectors';
 import { addToCart, changeQty } from '../features/cart/cartSlice';
 import { toggleFav } from '../features/favs/favsSlice';
 import { ProductImageGallery } from '../components/product/ProductImageGallery';
+import SEOHead from '../components/common/SEOHead';
 
 // Типы для внутренних компонентов
 interface ProductSpec {
@@ -349,14 +350,25 @@ export default function ProductPage() {
   }
 
   return (
-    <main className="container product-page" style={{ padding: '16px 0 40px' }}>
-      <section className="product-page-grid">
-        {/* Галерея изображений товара */}
-        <ProductImageGallery product={product} />
+    <>
+      <SEOHead 
+        title={`${product.name} - ${fmtCurrency(product.price)} | TechnoFame`}
+        description={`${product.name} по цене ${fmtCurrency(product.price)}. ${product.category}. Рейтинг ${product.rating.toFixed(1)}/5. Быстрая доставка, гарантия качества.`}
+        keywords={`${product.name}, ${product.category}, бытовая техника, купить, ${fmtCurrency(product.price)}`}
+        ogTitle={`${product.name} - ${fmtCurrency(product.price)}`}
+        ogDescription={`${product.name} по цене ${fmtCurrency(product.price)}. ${product.category}. Рейтинг ${product.rating.toFixed(1)}/5.`}
+        ogImage={product.images?.[0]?.url || 'https://technofame.store/icons/og-image.png'}
+        ogUrl={`https://technofame.store/product/${product.id}`}
+        canonical={`https://technofame.store/product/${product.id}`}
+      />
+      <main className="container product-page" style={{ padding: '16px 0 40px' }}>
+        <section className="product-page-grid">
+          {/* Галерея изображений товара */}
+          <ProductImageGallery product={product} />
 
-        {/* Сводка и действия */}
-        <div className="product-summary">
-          <h1 style={{ marginTop: 0 }}>{product.name}</h1>
+          {/* Сводка и действия */}
+          <div className="product-summary">
+            <h1 style={{ marginTop: 0 }}>{product.name}</h1>
 
           {/* Рейтинг кликабелен → к отзывам */}
           <div
@@ -433,6 +445,7 @@ export default function ProductPage() {
       <section ref={reviewsRef}>
         <ReviewsSection reviews={details.reviews} />
       </section>
-    </main>
+      </main>
+    </>
   );
 }

@@ -80,3 +80,4 @@ magick favicon.svg -resize 1200x630 og-image.png
 - **Кэширование**: браузеры кэшируют иконки
 
 
+
