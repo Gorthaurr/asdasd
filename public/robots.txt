@@ -16,3 +16,13 @@ Disallow: /admin/test
 
 # Allow product pages
 Allow: /product/
+
+
+
+
+
+
+
+
+
+

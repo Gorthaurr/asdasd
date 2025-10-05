@@ -1,19 +1,19 @@
 // Красивый каталог категорий для главной страницы
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useGetCategoriesQuery } from '../api/productsApi';
-import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
 import type { RootState } from '../app/store';
 
 export default function CategoriesGrid() {
-  const { setChip } = useCatalogUrlActions();
+  const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
 
   // Запрос категорий из API
   const { data: categories = [], isLoading, error } = useGetCategoriesQuery(undefined, {
-    staleTime: 10 * 60 * 1000,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
+    refetchOnMountOrArgChange: false,
+    refetchOnFocus: false,
+    refetchOnReconnect: false,
   });
 
   useEffect(() => {
@@ -113,7 +113,10 @@ export default function CategoriesGrid() {
             onError={(e) => {
               // Если изображение не загрузилось, показываем эмодзи
               e.currentTarget.style.display = 'none';
-              e.currentTarget.nextElementSibling.style.display = 'block';
+              const fallback = e.currentTarget.nextElementSibling;
+              if (fallback instanceof HTMLElement) {
+                fallback.style.display = 'block';
+              }
             }}
           />
           <div className="category-fallback" style={{ display: 'none' }}>
@@ -261,13 +264,13 @@ export default function CategoriesGrid() {
                 animationDelay: `${index * 0.1}s`,
                 background: categoryColors[category.slug] || 'linear-gradient(135deg, #374151, #1f2937)'
               }}
-              onClick={() => setChip(category.slug)}
+              onClick={() => navigate(`/category/${category.slug}`)}
               role="button"
               tabIndex={0}
               aria-label={`Перейти к категории ${category.slug}`}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                  setChip(category.slug);
+                  navigate(`/category/${category.slug}`);
                 }
               }}
             >

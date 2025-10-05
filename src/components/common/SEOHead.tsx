@@ -69,3 +69,13 @@ const updateCanonical = (href: string) => {
 };
 
 export default SEOHead;
+
+
+
+
+
+
+
+
+
+
