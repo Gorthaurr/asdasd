@@ -27,6 +27,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 1) Ставим pnpm СНАЧАЛА (чтобы setup-node с cache: pnpm не падал)
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+          run_install: false
+
+      # 2) Node + кэш для pnpm — теперь бинарь уже есть
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -34,19 +42,13 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      # ЯВНО ставим pnpm (без Corepack)
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.17.1
-          run_install: false
-
       - name: Show versions
         run: |
           node -v
           pnpm -v
 
-      - name: Install deps (try frozen, else soft)
+      # 3) Установка зависимостей: пробуем frozen, если локфайл отстаёт — мягкая установка
+      - name: Install deps
         run: |
           if [ -f pnpm-lock.yaml ]; then
             pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
@@ -54,6 +56,7 @@ jobs:
             pnpm install
           fi
 
+      # 4) Сборка
       - name: Build
         env:
           VITE_API_URL: https://api.technofame.store
@@ -61,6 +64,7 @@ jobs:
           pnpm run build
           test -f dist/index.html
 
+      # 5) Копируем артефакты на сервер (в upload-папку пользователя deploy)
       - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -72,6 +76,7 @@ jobs:
           target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
           overwrite: true
 
+      # 6) Атомарный деплой (скрипт уже настроен с sudo NOPASSWD)
       - name: Atomic deploy on server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -81,6 +86,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
+            # На случай, если appleboy распаковал как /frontend_upload/dist/*
             if [ -d "/home/${USER}/frontend_upload/dist" ]; then
               shopt -s dotglob || true
               mv /home/${USER}/frontend_upload/dist/* /home/${USER}/frontend_upload/ && rmdir /home/${USER}/frontend_upload/dist
@@ -89,4 +95,4 @@ jobs:
             test -f /var/www/frontend/index.html
             code=$(curl -sk -o /dev/null -w "%{http_code}" https://technofame.store/)
             echo "frontend status: $code"
-            [ "$code" = "200" ] || [ "$code" = "304" ] || exit 1
+            [ "$code" = "200" ] || [ "$code" = "304" ]
