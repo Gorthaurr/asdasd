@@ -9,6 +9,7 @@ import { fmtCurrency } from '../utils/format';
 import { toast } from '../utils/toast'; // форматирование суммы
 import { useGetProductsQuery } from '../api/productsApi'; // хук для загрузки товаров
 import AddressAutocomplete from '../components/forms/AddressAutocomplete'; // компонент автодополнения адресов
+import axios from 'axios';
 
 export default function Checkout() {
   const dispatch = useDispatch(); // отправка экшенов
@@ -78,23 +79,45 @@ export default function Checkout() {
   };
 
   // Submit: (демо) логируем, показываем toast, чистим корзину и уводим на главную
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
     if (!rows.length) {
       toast.warning('Добавьте товары перед оформлением заказа', 'Корзина пуста');
       return;
     }
-
+    
     if (!validateForm()) {
       toast.error('Пожалуйста, заполните все обязательные поля', 'Проверьте форму');
       return;
     }
 
-    console.log('ORDER_DRAFT', { form, items: rows, total: sum });
-    toast.success('Спасибо за заказ! Мы свяжемся с вами в ближайшее время', 'Заказ оформлен');
-    dispatch(clearCart());
-    setTimeout(() => navigate('/'), 2000); // возврат на главную через 2 сек
+    const orderData = {
+      customer: {
+        name: `${form.firstName} ${form.lastName}`,
+        email: form.email,
+        phone: form.phone,
+        address: form.address,
+      },
+      items: rows.map(row => ({
+        product_id: row.id,
+        qty: cartItems[row.id]
+      })),
+      comment: form.comment,
+      shipping_cents: 0, // или рассчитать
+      currency: 'EUR'
+    };
+
+    try {
+      const response = await axios.post('/api/v1/orders', orderData);
+      console.log('Order created:', response.data);
+      toast.success('Спасибо за заказ! Мы свяжемся с вами в ближайшее время', 'Заказ оформлен');
+      dispatch(clearCart());
+      setTimeout(() => navigate('/'), 2000);
+    } catch (error) {
+      console.error('Error creating order:', error);
+      toast.error('Ошибка при создании заказа. Попробуйте позже.', 'Ошибка');
+    }
   };
 
   return (
