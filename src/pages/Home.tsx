@@ -4,6 +4,8 @@ import PromoSection from '../sections/PromoSection';
 import ProductsGridApi from '../sections/ProductsGridApi';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../app/store';
+import { HeaderSection } from './sections/HeaderSection';
+import { ProductDisplaySection } from './sections/ProductDisplaySection';
 
 export default function Home() {
   const selectedCategory = useSelector((s: RootState) => s.catalog.chip);
@@ -13,19 +15,12 @@ export default function Home() {
   const showCategories = selectedCategory === 'Все' || !selectedCategory;
 
   return (
-    <main className="container" style={{ padding: showCategories ? '0' : '16px 0 0' }}>
-      {showCategories ? (
-        <>
-          <Hero />
-          <CategoriesGrid />
-          <PromoSection />
-        </>
-      ) : (
-        <>
-          <Hero />
-          <ProductsGridApi />
-        </>
-      )}
-    </main>
+    <>
+      <HeaderSection />
+      <ProductDisplaySection />
+      <main className="container" style={{ padding: showCategories ? '0' : '16px 0 0' }}>
+        {showCategories ? <PromoSection /> : <ProductsGridApi />}
+      </main>
+    </>
   );
 }
