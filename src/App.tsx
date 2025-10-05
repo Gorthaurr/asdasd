@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useGetCategoriesQuery } from "./api/productsApi";
 import Header from "./components/layout/Header";
+import MobileNav from "./components/layout/MobileNav";
 import Home from "./pages/Home";
 import ProductPage from "./pages/ProductPage";
 import Checkout from "./pages/Checkout";
@@ -39,6 +40,7 @@ const ConditionalLayout: React.FC<{ children: React.ReactNode }> = ({ children }
             {children}
             {!isAdminRoute && <Footer />}
             {!isAdminRoute && <CartDrawer />}
+            {!isAdminRoute && <MobileNav />}
         </>
     );
 };

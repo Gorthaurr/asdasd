@@ -241,53 +241,44 @@ export default function Hero(){
     }, []);
 
     return (
-        <section className={`hero animated-hero ${isVisible ? 'visible' : ''}`} aria-label="Промо">
-            <div className="hero-card">
-                <h1 className="hero-title">
-                    <span className="title-line">Каталог товаров</span>
-                    <span className="title-line highlight">с поиском и сортировкой</span>
-                </h1>
-                <p className="hero-description">
-                    <span className="description-line">Найдите нужный товар</span>
-                    <span className="description-line">с помощью поиска и фильтров</span>
-                </p>
+        <>
+            <section className="hero-banner">
+                <button className="hero-nav-btn hero-prev">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                <div className="hero-content">
+                    <h1 className="hero-title">Умная колонка</h1>
+                    <p className="hero-promo">СКИДКА 30%</p>
+                    <p className="hero-subtitle">при покупке второго товара</p>
+                </div>
+                <div className="hero-image">
+                    <img src="/placeholder-speaker.png" alt="Умная колонка" />
+                </div>
+                <button className="hero-nav-btn hero-next">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+            </section>
 
-                {showBackToCategories && (
-                    <div className="back-to-categories">
-                        <button
-                            className="btn secondary back-btn"
-                            onClick={() => setChip('Все')}
-                            aria-label="Вернуться к каталогу категорий"
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                            Вернуться к категориям
-                        </button>
-                        <div className="current-category">
-                            <span className="category-badge">{selectedCategory}</span>
-                        </div>
-                    </div>
-                )}
-                <div className="search-row">
-                    <AnimatedSearch 
-                        value={q} 
-                        onChange={(value) => setQ(value)} 
-                    />
-                    <AnimatedSortSelect 
-                        value={sort} 
-                        onChange={(value) => setSort(value)} 
-                    />
-                </div>
-                <div className="hero-background">
-                    <div className="floating-shapes">
-                        <div className="shape shape-1"></div>
-                        <div className="shape shape-2"></div>
-                        <div className="shape shape-3"></div>
-                        <div className="shape shape-4"></div>
+            {showBackToCategories && (
+                <div className="back-to-categories">
+                    <button
+                        className="btn secondary back-btn"
+                        onClick={() => setChip('Все')}
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Вернуться к категориям
+                    </button>
+                    <div className="current-category">
+                        <span className="category-badge">{selectedCategory}</span>
                     </div>
                 </div>
-            </div>
-        </section>
+            )}
+        </>
     );
 }

@@ -37,66 +37,53 @@ export default function Header() {
   }, []);
 
   return (
-    <header className={`animated-header ${isVisible ? 'visible' : ''}`}>
-      <div className="container nav" role="navigation" aria-label="Основная навигация">
-        <div className="brand animated-brand">
-          <Link to="/" aria-label="Перейти в каталог" className="brand-link">
-            <div className="logo animated-logo" aria-hidden="true">
-              <div className="logo-glow"></div>
-              <div className="logo-particles">
-                <div className="logo-particle particle-1"></div>
-                <div className="logo-particle particle-2"></div>
-                <div className="logo-particle particle-3"></div>
-              </div>
-            </div>
-          </Link>
-          <div className="title animated-title">
-            <span className="title-main">🏪 TechnoFame</span>
-            <small className="title-subtitle">✨ Премиальная бытовая техника</small>
-          </div>
+    <header>
+      <div className="container nav">
+        <Link to="/" className="logo">GLANCE</Link>
+        
+        <div className="search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" placeholder="Поиск" />
         </div>
 
-        <div className="actions animated-actions">
+        <div className="actions">
           <button
-            className="icon-btn animated-icon-btn"
-            aria-label="Перейти к избранному"
-            title="Избранные товары"
+            className="icon-btn"
             onClick={() => {
-              console.log('Navigating to favorites');
               window.location.href = "/?fav=1";
             }}
           >
-            <img 
-              src="/icons/Избранное.png" 
-              alt="Избранное"
-              style={{ 
-                width: '24px', 
-                height: '24px'
-              }}
-            />
-            {favCount > 0 && (
-              <span className="badge animated-badge">
-                <span className="badge-text">{favCount}</span>
-                <div className="badge-glow"></div>
-              </span>
-            )}
-            <div className="btn-ripple"></div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            <span>Каталог</span>
           </button>
 
           <button
-            className="icon-btn animated-icon-btn"
-            title="Корзина"
-            aria-label="Открыть корзину"
+            className="icon-btn"
             onClick={() => dispatch(openDrawer())}
           >
-            <span style={{ fontSize: '24px', lineHeight: 1 }}>🛒</span>
-            {cartCount > 0 && (
-              <span className="badge animated-badge cart-badge">
-                <span className="badge-text">{cartCount}</span>
-                <div className="badge-glow"></div>
-              </span>
-            )}
-            <div className="btn-ripple"></div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            <span>Корзина</span>
+            {cartCount > 0 && <span className="badge">{cartCount}</span>}
+          </button>
+
+          <button className="icon-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>Профиль</span>
           </button>
         </div>
       </div>

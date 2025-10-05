@@ -26,14 +26,14 @@
   right: 0;
   height: 100vh;
   width: min(420px, 100vw);
-  background: var(--bg-surface);
-  border-left: 1px solid var(--border-light);
+  background: #FFFFFF;
+  border-left: 1px solid #E5E7EB;
   transform: translateX(100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-2xl);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 
@@ -43,13 +43,12 @@
 
 /* Drawer Header */
 .drawer header {
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-light);
-  padding: var(--space-6);
+  background: #FFFFFF;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 20px;
   position: sticky;
   top: 0;
   z-index: 10;
-  box-shadow: var(--shadow-xs);
 }
 
 .drawer-title {
@@ -355,15 +354,15 @@
 
 /* Checkout Button */
 .checkout {
-  padding: var(--space-4) var(--space-6);
-  background: var(--primary-gradient);
-  color: var(--text-white);
+  padding: 12px 24px;
+  background: #0000CD;
+  color: white;
   border: none;
-  border-radius: var(--radius-xl);
+  border-radius: 8px;
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s;
   text-decoration: none;
   text-align: center;
   display: flex;

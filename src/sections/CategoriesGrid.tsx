@@ -137,28 +137,17 @@ export default function CategoriesGrid() {
   }
 
   return (
-    <section className="categories-section" aria-live="polite">
-      <div className="categories-header">
-        <h1 className="categories-title">
-          <span className="title-line">🏪 Премиальная техника</span>
-          <span className="title-line highlight">по категориям</span>
-        </h1>
-        <p className="categories-subtitle">Выберите категорию для просмотра лучших товаров</p>
-      </div>
+    <section className="categories-section">
+      <h2 className="section-title">Каталог</h2>
 
       <div className="categories-grid">
-        {categories.map((category: any, index: number) => (
+        {categories.map((category: any) => (
           <div
             key={category.id}
-            className={`category-card animated-category ${isVisible ? 'visible' : ''}`}
-            style={{
-              animationDelay: `${index * 0.1}s`,
-              background: categoryColors[category.slug] || 'linear-gradient(135deg, #374151, #1f2937)'
-            }}
+            className="category-card"
             onClick={() => setChip(category.slug)}
             role="button"
             tabIndex={0}
-            aria-label={`Перейти к категории ${category.slug}`}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 setChip(category.slug);
@@ -166,24 +155,16 @@ export default function CategoriesGrid() {
             }}
           >
             <div className="category-icon">
-              {getCategoryIcon(category.slug)}
+              <img 
+                src={`/icons/${category.slug}.png`} 
+                alt={category.slug}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement!.innerHTML = getCategoryIcon(category.slug);
+                }}
+              />
             </div>
             <h3 className="category-name">{category.slug}</h3>
-            <p className="category-description">
-              Лучшие товары категории
-            </p>
-            <div className="category-arrow">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M9 18l6-6-6-6"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <div className="category-overlay"></div>
           </div>
         ))}
       </div>
