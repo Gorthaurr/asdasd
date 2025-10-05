@@ -107,7 +107,7 @@ export default function Checkout() {
         address: form.address,
       },
       items: rows.map(row => ({
-        product_id: typeof row.id === 'number' ? row.id.toString().padStart(12, '0') : row.id,  // Фикс: number to padded str (temp, если не UUID)
+        product_id: String(row.id),
         qty: cartItems[row.id]
       })),
       comment: form.comment,

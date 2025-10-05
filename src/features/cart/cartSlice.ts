@@ -12,7 +12,7 @@ import { getJSON } from '../../utils/storage';
  * Тип для одной операции изменения количества
  */
 interface ChangePayload { 
-    id: number; 
+    id: string; 
     delta: number; 
 }
 
@@ -20,13 +20,13 @@ interface ChangePayload {
 const cartSlice = createSlice({
     name: 'cart', // имя ветки
     initialState: { 
-        items: getJSON('techhome_cart', {} as Record<number, number>) 
+        items: getJSON('techhome_cart', {} as Record<string, number>) 
     }, // читаем корзину из localStorage
     reducers: {
         /**
          * Добавить 1 шт товара в корзину
          */
-        add: (s, a: PayloadAction<number>) => {
+        add: (s, a: PayloadAction<string>) => {
             const id = a.payload; // ID товара
             s.items[id] = (s.items[id] || 0) + 1; // инкремент
         },
@@ -54,7 +54,7 @@ const cartSlice = createSlice({
         /**
          * Удалить позицию из корзины
          */
-        remove: (s, a: PayloadAction<number>) => { 
+        remove: (s, a: PayloadAction<string>) => { 
             delete s.items[a.payload];
             // Удаляем также из сохраненных данных
             if (typeof window !== 'undefined') {

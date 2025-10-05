@@ -142,8 +142,8 @@ export const selectCartDetailed = createSelector(
         const savedProducts = JSON.parse(localStorage.getItem('techhome_cart_products') || '{}');
         
         const rows = Object.entries(items).map(([id, qty]) => {
-            // Сначала ищем в кэше API
-            let product = allProducts.find((p: any) => p.id === Number(id));
+            // Сначала ищем в кэше API (id теперь str)
+            let product = allProducts.find((p: any) => p.id === id);
             
             // Если не нашли в кэше, ищем в localStorage
             if (!product && savedProducts[id]) {
@@ -152,7 +152,7 @@ export const selectCartDetailed = createSelector(
             
             if (!product) {
                 return {
-                    id: Number(id),
+                    id: id,
                     name: 'Товар не найден',
                     category: 'Неизвестно',
                     price: 0,
