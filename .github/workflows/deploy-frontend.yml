@@ -16,6 +16,9 @@ concurrency:
   group: deploy-frontend-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -24,45 +27,72 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PNPM via Corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@10.17.1 --activate
-          pnpm -v
+      # 1) Ставим pnpm СНАЧАЛА (чтобы setup-node с cache: pnpm не падал)
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+          run_install: false
 
+      # 2) Node + кэш для pnpm — теперь бинарь уже есть
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
-      # ВАЖНО: снимаем "frozen", чтобы не падало,
-      # когда package.json обновлён, а lockfile ещё нет
+      - name: Show versions
+        run: |
+          node -v
+          pnpm -v
+
+      # 3) Установка зависимостей: пробуем frozen, если локфайл отстаёт — мягкая установка
       - name: Install deps
-        run: pnpm install --no-frozen-lockfile
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
+          else
+            pnpm install
+          fi
 
+      # 4) Сборка
       - name: Build
         env:
           VITE_API_URL: https://api.technofame.store
-        run: pnpm run build
+        run: |
+          pnpm run build
+          test -f dist/index.html
 
+      # 5) Копируем артефакты на сервер (в upload-папку пользователя deploy)
       - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}     # deploy
+          username: ${{ secrets.SSH_USER }}   # deploy
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "dist/*"
           target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
           overwrite: true
 
+      # 6) Атомарный деплой (скрипт уже настроен с sudo NOPASSWD)
       - name: Atomic deploy on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}     # deploy
+          username: ${{ secrets.SSH_USER }}   # deploy
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            set -e
+            # На случай, если appleboy распаковал как /frontend_upload/dist/*
+            if [ -d "/home/${USER}/frontend_upload/dist" ]; then
+              shopt -s dotglob || true
+              mv /home/${USER}/frontend_upload/dist/* /home/${USER}/frontend_upload/ && rmdir /home/${USER}/frontend_upload/dist
+            fi
             sudo -n /opt/deploy/deploy_frontend.sh
+            test -f /var/www/frontend/index.html
+            code=$(curl -sk -o /dev/null -w "%{http_code}" https://technofame.store/)
+            echo "frontend status: $code"
+            [ "$code" = "200" ] || [ "$code" = "304" ]
