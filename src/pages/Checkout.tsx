@@ -9,7 +9,7 @@ import { fmtCurrency } from '../utils/format';
 import { toast } from '../utils/toast'; // форматирование суммы
 import { useGetProductsQuery } from '../api/productsApi'; // хук для загрузки товаров
 import AddressAutocomplete from '../components/forms/AddressAutocomplete'; // компонент автодополнения адресов
-import axios from 'axios';
+import http from '../api/http';  // Импорт кастомного http с baseURL
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.technofame.store';
 
@@ -111,7 +111,7 @@ export default function Checkout() {
     };
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/v1/orders`, orderData);
+      const response = await http.post('/api/v1/orders', orderData);  // Теперь с baseURL
       console.log('Order created:', response.data);
       toast.success('Спасибо за заказ! Мы свяжемся с вами в ближайшее время', 'Заказ оформлен');
       dispatch(clearCart());
