@@ -4,15 +4,10 @@
  */
 
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState, useEffect } from 'react';
 import { useGetProductsQuery, useGetCategoriesQuery } from '../api/productsApi';
-import { selectFilteredApiProducts, selectApiMeta } from '../features/catalog/apiSelectors';
 import ProductCard from '../components/products/ProductCard';
-import PaginationApi from '../components/products/PaginationApi';
 import SEOHead from '../components/common/SEOHead';
-import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
-import type { RootState } from '../app/store';
 
 // Анимированное поле поиска
 function AnimatedSearch({ value, onChange }: { value: string; onChange: (v: string) => void }) {
@@ -127,18 +122,10 @@ function AnimatedSortSelect({ value, onChange }: { value: string; onChange: (v: 
 export default function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { setQ, setSort, setChip } = useCatalogUrlActions();
   
-  const catalog = useSelector((s: RootState) => s.catalog);
-  const [localSearch, setLocalSearch] = useState(catalog.q || '');
-  const [localSort, setLocalSort] = useState(catalog.sort || 'popular');
-
-  // Устанавливаем выбранную категорию при загрузке страницы
-  useEffect(() => {
-    if (slug) {
-      setChip(slug);
-    }
-  }, [slug, setChip]);
+  const [localSearch, setLocalSearch] = useState('');
+  const [localSort, setLocalSort] = useState('popular');
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Получаем категории для отображения информации
   const { data: categories = [] } = useGetCategoriesQuery();
@@ -146,8 +133,8 @@ export default function CategoryPage() {
 
   // Запрос товаров категории
   const { data, isLoading, error } = useGetProductsQuery({
-    page: catalog.page,
-    page_size: catalog.pageSize,
+    page: currentPage,
+    page_size: 12,
     q: localSearch || undefined,
     category_slug: slug,
     sort: mapSortToApi(localSort),
@@ -155,18 +142,27 @@ export default function CategoryPage() {
     include_attributes: true,
   });
 
-  const products = useSelector(selectFilteredApiProducts);
-  const meta = useSelector(selectApiMeta);
+  const products = data?.items.map((apiProduct: any) => ({
+    id: parseInt(apiProduct.id) || 0,
+    originalId: apiProduct.id,
+    name: apiProduct.name || 'Товар',
+    category: slug || '',
+    price: apiProduct.price_cents ? apiProduct.price_cents / 100 : 0,
+    rating: 4.5,
+    images: apiProduct.images || []
+  })) || [];
+
+  const meta = data?.meta;
 
   // Обработчики поиска и сортировки
   const handleSearch = (value: string) => {
     setLocalSearch(value);
-    setQ(value);
+    setCurrentPage(1);
   };
 
   const handleSort = (value: string) => {
     setLocalSort(value);
-    setSort(value);
+    setCurrentPage(1);
   };
 
   // Получение эмодзи для категории
@@ -305,7 +301,25 @@ export default function CategoryPage() {
               </div>
 
               {meta && meta.total_pages > 1 && products.length > 0 && (
-                <PaginationApi meta={meta} />
+                <div className="pagination-wrapper">
+                  <button
+                    className="btn secondary"
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    ← Назад
+                  </button>
+                  <span className="pagination-info">
+                    Страница {currentPage} из {meta.total_pages}
+                  </span>
+                  <button
+                    className="btn secondary"
+                    onClick={() => setCurrentPage(Math.min(meta.total_pages, currentPage + 1))}
+                    disabled={currentPage === meta.total_pages}
+                  >
+                    Вперёд →
+                  </button>
+                </div>
               )}
             </>
           )}
