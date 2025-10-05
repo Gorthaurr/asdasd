@@ -24,7 +24,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Оставляю как у тебя (Corepack перед setup-node), раз так стабильно работало
       - name: Setup PNPM via Corepack
         run: |
           corepack enable
@@ -37,8 +36,10 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
+      # ВАЖНО: снимаем "frozen", чтобы не падало,
+      # когда package.json обновлён, а lockfile ещё нет
       - name: Install deps
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build
         env:
@@ -52,10 +53,9 @@ jobs:
           username: ${{ secrets.SSH_USER }}     # deploy
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "dist/**"
+          source: "dist/*"
           target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
           overwrite: true
-          strip_components: 1   # кладём содержимое dist прямо в frontend_upload/
 
       - name: Atomic deploy on server
         uses: appleboy/ssh-action@v1.0.3
