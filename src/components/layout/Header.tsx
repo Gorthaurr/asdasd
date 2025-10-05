@@ -49,9 +49,19 @@ export default function Header() {
         </form>
 
         <div className="header__right">
-          <button className="icon-btn" onClick={() => { window.location.href = "/?fav=1"; }} aria-label="Каталог">≡</button>
-          <button className="icon-btn" onClick={() => dispatch(openDrawer())} aria-label="Корзина">🛒{cartCount > 0 && <span className="badge">{cartCount}</span>}</button>
-          <button className="icon-btn" aria-label="Профиль">👤</button>
+          <button className="icon-btn" onClick={() => { window.location.href = "/?chip=Все"; }} aria-label="Каталог">
+            <span style={{ fontSize: 24, lineHeight: 1 }}>≡</span>
+            <span>Каталог</span>
+          </button>
+          <button className="icon-btn" onClick={() => dispatch(openDrawer())} aria-label="Корзина">
+            <span style={{ fontSize: 24, lineHeight: 1 }}>🛒</span>
+            <span>Корзина</span>
+            {cartCount > 0 && <span className="badge">{cartCount}</span>}
+          </button>
+          <button className="icon-btn" aria-label="Профиль">
+            <span style={{ fontSize: 24, lineHeight: 1 }}>👤</span>
+            <span>Профиль</span>
+          </button>
         </div>
       </div>
     </header>

@@ -1,5 +1,5 @@
 // Красивый каталог категорий для главной страницы
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useGetCategoriesQuery } from '../api/productsApi';
 import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
@@ -8,6 +8,7 @@ import type { RootState } from '../app/store';
 export default function CategoriesGrid() {
   const { setChip } = useCatalogUrlActions();
   const [isVisible, setIsVisible] = useState(false);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   // Запрос категорий из API
   const { data: categories = [], isLoading, error } = useGetCategoriesQuery(undefined, {
@@ -19,6 +20,12 @@ export default function CategoriesGrid() {
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  const scrollNext = () => {
+    const el = trackRef.current; if (!el) return;
+    const step = el.clientWidth * 0.9;
+    el.scrollBy({ left: step, behavior: 'smooth' });
+  };
 
   // Иконки для категорий - эмодзи иконки
   const getCategoryIcon = (categoryName: string) => {
@@ -162,34 +169,37 @@ export default function CategoriesGrid() {
     <section className="container" aria-live="polite">
       <h2 className="section-title">Каталог</h2>
 
-      <div className="cats">
-        {categories.map((category: any) => (
-          <article
-            key={category.id}
-            className="cat"
-            onClick={() => setChip(category.slug)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                setChip(category.slug);
-              }
-            }}
-            aria-label={`Перейти к категории ${category.slug}`}
-          >
-            <div className="cat__img">
-              <img 
-                src={getIconPath(category.slug)} 
-                alt={category.slug}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.parentElement!.innerHTML = getCategoryIcon(category.slug);
-                }}
-              />
-            </div>
-            <div className="cat__title">{category.slug}</div>
-          </article>
-        ))}
+      <div className="cats-wrapper">
+        <div className="cats-scroll" ref={trackRef}>
+          {categories.map((category: any) => (
+            <article
+              key={category.id}
+              className="cat"
+              onClick={() => setChip(category.slug)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setChip(category.slug);
+                }
+              }}
+              aria-label={`Перейти к категории ${category.slug}`}
+            >
+              <div className="cat__img">
+                <img 
+                  src={getIconPath(category.slug)} 
+                  alt={category.slug}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.parentElement!.innerHTML = getCategoryIcon(category.slug);
+                  }}
+                />
+              </div>
+              <div className="cat__title">{category.slug}</div>
+            </article>
+          ))}
+        </div>
+        <button className="carousel-btn next cats-next" aria-label="Вперёд" onClick={scrollNext}>›</button>
       </div>
     </section>
   );
