@@ -16,6 +16,9 @@ concurrency:
   group: deploy-frontend-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -24,33 +27,41 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup PNPM via Corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@10.17.1 --activate
-          pnpm -v
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: pnpm
 
-      # ВАЖНО: снимаем "frozen", чтобы не падало,
-      # когда package.json обновлён, а lockfile ещё нет
-      - name: Install deps
-        run: pnpm install --no-frozen-lockfile
+      - name: Enable Corepack & pin pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.17.1 --activate
+          pnpm -v
+          node -v
+
+      - name: Install deps (frozen if lockfile matches, fallback otherwise)
+        run: |
+          set -e
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
+          else
+            echo "pnpm-lock.yaml not found: running clean install"
+            pnpm install
+          fi
 
       - name: Build
         env:
           VITE_API_URL: https://api.technofame.store
-        run: pnpm run build
+        run: |
+          pnpm run build
+          test -f dist/index.html || { echo "dist/index.html is missing"; exit 1; }
 
       - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}     # deploy
+          username: ${{ secrets.SSH_USER }}   # deploy
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "dist/*"
@@ -61,8 +72,27 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}     # deploy
+          username: ${{ secrets.SSH_USER }}   # deploy
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            set -e
+            # если кто-то случайно залил вложенную папку dist/ — распакуем содержимое вверх
+            if [ -d "/home/${USER}/frontend_upload/dist" ]; then
+              shopt -s dotglob || true
+              mv /home/${USER}/frontend_upload/dist/* /home/${USER}/frontend_upload/ && rmdir /home/${USER}/frontend_upload/dist
+            fi
+
+            # основной скрипт деплоя (sudo NOPASSWD уже настроен)
             sudo -n /opt/deploy/deploy_frontend.sh
+
+            # базовые проверки
+            test -f /var/www/frontend/index.html || { echo "index.html missing after deploy"; exit 1; }
+            code=$(curl -sk -o /dev/null -w "%{http_code}" https://technofame.store/)
+            echo "frontend status: $code"
+            if [ "$code" != "200" ] && [ "$code" != "304" ]; then
+              echo "Unexpected HTTP status: $code"
+              sudo systemctl status caddy --no-pager || true
+              sudo journalctl -u caddy -n 120 --no-pager || true
+              exit 1
+            fi
