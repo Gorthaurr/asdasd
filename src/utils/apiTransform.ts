@@ -12,14 +12,8 @@ export function transformProduct(apiProduct: ProductApi): Product {
         throw new Error('Missing product ID');
     }
 
-    // Генерируем числовой ID для совместимости (хэш от строки)
-    const numericId = apiProduct.id.split('').reduce((acc, char) => {
-        return acc + char.charCodeAt(0);
-    }, 0) % 1000000; // ограничиваем до 6 цифр
-
     return {
-        id: numericId,
-        originalId: apiProduct.id, // сохраняем оригинальный ID из API
+        id: apiProduct.id, // используем UUID напрямую
         name: apiProduct.name,
         category: getCategoryFromApi(apiProduct) || 'Другое',
         price: apiProduct.price_cents ? apiProduct.price_cents : 0, // конвертируем центы в рубли
