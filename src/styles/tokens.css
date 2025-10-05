@@ -1,0 +1,67 @@
+/* UI-kit tokens exported to CSS variables so Tailwind arbitrary values work */
+:root {
+  /* Logo typography */
+  --logo-font-family: "Disket Mono", Helvetica, ui-monospace, monospace;
+  --logo-font-size: 28px;
+  --logo-font-style: normal;
+  --logo-font-weight: 400;
+  --logo-letter-spacing: 0px;
+  --logo-line-height: normal;
+
+  /* Headings and text tokens (subset used by template) */
+  --h6-32-regular-font-family: "Roboto", Helvetica, Arial, sans-serif;
+  --h6-32-regular-font-size: 32px;
+  --h6-32-regular-font-style: normal;
+  --h6-32-regular-font-weight: 400;
+  --h6-32-regular-letter-spacing: 0px;
+  --h6-32-regular-line-height: normal;
+
+  --h1-20-regular-32-font-family: "Roboto", Helvetica, Arial, sans-serif;
+  --h1-20-regular-32-font-size: 20px;
+  --h1-20-regular-32-font-style: normal;
+  --h1-20-regular-32-font-weight: 400;
+  --h1-20-regular-32-letter-spacing: 0px;
+  --h1-20-regular-32-line-height: 32px;
+
+  --h1-20-medium-auto-font-family: "Roboto", Helvetica, Arial, sans-serif;
+  --h1-20-medium-auto-font-size: 20px;
+  --h1-20-medium-auto-font-style: normal;
+  --h1-20-medium-auto-font-weight: 500;
+  --h1-20-medium-auto-letter-spacing: 0px;
+  --h1-20-medium-auto-line-height: normal;
+
+  --h2-16-regular-font-family: "Roboto", Helvetica, Arial, sans-serif;
+  --h2-16-regular-font-size: 16px;
+  --h2-16-regular-font-style: normal;
+  --h2-16-regular-font-weight: 400;
+  --h2-16-regular-letter-spacing: 0px;
+  --h2-16-regular-line-height: normal;
+
+  --h3-14-light-auto-font-family: "Roboto", Helvetica, Arial, sans-serif;
+  --h3-14-light-auto-font-size: 14px;
+  --h3-14-light-auto-font-style: normal;
+  --h3-14-light-auto-font-weight: 300;
+  --h3-14-light-auto-letter-spacing: 0px;
+  --h3-14-light-auto-line-height: normal;
+
+  --h3-14-medium-font-family: "Roboto", Helvetica, Arial, sans-serif;
+  --h3-14-medium-font-size: 14px;
+  --h3-14-medium-font-style: normal;
+  --h3-14-medium-font-weight: 500;
+  --h3-14-medium-letter-spacing: 0px;
+  --h3-14-medium-line-height: normal;
+
+  /* Color tokens from UI-kit */
+  --im-CM-zs: rgba(22, 155, 0, 1); /* success */
+  --ji-g-0o-i: rgba(246, 246, 246, 1); /* page bg */
+  --m-1hr15: rgba(235, 186, 26, 1); /* warning badge */
+  --my-4-gv-y: rgba(193, 193, 193, 1); /* stroke */
+  --n-44-wi-q: rgba(188, 197, 255, 1); /* soft indigo */
+  --o-md-5-pa: rgba(12, 12, 12, 1); /* text */
+  --x: rgba(69, 69, 69, 1); /* icon gray */
+  --x-2: rgba(171, 171, 171, 1);
+  --x-9g-itj-q: rgba(9, 29, 158, 1); /* primary blue */
+  --y-iy-2x-5: rgba(222, 222, 222, 1);
+}
+
+
