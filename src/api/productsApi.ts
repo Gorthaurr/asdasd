@@ -37,6 +37,10 @@ export const productsApi = createApi({
                     include_attributes: true, // всегда включаем атрибуты
                 }
             }),
+            transformResponse: (response: ProductsResponse) => ({
+                ...response,
+                items: response.items.map(item => ({ ...item, id: String(item.id) }))
+            }),
             providesTags: (result) => 
                 result 
                     ? [
@@ -55,6 +59,7 @@ export const productsApi = createApi({
                     include_attributes: true,
                 }
             }),
+            transformResponse: (response: ProductApi) => ({ ...response, id: String(response.id) }),
             providesTags: (result, error, id) => [{ type: 'Products', id }]
         }),
 
