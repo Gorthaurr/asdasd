@@ -11,6 +11,8 @@ import { useGetProductsQuery } from '../api/productsApi'; // хук для за�
 import AddressAutocomplete from '../components/forms/AddressAutocomplete'; // компонент автодополнения адресов
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.technofame.store';
+
 export default function Checkout() {
   const dispatch = useDispatch(); // отправка экшенов
   const navigate = useNavigate(); // переходы между страницами
@@ -109,7 +111,7 @@ export default function Checkout() {
     };
 
     try {
-      const response = await axios.post('/api/v1/orders', orderData);
+      const response = await axios.post(`${API_BASE_URL}/api/v1/orders`, orderData);
       console.log('Order created:', response.data);
       toast.success('Спасибо за заказ! Мы свяжемся с вами в ближайшее время', 'Заказ оформлен');
       dispatch(clearCart());
