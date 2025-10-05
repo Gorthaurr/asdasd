@@ -4,7 +4,6 @@ import { store } from './app/store';
 import App from './App';
 import './styles/global.css';
 import './styles/modern-user.css';
-import './styles/delivery-style.css';
 import './styles/user-effects.css';
 import './styles/cart-drawer.css';
 import './styles/product-checkout.css';

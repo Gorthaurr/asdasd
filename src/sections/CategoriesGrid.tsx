@@ -1,34 +1,36 @@
 // Красивый каталог категорий для главной страницы
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useGetCategoriesQuery } from '../api/productsApi';
+import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
 import type { RootState } from '../app/store';
 
 export default function CategoriesGrid() {
-  const navigate = useNavigate();
+  const { setChip } = useCatalogUrlActions();
   const [isVisible, setIsVisible] = useState(false);
 
   // Запрос категорий из API
   const { data: categories = [], isLoading, error } = useGetCategoriesQuery(undefined, {
-    refetchOnMountOrArgChange: false,
-    refetchOnFocus: false,
-    refetchOnReconnect: false,
+    staleTime: 10 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  // Функция для получения эмодзи иконки
-  const getEmojiIcon = (name: string) => {
-    switch (name) {
+  // Иконки для категорий - эмодзи иконки
+  const getCategoryIcon = (categoryName: string) => {
+    switch (categoryName) {
       case 'варочные-панели':
       case 'Плиты':
-        return '🔥';
+        return '🔥'; // огонь для варочной панели
+      case 'винные-шкафы':
+        return '🍷'; // вино для винных шкафов
       case 'холодильники':
       case 'Холодильники':
-        return '❄️';
+        return '❄️'; // снежинка для холодильника
       case 'встраиваемые-кофемашины':
       case 'Кофемашины':
         return '☕';
@@ -43,7 +45,7 @@ export default function CategoriesGrid() {
         return '🌡️';
       case 'микроволновые-печи':
       case 'Микроволновые печи':
-        return '📡';
+        return '📡'; // антенна/волны для микроволновки
       case 'морозильные-камеры':
       case 'Морозильные камеры':
         return '🧊';
@@ -55,7 +57,7 @@ export default function CategoriesGrid() {
         return '👕';
       case 'сушильные-машины':
       case 'Сушильные машины':
-        return '🌬️';
+        return '🌬️'; // ветер для сушилки
       case 'Водонагреватели':
         return '🚿';
       case 'Телевизоры':
@@ -80,62 +82,6 @@ export default function CategoriesGrid() {
     }
   };
 
-  // Получение изображения или иконки для категории
-  const getCategoryImage = (categoryName: string) => {
-    // Отладочная информация
-    console.log('Category name:', categoryName);
-    
-    // Маппинг названий категорий на файлы изображений
-    const imageMapping: { [key: string]: string } = {
-      'варочные-панели': '/icons/Варочные панели.png',
-      'винные-шкафы': '/icons/Винные шкафы.png',
-      'встраиваемые-кофемашины': '/icons/Встраиваемые-кофемашины.png',
-      'вытяжки': '/icons/Вытяжки.png',
-      'духовые-шкафы': '/icons/Духовые шкафы.png',
-      'климатическое-оборудование': '/icons/Климатическое-оборудование.png',
-      'микроволновые-печи': '/icons/микроволновые печи.png',
-      'морозильные-камеры': '/icons/Морозильные камеры.png',
-      'посудомоечные-машины': '/icons/Посудомоечные машины.png',
-      'стиральные-машины': '/icons/Стиральные машины.png',
-      'сушильные-машины': '/icons/Сушильные машины.png',
-      'холодильники': '/icons/Холодильники.png'
-    };
-    
-    console.log('Image mapping for', categoryName, ':', imageMapping[categoryName]);
-    
-    // Если есть изображение для категории, возвращаем его
-    if (imageMapping[categoryName]) {
-      return (
-        <div className="category-image">
-          <img 
-            src={imageMapping[categoryName]} 
-            alt={categoryName}
-            onError={(e) => {
-              // Если изображение не загрузилось, показываем эмодзи
-              e.currentTarget.style.display = 'none';
-              const fallback = e.currentTarget.nextElementSibling;
-              if (fallback instanceof HTMLElement) {
-                fallback.style.display = 'block';
-              }
-            }}
-          />
-          <div className="category-fallback" style={{ display: 'none' }}>
-            {getEmojiIcon(categoryName)}
-          </div>
-        </div>
-      );
-    }
-    
-    // Для остальных категорий показываем эмодзи
-    return (
-      <div className="category-image">
-        <div className="category-fallback">
-          {getEmojiIcon(categoryName)}
-        </div>
-      </div>
-    );
-  };
-
   // Цвета для категорий
   const categoryColors: { [key: string]: string } = {
     'Холодильники': 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
@@ -158,9 +104,6 @@ export default function CategoriesGrid() {
     'Утюги': 'linear-gradient(135deg, #a16207, #854d0e)',
     'Пылесосы': 'linear-gradient(135deg, #7c2d12, #9a3412)',
   };
-
-  // Отладочная информация
-  console.log('Categories from API:', categories);
 
   if (isLoading) {
     return (
@@ -201,98 +144,48 @@ export default function CategoriesGrid() {
           <span className="title-line highlight">по категориям</span>
         </h1>
         <p className="categories-subtitle">Выберите категорию для просмотра лучших товаров</p>
-        
-        <div className="categories-stats">
-          <div className="stat-row">
-            <strong className="stat-number">⭐ 4.9/5</strong>
-            <span className="stat-label">📊 по оценкам покупателей</span>
-          </div>
-          <div className="stat-row">
-            <strong className="stat-number">🕐 24/7</strong>
-            <span className="stat-label">📞 поддержка клиентов</span>
-          </div>
-          <div className="stat-row">
-            <strong className="stat-number">🔄 365</strong>
-            <span className="stat-label">📅 дней возврата</span>
-          </div>
-          <div className="stat-row">
-            <strong className="stat-number">🏆 10+</strong>
-            <span className="stat-label">🎯 лет опыта</span>
-          </div>
-        </div>
-        
-        <div className="categories-features">
-          <div className="feature-item">
-            <div className="feature-icon">✅</div>
-            <div className="feature-content">
-              <h4 className="feature-title">🛡️ Гарантия качества</h4>
-              <p className="feature-description">Вся техника с официальной гарантией, в заводской упаковке</p>
-            </div>
-          </div>
-          
-          <div className="feature-item">
-            <div className="feature-icon">⭐</div>
-            <div className="feature-content">
-              <h4 className="feature-title">🏅 Премиальные бренды</h4>
-              <p className="feature-description">Сотрудничаем со всеми мировыми производителями</p>
-            </div>
-          </div>
-          
-          <div className="feature-item">
-            <div className="feature-icon">📦</div>
-            <div className="feature-content">
-              <h4 className="feature-title">🛍️ Широкий ассортимент</h4>
-              <p className="feature-description">Тысячи товаров от ведущих производителей электроники</p>
-            </div>
-          </div>
-        </div>
       </div>
 
-       <div className="categories-header-section">
-         <h2 className="categories-section-title">Категории товаров</h2>
-         <p className="categories-section-subtitle">Выберите интересующую вас категорию</p>
-       </div>
-
-       <div className="categories-grid">
-         {categories.map((category: any, index: number) => {
-           console.log('Rendering category:', category.slug, 'with image:', getCategoryImage(category.slug));
-           return (
-            <div
-              key={category.id}
-              className={`category-card animated-category ${isVisible ? 'visible' : ''}`}
-              style={{
-                animationDelay: `${index * 0.1}s`,
-                background: categoryColors[category.slug] || 'linear-gradient(135deg, #374151, #1f2937)'
-              }}
-              onClick={() => navigate(`/category/${category.slug}`)}
-              role="button"
-              tabIndex={0}
-              aria-label={`Перейти к категории ${category.slug}`}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  navigate(`/category/${category.slug}`);
-                }
-              }}
-            >
-              <div className="category-icon">
-                {getCategoryImage(category.slug)}
-              </div>
-              <h3 className="category-name">{category.slug}</h3>
-              <div className="category-arrow">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M9 18l6-6-6-6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <div className="category-overlay"></div>
+      <div className="categories-grid">
+        {categories.map((category: any, index: number) => (
+          <div
+            key={category.id}
+            className={`category-card animated-category ${isVisible ? 'visible' : ''}`}
+            style={{
+              animationDelay: `${index * 0.1}s`,
+              background: categoryColors[category.slug] || 'linear-gradient(135deg, #374151, #1f2937)'
+            }}
+            onClick={() => setChip(category.slug)}
+            role="button"
+            tabIndex={0}
+            aria-label={`Перейти к категории ${category.slug}`}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                setChip(category.slug);
+              }
+            }}
+          >
+            <div className="category-icon">
+              {getCategoryIcon(category.slug)}
             </div>
-          );
-        })}
+            <h3 className="category-name">{category.slug}</h3>
+            <p className="category-description">
+              Лучшие товары категории
+            </p>
+            <div className="category-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M9 18l6-6-6-6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <div className="category-overlay"></div>
+          </div>
+        ))}
       </div>
     </section>
   );

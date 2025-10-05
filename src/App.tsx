@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useGetCategoriesQuery } from "./api/productsApi";
 import Header from "./components/layout/Header";
 import Home from "./pages/Home";
-import CategoryPage from "./pages/CategoryPage";
 import ProductPage from "./pages/ProductPage";
 import Checkout from "./pages/Checkout";
 import Admin from "./pages/Admin";
@@ -50,7 +49,6 @@ export default function App(){
             <ConditionalLayout>
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/category/:slug" element={<CategoryPage />} />
                     <Route path="/product/:id" element={<ProductPage />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/admin/login" element={<AdminLogin />} />
