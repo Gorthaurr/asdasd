@@ -361,90 +361,55 @@ export default function ProductPage() {
         ogUrl={`https://technofame.store/product/${product.id}`}
         canonical={`https://technofame.store/product/${product.id}`}
       />
-      <main className="container product-page" style={{ padding: '16px 0 40px' }}>
-        <section className="product-page-grid">
-          {/* Галерея изображений товара */}
+      <main className="container" style={{ padding: '16px 0' }}>
+        <nav className="breadcrumbs">Главная / {product.category} / <strong>Карточка товара</strong></nav>
+        <section className="product-page-grid" style={{ gridTemplateColumns: '1.1fr 1fr 320px' }}>
           <ProductImageGallery product={product} />
 
-          {/* Сводка и действия */}
-          <div className="product-summary">
-            <h1 style={{ marginTop: 0 }}>{product.name}</h1>
-
-          {/* Рейтинг кликабелен → к отзывам */}
-          <div
-            className="product-rating"
-            role="button"
-            title="Перейти к отзывам"
-            onClick={handleScrollToReviews}
-          >
-            <RatingStars rating={product.rating} />
-            <strong>⭐ {product.rating.toFixed(1)}</strong>
-            <span>(отзывы)</span>
-          </div>
-
-          {/* Краткие характеристики */}
-          <ul className="specs-list">
-            {details.mainSpecs.map((spec) => (
-              <li key={spec.label}>
-                <span>{spec.label}</span>
-                <span>{spec.value}</span>
-              </li>
-            ))}
-          </ul>
-
-          {/* Действия: − qty +, Подробнее, Сердце */}
-          <div className="product-actions">
-            <div className="product-price">
-              {fmtCurrency(product.price)}
+          <div className="product-info">
+            <h1 className="product-title">{product.name}</h1>
+            <div className="color-selector">
+              <div className="color-label">Цвет:</div>
+              <div className="color-options">
+                <button className="color-option" style={{ background: '#000' }} aria-label="чёрный" />
+                <button className="color-option" style={{ background: '#f00' }} aria-label="красный" />
+                <button className="color-option active" style={{ background: '#fff' }} aria-label="белый" />
+              </div>
             </div>
 
-            <QuantityControl
-              productId={product.id}
-              quantity={quantity}
-              onQuantityChange={handleQuantityChange}
-              onAddToCart={handleAddToCart}
-            />
+            <ul className="specs-list">
+              {details.mainSpecs.map((spec) => (
+                <li key={spec.label}><span className="spec-label">{spec.label}</span><span className="spec-value">{spec.value}</span></li>
+              ))}
+            </ul>
 
-            <button
-              className="btn primary"
-              onClick={handleScrollToSpecs}
-              title="📋 К полным характеристикам"
-            >
-              📋 Подробнее
-            </button>
-
-            {/* Сердце-избранное: активная синяя заливка как в карточке */}
-            <button
-              className={`animated-fav${isFav ? ' is-active' : ''}`}
-              aria-label="Добавить в избранное"
-              title={isFav ? '💔 Убрать из избранного' : '💖 Добавить в избранное'}
-              onClick={handleToggleFav}
-            >
-              <img 
-                src="/icons/Избранное.png" 
-                alt="Избранное"
-                style={{ 
-                  width: '18px', 
-                  height: '18px',
-                  filter: isFav ? 'none' : 'grayscale(100%) opacity(0.5)'
-                }}
-              />
-            </button>
+            <div className="product-actions" style={{ display: 'grid', gap: 12 }}>
+              <div className="product-price">{fmtCurrency(product.price)}</div>
+              <QuantityControl productId={product.id} quantity={quantity} onQuantityChange={handleQuantityChange} onAddToCart={handleAddToCart} />
+              <button className="btn btn--primary" onClick={handleScrollToSpecs}>Все характеристики</button>
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* Полные характеристики */}
-      <section ref={fullSpecsRef} id="full-specs">
-        <SpecificationsSection specs={details.fullSpecs} title="📋 Характеристики" />
-        <h3>📝 Описание</h3>
-        <p style={{ color: 'var(--muted)' }}>{details.description}</p>
-      </section>
+          <aside className="card" style={{ alignSelf: 'start' }}>
+            <div className="price" style={{ justifyContent: 'flex-end' }}>
+              <div className="price__now" style={{ fontSize: 22 }}>{fmtCurrency(product.price)}</div>
+            </div>
+            <button className="btn btn--primary" style={{ marginTop: 12 }} onClick={handleAddToCart}>В корзину</button>
+          </aside>
+        </section>
 
-      {/* Отзывы */}
-      <section ref={reviewsRef}>
-        <ReviewsSection reviews={details.reviews} />
-      </section>
+        <section ref={fullSpecsRef} id="full-specs" className="specs-section">
+          <h2 className="specs-title">Характеристики</h2>
+          <SpecificationsSection specs={details.fullSpecs} title="" />
+        </section>
+
+        <section ref={reviewsRef} className="reviews-section">
+          <div className="reviews-header">
+            <h2 className="reviews-title">Отзывы</h2>
+            <span className="reviews-count">{details.reviews.length} отзывов</span>
+          </div>
+          <ReviewsSection reviews={details.reviews} />
+        </section>
       </main>
     </>
   );

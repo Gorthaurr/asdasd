@@ -74,52 +74,18 @@ export default function ProductsGridApi() {
   }
 
   return (
-    <section className="catalog-layout">
+    <section className="container" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '16px', marginTop: '16px' }}>
       <Filters />
       
       <div className="catalog-content">
-        <div className="catalog-header">
-          <div className="sort-control">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 6h18M7 12h10M11 18h2"/>
-            </svg>
-            <select 
-              value={catalog.sort} 
-              onChange={(e) => setSort(e.target.value)}
-              className="sort-select"
-            >
-              <option value="popular">По популярности</option>
-              <option value="priceAsc">Цена: по возрастанию</option>
-              <option value="priceDesc">Цена: по убыванию</option>
-              <option value="new">Новинки</option>
-            </select>
+        <div className="toolbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button className="icon-btn" aria-label="Назад">‹</button>
+            <h1 style={{ fontSize: 20, margin: 0 }}>{catalog.chip || 'Каталог'}</h1>
           </div>
-          
           <div className="view-toggle">
-            <button 
-              className={viewMode === 'grid' ? 'active' : ''}
-              onClick={() => setViewMode('grid')}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-              </svg>
-            </button>
-            <button 
-              className={viewMode === 'list' ? 'active' : ''}
-              onClick={() => setViewMode('list')}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="8" y1="6" x2="21" y2="6"/>
-                <line x1="8" y1="12" x2="21" y2="12"/>
-                <line x1="8" y1="18" x2="21" y2="18"/>
-                <line x1="3" y1="6" x2="3.01" y2="6"/>
-                <line x1="3" y1="12" x2="3.01" y2="12"/>
-                <line x1="3" y1="18" x2="3.01" y2="18"/>
-              </svg>
-            </button>
+            <button className={viewMode === 'grid' ? 'viewbtn active' : 'viewbtn'} onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'} aria-label="Плитка">▦</button>
+            <button className={viewMode === 'list' ? 'viewbtn active' : 'viewbtn'} onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'} aria-label="Список">≣</button>
           </div>
         </div>
         

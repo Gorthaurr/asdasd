@@ -37,54 +37,21 @@ export default function Header() {
   }, []);
 
   return (
-    <header>
-      <div className="container nav">
+    <header className="header">
+      <div className="container header__row">
         <Link to="/" className="logo">GLANCE</Link>
         
-        <div className="search">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input type="text" placeholder="Поиск" />
-        </div>
+        <form className="search" role="search">
+          <label className="search__wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input className="search__field" type="text" placeholder="Поиск" />
+          </label>
+        </form>
 
-        <div className="actions">
-          <button
-            className="icon-btn"
-            onClick={() => {
-              window.location.href = "/?fav=1";
-            }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-            </svg>
-            <span>Каталог</span>
-          </button>
-
-          <button
-            className="icon-btn"
-            onClick={() => dispatch(openDrawer())}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
-            <span>Корзина</span>
-            {cartCount > 0 && <span className="badge">{cartCount}</span>}
-          </button>
-
-          <button className="icon-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
-            <span>Профиль</span>
-          </button>
+        <div className="header__right">
+          <button className="icon-btn" onClick={() => { window.location.href = "/?fav=1"; }} aria-label="Каталог">≡</button>
+          <button className="icon-btn" onClick={() => dispatch(openDrawer())} aria-label="Корзина">🛒{cartCount > 0 && <span className="badge">{cartCount}</span>}</button>
+          <button className="icon-btn" aria-label="Профиль">👤</button>
         </div>
       </div>
     </header>

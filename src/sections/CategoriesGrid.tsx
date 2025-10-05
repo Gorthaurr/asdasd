@@ -159,14 +159,14 @@ export default function CategoriesGrid() {
   }
 
   return (
-    <section className="categories-section">
+    <section className="container" aria-live="polite">
       <h2 className="section-title">Каталог</h2>
 
-      <div className="categories-grid">
+      <div className="cats">
         {categories.map((category: any) => (
-          <div
+          <article
             key={category.id}
-            className="category-card"
+            className="cat"
             onClick={() => setChip(category.slug)}
             role="button"
             tabIndex={0}
@@ -175,8 +175,9 @@ export default function CategoriesGrid() {
                 setChip(category.slug);
               }
             }}
+            aria-label={`Перейти к категории ${category.slug}`}
           >
-            <div className="category-icon">
+            <div className="cat__img">
               <img 
                 src={getIconPath(category.slug)} 
                 alt={category.slug}
@@ -186,8 +187,8 @@ export default function CategoriesGrid() {
                 }}
               />
             </div>
-            <h3 className="category-name">{category.slug}</h3>
-          </div>
+            <div className="cat__title">{category.slug}</div>
+          </article>
         ))}
       </div>
     </section>
