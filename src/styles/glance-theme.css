@@ -42,7 +42,7 @@ body {
 }
 
 .container {
-    width: min(1200px, 100% - 40px);
+    width: min(1200px, 100% - 32px);
     margin: 0 auto;
 }
 
@@ -195,7 +195,9 @@ header {
 .hero-image img {
     max-width: 100%;
     height: auto;
+    max-height: 280px;
 }
+@media (min-width: 1024px) { .hero-image img { max-height: 360px; } }
 
 .hero-nav-btn {
     position: absolute;
@@ -272,7 +274,7 @@ header {
 
 .categories-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 16px;
 }
 
@@ -287,6 +289,7 @@ header {
     gap: 12px;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
+    min-height: 160px;
 }
 
 .category-card:hover {
@@ -296,7 +299,7 @@ header {
 
 .category-icon {
     width: 80px;
-    height: 80px;
+    height: 96px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -478,12 +481,16 @@ header {
 
 .products.list-view .card {
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 180px 1fr;
     gap: 16px;
 }
 
 .products.list-view .thumb {
-    height: 200px;
+    height: 180px;
+}
+
+.products.list-view .content {
+    padding: 16px;
 }
 
 /* Product Card */
@@ -495,6 +502,7 @@ header {
     display: flex;
     flex-direction: column;
     transition: box-shadow 0.2s;
+    min-height: 420px;
 }
 
 .card:hover {
@@ -591,6 +599,7 @@ header {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    flex: 1;
 }
 
 .name {
@@ -614,7 +623,7 @@ header {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-top: 8px;
+    margin-top: auto;
 }
 
 .cost {
@@ -655,6 +664,7 @@ header {
     background: var(--accent);
     border-color: var(--accent);
     color: white;
+    align-self: stretch;
 }
 
 .btn.primary:hover {
@@ -1034,4 +1044,83 @@ header {
 
 .text-error {
     color: var(--error);
+}
+
+/* Reset for media to avoid layout shifts */
+img, svg { display: block; max-width: 100%; height: auto; }
+
+/* Container padding fix for small screens */
+.container { width: min(1200px, 100% - 32px); margin: 0 auto; }
+
+/* Hero constraints to prevent overflow */
+.hero-image img { max-height: 280px; }
+@media (min-width: 1024px) { .hero-image img { max-height: 360px; } }
+
+/* Category cards: stable sizes */
+.categories-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.category-card { min-height: 160px; }
+.category-icon { height: 96px; }
+
+/* Product card layout stability */
+.card { min-height: 420px; }
+.thumb { height: 220px; }
+.content { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.price { margin-top: auto; }
+.btn.primary { align-self: stretch; }
+
+/* List view tune */
+.products.list-view .card { grid-template-columns: 180px 1fr; }
+.products.list-view .thumb { height: 180px; }
+.products.list-view .content { padding: 16px; }
+
+/* Mobile safe area for bottom nav */
+@supports(padding: max(0px)) {
+  .mobile-nav { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  body { padding-bottom: max(60px, env(safe-area-inset-bottom)); }
+}
+
+/* UI-kit brand variables */
+:root{
+  --brand-blue: #091D9E;
+  --brand-purple: #750DC5;
+  --brand-lilac: #BCC5FF;
+  --brand-bg: #F6F6F6;
+  --brand-gray: #C1C1C1;
+  --brand-black: #0C0C0C;
+  --brand-yellow: #EBBA1A;
+  --brand-grad-start: #260DC1;
+  --brand-grad-end: #59006F;
+}
+
+/* Buttons per UI-kit */
+.btn.primary{
+  background: var(--brand-blue);
+  border-color: var(--brand-blue);
+  color: #fff;
+}
+.btn.primary:hover{ filter: brightness(1.05); }
+
+.btn.secondary{
+  background: var(--brand-lilac);
+  border-color: var(--brand-lilac);
+  color: var(--brand-blue);
+}
+
+/* Inputs per UI-kit */
+input, select, textarea{
+  border: 1px solid var(--brand-gray);
+  background: #fff;
+}
+input:focus, select:focus, textarea:focus{
+  outline: none;
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 3px rgba(9,29,158,0.12);
+}
+input:invalid{
+  border-color: #E53935;
+  box-shadow: 0 0 0 3px rgba(229,57,53,0.12);
+}
+input:valid{
+  border-color: #10B981;
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
 }

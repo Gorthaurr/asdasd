@@ -82,6 +82,28 @@ export default function CategoriesGrid() {
     }
   };
 
+  // Соответствие slug -> имя файла иконки в public/icons
+  const slugToIcon: Record<string, string> = {
+    'варочные-панели': 'Варочные панели.png',
+    'винные-шкафы': 'Винные шкафы.png',
+    'вытяжки': 'Вытяжки.png',
+    'духовые-шкафы': 'Духовые шкафы.png',
+    'климатическое-оборудование': 'Климатическое-оборудование.png',
+    'микроволновые-печи': 'микроволновые печи.png',
+    'морозильные-камеры': 'Морозильные камеры.png',
+    'посудомоечные-машины': 'Посудомоечные машины.png',
+    'стиральные-машины': 'Стиральные машины.png',
+    'сушильные-машины': 'Сушильные машины.png',
+    'холодильники': 'Холодильники.png',
+  };
+
+  const getIconPath = (slug: string) => {
+    if (slugToIcon[slug]) return `/icons/${slugToIcon[slug]}`;
+    // Фолбэк: заменяем тире на пробелы и пытаемся с заглавной
+    const guess = slug.replace(/-/g, ' ');
+    return `/icons/${guess.charAt(0).toUpperCase()}${guess.slice(1)}.png`;
+  };
+
   // Цвета для категорий
   const categoryColors: { [key: string]: string } = {
     'Холодильники': 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
@@ -156,7 +178,7 @@ export default function CategoriesGrid() {
           >
             <div className="category-icon">
               <img 
-                src={`/icons/${category.slug}.png`} 
+                src={getIconPath(category.slug)} 
                 alt={category.slug}
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
