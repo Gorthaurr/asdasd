@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 // Страница оформления заказа: форма + сводка корзины (без кнопки «Назад в каталог»)
 
 import { FormEvent, useState, useEffect } from 'react'; // локальное состояние/типы формы
@@ -94,6 +96,9 @@ export default function Checkout() {
       return;
     }
 
+    console.log('Cart rows before submit:', rows);  // Debug: смотри id здесь
+    console.log('Cart items:', cartItems);
+
     const orderData = {
       customer: {
         name: `${form.firstName} ${form.lastName}`,
@@ -102,7 +107,7 @@ export default function Checkout() {
         address: form.address,
       },
       items: rows.map(row => ({
-        product_id: row.id,
+        product_id: typeof row.id === 'number' ? row.id.toString().padStart(12, '0') : row.id,  // Фикс: number to padded str (temp, если не UUID)
         qty: cartItems[row.id]
       })),
       comment: form.comment,

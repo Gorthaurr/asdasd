@@ -2,7 +2,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../../app/store';
 import type { Product } from '../../types/product';
-import products from '../../mocks/products.json'; // мок-данные (заменим на API позднее)
+// Удалить: import products from '../../mocks/products.json';
 
 
 // Базовые выборки состояния
@@ -67,16 +67,30 @@ export const selectCartCount = createSelector(selectCartItems, (items)=>
 
 
 // Подробная корзина: строки и сумма
-export const selectCartDetailed = createSelector(selectCartItems, () => products as Product[], (items, list) => {
-    const rows = Object.entries(items).map(([id, qty]) => {
-        // Пробуем найти товар по числовому или строковому ID
-        const product = list.find(p => p.id === Number(id) || p.id === id);
-        if (!product) {
-            return { id, name: 'Товар не найден', category: 'Неизвестно', price: 0, qty };
-        }
-        return { ...product, qty };
-    });
-    const sum = rows.reduce((acc, r) => acc + (r.price || 0) * (r.qty || 0), 0); // общая сумма
-    return { rows, sum }; // возвращаем структуру для UI
-});
+export const selectCartDetailed = createSelector(
+  selectCartItems,
+  (state: RootState) => state.products.entities,  // Из RTK Query, id str UUID
+  (items, productsEntities) => {
+    const rows: CartRow[] = [];
+    let sum = 0;
+
+    for (const [id, qty] of Object.entries(items)) {
+      const product = productsEntities[id];  // id как str
+      if (product) {
+        rows.push({ 
+          id: product.id,  // str UUID
+          name: product.name,
+          price: product.price_cents / 100,
+          qty,
+          images: product.images || []
+        });
+        sum += (product.price_cents / 100) * qty;
+      } else {
+        rows.push({ id, name: 'Товар не загружен (проверьте API)', price: 0, qty });
+      }
+    }
+
+    return { rows, sum };
+  }
+);
 
