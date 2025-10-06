@@ -3,20 +3,20 @@ import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 import { useGetCategoriesQuery } from '../../api/productsApi';
 
-// Маппинг латинских slug из БД на русские названия и иконки
+// Маппинг русских slug (с дефисами) из БД на отображаемые названия и иконки из папки icons
 const categoryData: Record<string, { name: string; icon: string }> = {
-  'varochnye-paneli': { name: 'Варочные панели', icon: '/icons/Варочные панели.png' },
-  'vinnye-shkafy': { name: 'Винные шкафы', icon: '/icons/Винные шкафы.png' },
-  'vstraivaemye-kofemashiny': { name: 'Встраиваемые кофемашины', icon: '/icons/Встраиваемые-кофемашины.png' },
-  'vytyazhki': { name: 'Вытяжки', icon: '/icons/Вытяжки.png' },
-  'duhovye-shkafy': { name: 'Духовые шкафы', icon: '/icons/Духовые шкафы.png' },
-  'klimaticheskoe-oborudovanie': { name: 'Климатическое оборудование', icon: '/icons/Климатическое-оборудование.png' },
-  'mikrovolnovye-pechi': { name: 'Микроволновые печи', icon: '/icons/микроволновые печи.png' },
-  'morozilnye-kamery': { name: 'Морозильные камеры', icon: '/icons/Морозильные камеры.png' },
-  'posudomoechnye-mashiny': { name: 'Посудомоечные машины', icon: '/icons/Посудомоечные машины.png' },
-  'stiralnye-mashiny': { name: 'Стиральные машины', icon: '/icons/Стиральные машины.png' },
-  'sushilnye-mashiny': { name: 'Сушильные машины', icon: '/icons/Сушильные машины.png' },
-  'holodilniki': { name: 'Холодильники', icon: '/icons/Холодильники.png' },
+  'холодильники': { name: 'Холодильники', icon: '/icons/Холодильники.png' },
+  'варочные-панели': { name: 'Варочные панели', icon: '/icons/Варочные панели.png' },
+  'духовые-шкафы': { name: 'Духовые шкафы', icon: '/icons/Духовые шкафы.png' },
+  'стиральные-машины': { name: 'Стиральные машины', icon: '/icons/Стиральные машины.png' },
+  'сушильные-машины': { name: 'Сушильные машины', icon: '/icons/Сушильные машины.png' },
+  'посудомоечные-машины': { name: 'Посудомоечные машины', icon: '/icons/Посудомоечные машины.png' },
+  'вытяжки': { name: 'Вытяжки', icon: '/icons/Вытяжки.png' },
+  'морозильные-камеры': { name: 'Морозильные камеры', icon: '/icons/Морозильные камеры.png' },
+  'микроволновые-печи': { name: 'Микроволновые печи', icon: '/icons/микроволновые печи.png' },
+  'винные-шкафы': { name: 'Винные шкафы', icon: '/icons/Винные шкафы.png' },
+  'встраиваемые-кофемашины': { name: 'Встраиваемые кофемашины', icon: '/icons/Встраиваемые-кофемашины.png' },
+  'климатическое-оборудование': { name: 'Климатическое оборудование', icon: '/icons/Климатическое-оборудование.png' },
 };
 
 export const ProductDisplaySection = (): JSX.Element => {
