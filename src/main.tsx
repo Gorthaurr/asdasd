@@ -21,3 +21,6 @@ createRoot(document.getElementById('root')!).render(
     </Provider>
   </ErrorBoundary>
 );
+
+// Экспортируем store в window для ErrorBoundary логов
+(window as any).store = store;
