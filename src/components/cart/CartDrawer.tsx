@@ -13,6 +13,7 @@ export default function CartDrawer() {
   const { rows, sum } = useSelector(selectCartDetailedApi);
   const [isVisible, setIsVisible] = useState(false);
 
+  // Убираем спам логов
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && open) dispatch(closeDrawer());

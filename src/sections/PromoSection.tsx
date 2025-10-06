@@ -35,19 +35,26 @@ export default function PromoSection() {
   };
 
   useEffect(() => {
+    let isMounted = true;
     const el = trackRef.current;
     if (!el) return;
-    
-    const scrollHandler = handleScroll;
+
+    const scrollHandler = () => {
+      if (!isMounted) return;
+      handleScroll();
+    };
+
     el.addEventListener('scroll', scrollHandler);
-    
-    const timer = setTimeout(() => handleScroll(), 100);
-    
+    const timer = setTimeout(() => {
+      if (isMounted) handleScroll();
+    }, 100);
+
     return () => {
+      isMounted = false;
       el.removeEventListener('scroll', scrollHandler);
       clearTimeout(timer);
     };
-  }, [data]);
+  }, []);
 
   return (
     <section className="promo-section">

@@ -42,20 +42,26 @@ export const ProductDisplaySection = (): JSX.Element => {
   };
 
   React.useEffect(() => {
+    let isMounted = true;
     const el = trackRef.current;
     if (!el) return;
-    
-    const scrollHandler = handleScroll;
+
+    const scrollHandler = () => {
+      if (!isMounted) return;
+      handleScroll();
+    };
+
     el.addEventListener('scroll', scrollHandler);
-    
-    // Проверяем начальное состояние после небольшой задержки
-    const timer = setTimeout(() => handleScroll(), 100);
-    
+    const timer = setTimeout(() => {
+      if (isMounted) handleScroll();
+    }, 100);
+
     return () => {
+      isMounted = false;
       el.removeEventListener('scroll', scrollHandler);
       clearTimeout(timer);
     };
-  }, [categories]);
+  }, []);
 
   return (
     <section className="flex flex-col items-start gap-10 w-full px-20 py-10">
