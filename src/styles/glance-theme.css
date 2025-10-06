@@ -124,3 +124,13 @@ h6, .h6 {
 .btn--secondary:active {
   transform: scale(0.98);
 }
+
+/* Скрытие полосы прокрутки */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
