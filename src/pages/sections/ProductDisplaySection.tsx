@@ -35,7 +35,8 @@ export const ProductDisplaySection = (): JSX.Element => {
                     alt={category.name} 
                     className="w-[160px] h-[160px] object-contain"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/icons/default.png';
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
                     }}
                   />
                 </div>
