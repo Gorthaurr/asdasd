@@ -1,13 +1,13 @@
 // Грид товаров + пагинация с реальным API
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useGetProductsQuery } from '../api/productsApi';
-import { selectFilteredApiProducts, selectApiMeta } from '../features/catalog/apiSelectors';
+import { useGetProductsQuery, useGetCategoriesQuery } from '../api/productsApi';
 import ProductCard from '../components/products/ProductCard';
 import PaginationApi from '../components/products/PaginationApi';
 import Filters from '../components/products/Filters';
 import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
 import type { RootState } from '../app/store';
+import { transformProduct } from '../utils/apiTransform';
 
 export default function ProductsGridApi() {
   const catalog = useSelector((s: RootState) => s.catalog);
@@ -17,30 +17,37 @@ export default function ProductsGridApi() {
   // Проверяем, находимся ли на странице избранного
   const isOnFavoritesPage = catalog.favoriteOnly;
 
-  // Запрос к API с параметрами из состояния каталога - ОПТИМИЗИРОВАННЫЙ
-  const { data, isLoading, error, refetch } = useGetProductsQuery(
+  // Загружаем список категорий, чтобы сопоставить chip -> id
+  const { data: categories } = useGetCategoriesQuery();
+  const selectedCategoryId = useMemo(() => {
+    if (!categories) return undefined;
+    if (!catalog.chip || catalog.chip === 'Все') return undefined;
+    // chip хранит человекочитаемый slug (например, "холодильники")
+    const found = categories.find((c: any) => c.slug === catalog.chip);
+    return found?.id;
+  }, [categories, catalog.chip]);
+
+  // Запрос к API: используем category_id, а не slug
+  const { data, isLoading, error } = useGetProductsQuery(
     {
       page: catalog.page,
       page_size: catalog.pageSize,
       q: catalog.q || undefined,
-      category_slug: catalog.chip !== 'Все' ? catalog.chip : undefined,
+      category_id: selectedCategoryId,
       sort: mapSortToApi(catalog.sort),
       include_images: true,
       include_attributes: true,
     },
     {
-      // Принудительно перезапрашиваем данные при изменении параметров
       refetchOnMountOrArgChange: true,
-      // Кэшируем на 2 минуты для быстрой навигации
       staleTime: 2 * 60 * 1000,
-      // Не блокируем загрузку категорий
       refetchOnWindowFocus: false,
     }
   );
 
-  // Получаем данные через селекторы
-  const products = useSelector(selectFilteredApiProducts);
-  const meta = useSelector(selectApiMeta);
+  // Преобразуем данные напрямую из ответа (без сложных селекторов)
+  const products = useMemo(() => (data?.items || []).map(transformProduct), [data]);
+  const meta = data?.meta;
 
   if (isLoading) {
     return (
