@@ -201,20 +201,12 @@ h6, .h6 {
 .promo-scroll::before,
 .promo-scroll::after {
   content: '';
-  position: fixed;
+  position: absolute;
   left: 0;
   right: 0;
   height: 1px;
   background-color: #BCC5FF;
-  z-index: 1000;
-}
-
-.promo-scroll::before {
-  top: 140px; /* Позиция хедера + отступы */
-}
-
-.promo-scroll::after {
-  bottom: 100px; /* Отступ от низа экрана */
+  z-index: 1;
 }
 
 .promo-card-wrapper {
