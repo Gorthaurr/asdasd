@@ -6,6 +6,7 @@ import { selectCartCount } from '../../features/catalog/apiSelectors';
 import { selectFavCount } from '../../features/catalog/apiSelectors';
 import type { RootState } from '../../app/store';
 import { useCatalogUrlActions } from '../../routing/useCatalogUrlActions';
+import { Search, Menu, ShoppingCart, User } from 'lucide-react';
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -37,30 +38,32 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="header">
-      <div className="container header__row">
-        <Link to="/" className="logo">GLANCE</Link>
-        
-        <form className="search" role="search">
-          <label className="search__wrap">
-            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            <input className="search__field" type="text" placeholder="Поиск" />
+    <header className="w-full h-20 flex bg-white border-b border-[#c1c1c1]">
+      <div className="flex items-center w-full max-w-[1280px] h-[46px] mx-auto px-4 gap-[88px] ml-[80px] mt-[17px]">
+        <Link to="/" className="relative w-fit bg-[linear-gradient(234deg,rgba(38,13,193,1)_0%,rgba(89,0,111,1)_100%)] [-webkit-background-clip:text] bg-clip-text [-webkit-text-fill-color:transparent] [text-fill-color:transparent] font-logo font-[number:var(--logo-font-weight)] text-transparent text-[length:var(--logo-font-size)] tracking-[var(--logo-letter-spacing)] leading-[var(--logo-line-height)] whitespace-nowrap [font-style:var(--logo-font-style)]">
+          TECHOFAME
+        </Link>
+
+        <form className="flex-1 max-w-[754px] h-10" role="search">
+          <label className="flex items-center gap-4 h-full px-4 bg-y-iy-2x-5 rounded-lg">
+            <Search className="w-[18px] h-[18px] text-x flex-shrink-0" aria-hidden="true" />
+            <input className="border-0 bg-transparent p-0 h-auto text-x w-full outline-none" type="text" placeholder="Поиск" />
           </label>
         </form>
 
-        <div className="header__right">
-          <button className="icon-btn" onClick={() => { window.location.href = "/?chip=Все"; }} aria-label="Каталог">
-            <span style={{ fontSize: 24, lineHeight: 1 }}>≡</span>
-            <span>Каталог</span>
+        <div className="flex items-center gap-8">
+          <button className="flex flex-col items-center gap-1 text-x hover:text-x-9g-itj-q transition-colors" onClick={() => { window.location.href = "/?chip=Все"; }} aria-label="Каталог">
+            <Menu className="w-6 h-6" strokeWidth={1.5} />
+            <span className="text-sm font-light">Каталог</span>
           </button>
-          <button className="icon-btn" onClick={() => dispatch(openDrawer())} aria-label="Корзина">
-            <span style={{ fontSize: 24, lineHeight: 1 }}>🛒</span>
-            <span>Корзина</span>
-            {cartCount > 0 && <span className="badge">{cartCount}</span>}
+          <button className="relative flex flex-col items-center gap-1 text-x hover:text-x-9g-itj-q transition-colors" onClick={() => dispatch(openDrawer())} aria-label="Корзина">
+            <ShoppingCart className="w-6 h-6" strokeWidth={1.5} />
+            <span className="text-sm font-light">Корзина</span>
+            {cartCount > 0 && <span className="absolute -top-1 -right-2 min-w-[18px] h-[18px] px-1 rounded-full bg-x-9g-itj-q text-white text-[11px] leading-[18px] text-center">{cartCount}</span>}
           </button>
-          <button className="icon-btn" aria-label="Профиль">
-            <span style={{ fontSize: 24, lineHeight: 1 }}>👤</span>
-            <span>Профиль</span>
+          <button className="flex flex-col items-center gap-1 text-x hover:text-x-9g-itj-q transition-colors" aria-label="Профиль">
+            <User className="w-6 h-6" strokeWidth={1.5} />
+            <span className="text-sm font-light">Профиль</span>
           </button>
         </div>
       </div>

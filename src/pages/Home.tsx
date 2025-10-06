@@ -4,7 +4,6 @@ import PromoSection from '../sections/PromoSection';
 import ProductsGridApi from '../sections/ProductsGridApi';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../app/store';
-import { HeaderSection } from './sections/HeaderSection';
 import { ProductDisplaySection } from './sections/ProductDisplaySection';
 
 export default function Home() {
@@ -16,7 +15,7 @@ export default function Home() {
 
   return (
     <>
-      <HeaderSection />
+      {/* Header уже выводится в макете App, поэтому локальный HeaderSection убираем */}
       <ProductDisplaySection />
       <main className="container" style={{ padding: showCategories ? '0' : '16px 0 0' }}>
         {showCategories ? <PromoSection /> : <ProductsGridApi />}

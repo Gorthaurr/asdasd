@@ -3,3 +3,124 @@
 @tailwind utilities;
 
 /* ниже — кастомные стили glance-theme */
+
+/* Базовая типографика для всего текста */
+body {
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--o-md-5-pa, #0c0c0c);
+}
+
+p, span, div, a, button, input, textarea, label {
+  font-family: inherit;
+}
+
+/* Типографика по спецификации */
+h1, .h1 {
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: normal;
+}
+
+h2, .h2 {
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: normal;
+}
+
+h3, .h3 {
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: normal;
+}
+
+h4, .h4 {
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: normal;
+}
+
+h5, .h5 {
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+}
+
+h6, .h6 {
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: normal;
+}
+
+.h7 {
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: normal;
+  text-decoration: line-through;
+}
+
+/* Сброс устаревших классов мобильной навигации (ранее тянулись из global css) */
+.mobile-nav, .mobile-nav-items, .mobile-nav-item { all: unset; }
+
+/* Базовые утилиты, недостающие для старых разметок */
+.icon-btn{ display:inline-flex; flex-direction:column; align-items:center; gap:4px; color:var(--x); background:transparent; border:0; cursor:pointer; }
+.icon-btn .badge{ display:inline-block; min-width:18px; height:18px; line-height:18px; text-align:center; background:var(--x-9g-itj-q); color:#fff; border-radius:9999px; font-size:11px; padding:0 4px; }
+
+/* Глобальные стили кнопок для клиентской части (не трогаем .admin-* и admin.css) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.btn--primary {
+  background: #091D9E;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn--primary:hover {
+  background: #0a1a85;
+}
+
+.btn--primary:active {
+  transform: scale(0.98);
+}
+
+.btn--secondary {
+  background: #BCC5FF;
+  color: #091D9E;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn--secondary:hover {
+  background: #a8b3ff;
+}
+
+.btn--secondary:active {
+  transform: scale(0.98);
+}

@@ -15,10 +15,10 @@ export default function Footer() {
       <div className="footer-content">
         <div className="footer-main">
           <div className="footer-brand">
-            <h3 className="brand-title">TechnoFame</h3>
-            <p className="brand-subtitle">Премиальная бытовая техника</p>
+            <h3 className="brand-title">TECHOFAME</h3>
+            <p className="brand-subtitle">Техника и электроника</p>
             <p className="brand-description">
-              Бытовая, цифровая, садовая и аудио техника от ведущих мировых производителей
+              Бытовая, цифровая и аудио техника от ведущих производителей
             </p>
           </div>
 
@@ -113,7 +113,7 @@ export default function Footer() {
           </div>
 
           <div className="footer-copyright">
-            <span>© {year} TechnoFame. Все права защищены.</span>
+            <span>© {year} TECHOFAME. Все права защищены.</span>
           </div>
         </div>
       </div>
