@@ -11,6 +11,8 @@ body {
   font-weight: 400;
   line-height: 1.5;
   color: var(--o-md-5-pa, #0c0c0c);
+  margin-left: 80px;
+  margin-right: 80px;
 }
 
 p, span, div, a, button, input, textarea, label {
@@ -175,15 +177,52 @@ h6, .h6 {
 /* Промо карусель */
 .promo-scroll {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   overflow-x: auto;
   padding: 8px 0;
   scroll-snap-type: x mandatory;
+  align-items: stretch;
 }
 
 .promo-card-wrapper {
-  flex: 0 0 auto;
+  flex: 0 0 220px;
   scroll-snap-align: start;
+  height: 530px;
+}
+
+/* Точки пагинации изображений в карточках товаров */
+.image-pagination-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.image-pagination-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.image-pagination-dot.active {
+  background: #091D9E;
+}
+
+.image-pagination-dot:hover {
+  background: #bcc5ff;
+}
+
+/* Перенос текста в названиях товаров */
+.product-card-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
 }
 
 /* Состояния загрузки и ошибок */
@@ -211,7 +250,7 @@ h6, .h6 {
   100% { transform: rotate(360deg); }
 }
 
-/* Промо: стрелки как в карусели категорий - без заливки */
+/* Промо: стрелки как в карусели категорий - белый фон, синий контур */
 .promo-arrow {
   position: absolute;
   top: 50%;
@@ -219,19 +258,21 @@ h6, .h6 {
   width: 52px;
   height: 52px;
   border-radius: 9999px;
-  background: transparent;
+  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 2px solid #091D9E;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transition: all 0.2s;
   z-index: 10;
   cursor: pointer;
 }
 
 .promo-arrow:hover {
-  background: #091D9E;
-  border-color: #091D9E;
+  background: #f8f9ff;
+  border-color: #0a1a85;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .promo-arrow:active { transform: translateY(-50%) scale(0.98); }

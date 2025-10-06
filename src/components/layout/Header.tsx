@@ -15,7 +15,7 @@ export default function Header() {
 
   return (
     <header className="w-full h-20 flex bg-white border-b border-[#c1c1c1]">
-      <div className="flex items-center w-full max-w-[1280px] h-[46px] mx-auto px-4 gap-[88px] ml-[80px] mt-[17px]">
+      <div className="flex items-center w-full max-w-[1280px] h-[46px] mx-auto px-4 gap-[88px] mt-[17px]">
         <Link to="/" className="relative w-fit bg-[linear-gradient(234deg,rgba(38,13,193,1)_0%,rgba(89,0,111,1)_100%)] [-webkit-background-clip:text] bg-clip-text [-webkit-text-fill-color:transparent] [text-fill-color:transparent] font-logo font-[number:var(--logo-font-weight)] text-transparent text-[length:var(--logo-font-size)] tracking-[var(--logo-letter-spacing)] leading-[var(--logo-line-height)] whitespace-nowrap [font-style:var(--logo-font-style)]">
           TECHOFAME
         </Link>

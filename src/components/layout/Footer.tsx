@@ -11,7 +11,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className={`animated-footer ${isVisible ? 'visible' : ''}`}>
+    <footer className={`animated-footer ${isVisible ? 'visible' : ''}`} style={{ marginLeft: 0, marginRight: 0 }}>
       <div className="footer-content">
         <div className="footer-main">
           <div className="footer-brand">

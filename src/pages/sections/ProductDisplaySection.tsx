@@ -30,7 +30,7 @@ export const ProductDisplaySection = (): JSX.Element => {
 
 
   return (
-    <section className="flex flex-col items-start gap-10 w-full px-20 py-10">
+    <section className="flex flex-col items-start gap-10 w-full py-10">
       {/* Каталог */}
       <div className="flex flex-col items-start gap-7 w-full relative">
         <div className="flex items-center justify-end gap-5">

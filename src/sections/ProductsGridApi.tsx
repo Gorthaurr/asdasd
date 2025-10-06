@@ -81,7 +81,7 @@ export default function ProductsGridApi() {
   }
 
   return (
-    <section className="container" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '16px', marginTop: '16px' }}>
+    <section className="container" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '16px' }}>
       <Filters />
       
       <div className="catalog-content">

@@ -319,7 +319,7 @@ export default function ProductPage() {
   // Состояние загрузки
   if (isLoading) {
     return (
-      <main className="container" style={{ padding: '24px 0' }}>
+      <main className="container">
         <div className="loading-state">
           <div className="loading-spinner"></div>
           <p>Загружаем товар...</p>
@@ -331,7 +331,7 @@ export default function ProductPage() {
   // Состояние ошибки
   if (error || !product || !details) {
     return (
-      <main className="container" style={{ padding: '24px 0' }}>
+      <main className="container">
         <div className="error-state">
           <div className="error-icon">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
@@ -361,7 +361,7 @@ export default function ProductPage() {
         ogUrl={`https://technofame.store/product/${product.id}`}
         canonical={`https://technofame.store/product/${product.id}`}
       />
-      <main className="container" style={{ padding: '16px 0' }}>
+      <main className="container">
         <nav className="breadcrumbs">Главная / {product.category} / <strong>Карточка товара</strong></nav>
         <section className="product-page-grid" style={{ gridTemplateColumns: '1.1fr 1fr 320px' }}>
           <ProductImageGallery product={product} />
