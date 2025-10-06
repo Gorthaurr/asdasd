@@ -45,10 +45,16 @@ export const ProductDisplaySection = (): JSX.Element => {
     const el = trackRef.current;
     if (!el) return;
     
-    el.addEventListener('scroll', handleScroll);
-    handleScroll(); // Проверяем начальное состояние
+    const scrollHandler = handleScroll;
+    el.addEventListener('scroll', scrollHandler);
     
-    return () => el.removeEventListener('scroll', handleScroll);
+    // Проверяем начальное состояние после небольшой задержки
+    const timer = setTimeout(() => handleScroll(), 100);
+    
+    return () => {
+      el.removeEventListener('scroll', scrollHandler);
+      clearTimeout(timer);
+    };
   }, [categories]);
 
   return (

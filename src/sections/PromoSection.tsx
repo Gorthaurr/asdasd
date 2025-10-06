@@ -37,9 +37,16 @@ export default function PromoSection() {
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
-    el.addEventListener('scroll', handleScroll);
-    handleScroll();
-    return () => el.removeEventListener('scroll', handleScroll);
+    
+    const scrollHandler = handleScroll;
+    el.addEventListener('scroll', scrollHandler);
+    
+    const timer = setTimeout(() => handleScroll(), 100);
+    
+    return () => {
+      el.removeEventListener('scroll', scrollHandler);
+      clearTimeout(timer);
+    };
   }, [data]);
 
   return (
