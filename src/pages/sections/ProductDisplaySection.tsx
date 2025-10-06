@@ -3,6 +3,22 @@ import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 import { useGetCategoriesQuery } from '../../api/productsApi';
 
+// Маппинг названий категорий на файлы иконок
+const categoryIconMap: Record<string, string> = {
+  'Варочные панели': '/icons/Варочные панели.png',
+  'Винные шкафы': '/icons/Винные шкафы.png',
+  'Встраиваемые кофемашины': '/icons/Встраиваемые-кофемашины.png',
+  'Вытяжки': '/icons/Вытяжки.png',
+  'Духовые шкафы': '/icons/Духовые шкафы.png',
+  'Климатическое оборудование': '/icons/Климатическое-оборудование.png',
+  'Микроволновые печи': '/icons/микроволновые печи.png',
+  'Морозильные камеры': '/icons/Морозильные камеры.png',
+  'Посудомоечные машины': '/icons/Посудомоечные машины.png',
+  'Стиральные машины': '/icons/Стиральные машины.png',
+  'Сушильные машины': '/icons/Сушильные машины.png',
+  'Холодильники': '/icons/Холодильники.png',
+};
+
 export const ProductDisplaySection = (): JSX.Element => {
   const trackRef = useRef<HTMLDivElement>(null);
   const { data: categories, isLoading } = useGetCategoriesQuery();
@@ -23,26 +39,29 @@ export const ProductDisplaySection = (): JSX.Element => {
           <div className="w-full text-center py-10 text-gray-500">Загрузка категорий...</div>
         ) : (
           <div className="flex items-start gap-4 w-full overflow-x-auto" ref={trackRef}>
-            {categories?.map((category) => (
-              <button 
-                key={category.id} 
-                className="flex flex-col items-center gap-3 flex-shrink-0"
-                onClick={() => { window.location.href = `/?chip=${encodeURIComponent(category.name)}`; }}
-              >
-                <div className="w-[200px] h-[211px] bg-[#EEF1FF] rounded-[16px] border border-[#E7E7E7] grid place-items-center">
-                  <img 
-                    src={`/icons/${category.name}.png`} 
-                    alt={category.name} 
-                    className="w-[160px] h-[160px] object-contain"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                  />
-                </div>
-                <span className="text-black text-xl font-light">{category.name}</span>
-              </button>
-            ))}
+            {categories?.map((category) => {
+              const iconPath = categoryIconMap[category.name];
+              return (
+                <button 
+                  key={category.id} 
+                  className="flex flex-col items-center gap-3 flex-shrink-0"
+                  onClick={() => { window.location.href = `/?chip=${encodeURIComponent(category.name)}`; }}
+                >
+                  <div className="w-[200px] h-[211px] bg-[#EEF1FF] rounded-[16px] border border-[#E7E7E7] grid place-items-center">
+                    {iconPath ? (
+                      <img 
+                        src={iconPath} 
+                        alt={category.name} 
+                        className="w-[160px] h-[160px] object-contain"
+                      />
+                    ) : (
+                      <div className="text-6xl opacity-30">📦</div>
+                    )}
+                  </div>
+                  <span className="text-black text-xl font-light">{category.name}</span>
+                </button>
+              );
+            })}
           </div>
         )}
         <Button variant="ghost" size="icon" className="absolute right-[80px] w-[52px] h-[52px] rounded-full bg-white shadow-lg">›</Button>
