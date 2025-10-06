@@ -72,10 +72,10 @@ export const ProductDisplaySection = (): JSX.Element => {
               return (
                 <button 
                   key={category.id} 
-                  className="flex flex-col items-center gap-3 flex-shrink-0"
+                  className="category-card flex flex-col items-center gap-3 flex-shrink-0"
                   onClick={() => { window.location.href = `/?chip=${encodeURIComponent(displayName)}`; }}
                 >
-                  <div className="w-[200px] h-[211px] bg-[#EEF1FF] rounded-[16px] border border-[#E7E7E7] grid place-items-center">
+                  <div className="w-[200px] h-[211px] bg-[#EEF1FF] rounded-[16px] border border-[#BCC5FF] grid place-items-center overflow-hidden">
                     {iconPath ? (
                       <img 
                         src={iconPath} 
@@ -86,7 +86,7 @@ export const ProductDisplaySection = (): JSX.Element => {
                       <div className="text-6xl opacity-30">📦</div>
                     )}
                   </div>
-                  <span className="text-black text-xl font-light">{displayName}</span>
+                  <span className="category-name text-black text-xl font-light text-center">{displayName}</span>
                 </button>
               );
             })}

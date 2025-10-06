@@ -134,3 +134,52 @@ h6, .h6 {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Стили для всех иконок категорий - картинки должны полностью помещаться */
+.category-card {
+  min-width: 200px;
+  max-width: 200px;
+}
+
+.category-card img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+/* Фиксированная высота для текста категории с переносом */
+.category-card .category-name {
+  min-height: 56px;
+  max-height: 56px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+
+/* Промо: стрелки как в карусели категорий */
+.promo-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 9999px;
+  background: #091D9E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(9,29,158,0.25);
+  transition: background-color 0.2s, transform 0.2s;
+  z-index: 10;
+  border: none;
+  cursor: pointer;
+}
+
+.promo-arrow:hover { background: #0a1a85; }
+.promo-arrow:active { transform: translateY(-50%) scale(0.98); }
+.promo-arrow--left { left: 0; }
+.promo-arrow--right { right: 0; }
