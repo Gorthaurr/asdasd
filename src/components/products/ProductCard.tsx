@@ -143,7 +143,7 @@ export default function ProductCard({ p }: { p: Product }) {
             className={`product-favorite-btn w-10 h-10 flex items-center justify-center rounded-lg border transition-all ${
               isFav
                 ? 'bg-white border-black text-black'
-                : 'bg-white border-black text-gray-400 hover:border-[#091D9E] hover:text-[#091D9E]'
+                : 'bg-white border-black text-gray-400 hover:border-[#091D9E] hover:text-[#091D9E] hover:bg-[#f8f9ff]'
             }`}
             onClick={() => dispatch(toggleFav(p.id))}
             aria-label="В избранное"
