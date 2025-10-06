@@ -66,7 +66,7 @@ export default function PromoSection() {
 
 
   return (
-    <section className="promo-section" style={{ marginLeft: 0, marginRight: 0 }}>
+    <section className="promo-section" style={{ marginLeft: 0, marginRight: 0, marginTop: 0 }}>
       <h2 className="section-title">Акции</h2>
       <div className="promo-carousel" style={{ position: 'relative' }}>
         <button

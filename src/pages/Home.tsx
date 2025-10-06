@@ -17,7 +17,7 @@ export default function Home() {
     <>
       {/* Header уже выводится в макете App, поэтому локальный HeaderSection убираем */}
       <ProductDisplaySection />
-      <main className="container">
+      <main className="container" style={{ paddingTop: 0, marginTop: 0 }}>
         {showCategories ? <PromoSection /> : <ProductsGridApi />}
       </main>
     </>

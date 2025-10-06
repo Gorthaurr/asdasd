@@ -122,7 +122,7 @@ export default function ProductCard({ p }: { p: Product }) {
         </div>
 
         {/* Название товара */}
-        <h3 className="product-card-title text-sm font-normal mb-3">
+        <h3 className="product-card-title text-base font-medium mb-3 leading-tight">
           <Link to={`/product/${p.originalId || p.id}`} className="hover:text-[#091D9E] transition-colors">
             {p.name}
           </Link>
@@ -137,13 +137,13 @@ export default function ProductCard({ p }: { p: Product }) {
         </div>
 
         {/* Наличие и сердечко */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-3">
           <span className="text-xs text-[#169B00] font-medium">Наличии</span>
           <button
-            className={`w-10 h-10 flex items-center justify-center rounded-lg border transition-all ${
+            className={`product-favorite-btn w-10 h-10 flex items-center justify-center rounded-lg border transition-all ${
               isFav
-                ? 'bg-white border-[#091D9E] text-[#091D9E]'
-                : 'bg-white border-gray-200 text-gray-400 hover:border-[#091D9E] hover:text-[#091D9E]'
+                ? 'bg-white border-black text-black'
+                : 'bg-white border-black text-gray-400 hover:border-[#091D9E] hover:text-[#091D9E]'
             }`}
             onClick={() => dispatch(toggleFav(p.id))}
             aria-label="В избранное"
@@ -153,6 +153,14 @@ export default function ProductCard({ p }: { p: Product }) {
             </svg>
           </button>
         </div>
+
+        {/* Кнопка "В корзину" */}
+        <button
+          className="w-full bg-[#091D9E] text-white text-sm font-medium py-3 px-4 rounded-lg hover:bg-[#0a1a85] active:scale-[0.98] transition-all"
+          onClick={handleAddToCart}
+        >
+          В корзину
+        </button>
       </div>
     </div>
   );

@@ -30,7 +30,7 @@ export const ProductDisplaySection = (): JSX.Element => {
 
 
   return (
-    <section className="flex flex-col items-start gap-10 w-full py-10">
+    <section className="flex flex-col items-start gap-10 w-full py-10" style={{ maxWidth: '1280px', margin: '0 auto' }}>
       {/* Каталог */}
       <div className="flex flex-col items-start gap-7 w-full relative">
         <div className="flex items-center justify-end gap-5">
@@ -40,7 +40,7 @@ export const ProductDisplaySection = (): JSX.Element => {
           <div className="w-full text-center py-10 text-gray-500">Загрузка категорий...</div>
         ) : (
           <>
-            <div className="flex items-start gap-4 w-full overflow-x-auto scrollbar-hide" ref={trackRef}>
+            <div className="flex items-start gap-4 overflow-x-auto scrollbar-hide" ref={trackRef} style={{ maxWidth: '1280px', margin: '0 auto' }}>
             {categories?.map((category) => {
               // Берём данные по латинскому slug из БД
               const data = categoryData[category.slug];
