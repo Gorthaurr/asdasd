@@ -225,6 +225,20 @@ h6, .h6 {
   gap: 16px;
 }
 
+/* Сетка продуктов для категорий - 4 колонки по 4 ряда (16 продуктов) */
+.products.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.product-grid-item {
+  display: flex;
+  justify-content: center;
+}
+
 /* Точки пагинации изображений в карточках товаров */
 .image-pagination-dots {
   display: flex;

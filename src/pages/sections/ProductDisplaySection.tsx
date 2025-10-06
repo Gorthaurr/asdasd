@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 import { useGetCategoriesQuery } from '../../api/productsApi';
+import { useCatalogUrlActions } from '../../routing/useCatalogUrlActions';
 
 // Маппинг русских slug (с дефисами) из БД на отображаемые названия и иконки из папки icons
 const categoryData: Record<string, { name: string; icon: string }> = {
@@ -22,6 +23,7 @@ const categoryData: Record<string, { name: string; icon: string }> = {
 export const ProductDisplaySection = (): JSX.Element => {
   const trackRef = useRef<HTMLDivElement>(null);
   const { data: categories, isLoading } = useGetCategoriesQuery();
+  const { setChip } = useCatalogUrlActions();
   
   const scroll = (dir: 1 | -1) => {
     const el = trackRef.current; if (!el) return;
@@ -52,7 +54,7 @@ export const ProductDisplaySection = (): JSX.Element => {
                 <button 
                   key={category.id} 
                   className="category-card flex flex-col items-center gap-3 flex-shrink-0"
-                  onClick={() => { window.location.href = `/?chip=${encodeURIComponent(displayName)}`; }}
+                  onClick={() => setChip(category.slug)}
                 >
                   <div className="w-[200px] h-[211px] bg-[#EEF1FF] rounded-[16px] border border-[#BCC5FF] grid place-items-center overflow-hidden">
                     {iconPath ? (

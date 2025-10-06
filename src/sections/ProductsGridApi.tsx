@@ -17,6 +17,12 @@ export default function ProductsGridApi() {
   // Проверяем, находимся ли на странице избранного
   const isOnFavoritesPage = catalog.favoriteOnly;
 
+  // Проверяем, выбрана ли конкретная категория (не "Все")
+  const isCategorySelected = catalog.chip && catalog.chip !== 'Все';
+
+  // При выбранной категории всегда используем grid режим
+  const effectiveViewMode = isCategorySelected ? 'grid' : viewMode;
+
   // Загружаем список категорий, чтобы сопоставить chip -> id
   const { data: categories } = useGetCategoriesQuery();
   const selectedCategoryId = useMemo(() => {
@@ -90,19 +96,22 @@ export default function ProductsGridApi() {
             <button className="icon-btn" aria-label="Назад">‹</button>
             <h1 style={{ fontSize: 20, margin: 0 }}>{catalog.chip || 'Каталог'}</h1>
           </div>
-          <div className="view-toggle">
-            <button className={viewMode === 'grid' ? 'viewbtn active' : 'viewbtn'} onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'} aria-label="Плитка">▦</button>
-            <button className={viewMode === 'list' ? 'viewbtn active' : 'viewbtn'} onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'} aria-label="Список">≣</button>
-          </div>
+          {!isCategorySelected && (
+            <div className="view-toggle">
+              <button className={viewMode === 'grid' ? 'viewbtn active' : 'viewbtn'} onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'} aria-label="Плитка">▦</button>
+              <button className={viewMode === 'list' ? 'viewbtn active' : 'viewbtn'} onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'} aria-label="Список">≣</button>
+            </div>
+          )}
         </div>
         
-        <div id="products" className={`products ${viewMode === 'list' ? 'list-view' : ''}`}>
+        <div id="products" className={`products ${effectiveViewMode === 'list' ? 'list-view' : (isCategorySelected ? 'category-grid' : '')}`}>
           {products
             .filter((p: any, index: number, arr: any[]) =>
               arr.findIndex(item => item.id === p.id) === index
             )
+            .slice(0, isCategorySelected ? 16 : products.length) // При выбранной категории показываем максимум 16 продуктов
             .map((p: any) => (
-              <div key={p.id} className="promo-card-wrapper">
+              <div key={p.id} className={isCategorySelected ? "product-grid-item" : "promo-card-wrapper"}>
                 <ProductCard p={p} />
               </div>
             ))}
@@ -113,7 +122,8 @@ export default function ProductsGridApi() {
             </div>
           )}
         </div>
-        {meta && meta.total_pages > 1 && products.length > 0 && !isOnFavoritesPage && <PaginationApi meta={meta} />}
+        {meta && meta.total_pages > 1 && products.length > 0 && !isOnFavoritesPage &&
+         (!isCategorySelected || (isCategorySelected && meta.total > 16)) && <PaginationApi meta={meta} />}
       </div>
     </section>
   );
