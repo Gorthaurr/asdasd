@@ -98,11 +98,13 @@ export default function ProductsGridApi() {
         
         <div id="products" className={`products ${viewMode === 'list' ? 'list-view' : ''}`}>
           {products
-            .filter((p: any, index: number, arr: any[]) => 
+            .filter((p: any, index: number, arr: any[]) =>
               arr.findIndex(item => item.id === p.id) === index
             )
             .map((p: any) => (
-              <ProductCard key={p.id} p={p} />
+              <div key={p.id} className="promo-card-wrapper">
+                <ProductCard p={p} />
+              </div>
             ))}
           {products.length === 0 && (
             <div id="empty" className="empty">

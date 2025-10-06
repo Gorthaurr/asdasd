@@ -198,30 +198,31 @@ h6, .h6 {
   position: relative;
 }
 
-.promo-scroll::before,
-.promo-scroll::after {
-  content: '';
-  position: fixed;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background-color: #BCC5FF;
-  z-index: 1000;
-}
-
-.promo-scroll::before {
-  top: 140px; /* Позиция под хедером */
-}
-
-.promo-scroll::after {
-  bottom: 0; /* Внизу экрана */
-}
 
 .promo-card-wrapper {
   flex: 0 0 220px;
   scroll-snap-align: start;
   height: auto;
   min-height: 580px;
+}
+
+/* Стили для грида товаров в категории - аналогично промо секции */
+.products {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 8px 0;
+  scroll-snap-type: x mandatory;
+  align-items: stretch;
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.products.list-view {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
 }
 
 /* Точки пагинации изображений в карточках товаров */
