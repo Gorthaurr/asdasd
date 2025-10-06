@@ -472,7 +472,9 @@
 /* Responsive */
 @media (max-width: 480px) {
   .drawer {
-    width: 100vw;
+    width: 100%;
+    left: 0;
+    right: 0;
   }
   
   .cart-item {

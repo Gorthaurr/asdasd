@@ -1594,9 +1594,7 @@ button:focus-visible {
     opacity: 0;
     transform: translateY(30px);
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 100vw;
-    left: 0;
-    right: 0;
+    width: 100%;
 }
 
 .animated-footer.visible {
@@ -1986,6 +1984,7 @@ button:focus-visible {
     right: 0;
     width: 100%;
     z-index: 1000;
+    box-sizing: border-box;
 }
 
 .footer-links {

@@ -212,6 +212,7 @@ h6, .h6 {
   gap: 20px;
   overflow-x: auto;
   padding: 8px 0;
+  padding-top: 24px; /* Отступ сверху для выравнивания с картинками продуктов */
   scroll-snap-type: x mandatory;
   align-items: stretch;
   max-width: 1280px;
@@ -232,11 +233,120 @@ h6, .h6 {
   gap: 20px;
   max-width: 1280px;
   margin: 0 auto;
+  padding-top: 24px; /* Отступ сверху для выравнивания с картинками продуктов */
 }
 
 .product-grid-item {
   display: flex;
   justify-content: center;
+}
+
+/* Фильтры и тулбар - отступы для выравнивания с картинками продуктов */
+.filters-sidebar {
+  padding-top: 24px; /* Отступ сверху для выравнивания с картинками продуктов */
+}
+
+.toolbar {
+  padding-top: 24px; /* Отступ сверху для выравнивания с картинками продуктов */
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.breadcrumbs-section {
+  margin-bottom: 8px;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.breadcrumb-link {
+  color: #091D9E;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+  color: #0a1a85;
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  color: #6b7280;
+}
+
+.breadcrumb-current {
+  color: #374151;
+  font-weight: 500;
+}
+
+.toolbar-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+  color: #374151;
+}
+
+.sort-section {
+  display: flex;
+  align-items: center;
+}
+
+.sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.sort-btn:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+.sort-btn svg {
+  transition: transform 0.2s;
+}
+
+.sort-btn:hover svg {
+  transform: rotate(180deg);
 }
 
 /* Точки пагинации изображений в карточках товаров */

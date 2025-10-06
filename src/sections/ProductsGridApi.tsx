@@ -92,16 +92,39 @@ export default function ProductsGridApi() {
       
       <div className="catalog-content">
         <div className="toolbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <button className="icon-btn" aria-label="Назад">‹</button>
-            <h1 style={{ fontSize: 20, margin: 0 }}>{catalog.chip || 'Каталог'}</h1>
+          <div className="breadcrumbs-section">
+            <nav className="breadcrumbs">
+              <a href="/" className="breadcrumb-link">Главная</a>
+              <span className="breadcrumb-separator">/</span>
+              <span className="breadcrumb-current">{catalog.chip || 'Каталог'}</span>
+            </nav>
           </div>
-          {!isCategorySelected && (
-            <div className="view-toggle">
-              <button className={viewMode === 'grid' ? 'viewbtn active' : 'viewbtn'} onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'} aria-label="Плитка">▦</button>
-              <button className={viewMode === 'list' ? 'viewbtn active' : 'viewbtn'} onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'} aria-label="Список">≣</button>
+
+          <div className="toolbar-controls">
+            <div className="toolbar-left">
+              <button className="back-btn" onClick={() => setChip('Все')} aria-label="Вернуться к категориям">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+              </button>
+
+              <div className="sort-section">
+                <button className="sort-btn" onClick={() => {/* Открыть меню сортировки */}}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M7 16l5-5 5 5"/>
+                  </svg>
+                  <span>По популярности</span>
+                </button>
+              </div>
             </div>
-          )}
+
+            {!isCategorySelected && (
+              <div className="view-toggle">
+                <button className={viewMode === 'grid' ? 'viewbtn active' : 'viewbtn'} onClick={() => setViewMode('grid')} aria-pressed={viewMode === 'grid'} aria-label="Плитка">▦</button>
+                <button className={viewMode === 'list' ? 'viewbtn active' : 'viewbtn'} onClick={() => setViewMode('list')} aria-pressed={viewMode === 'list'} aria-label="Список">≣</button>
+              </div>
+            )}
+          </div>
         </div>
         
         <div id="products" className={`products ${effectiveViewMode === 'list' ? 'list-view' : (isCategorySelected ? 'category-grid' : '')}`}>
