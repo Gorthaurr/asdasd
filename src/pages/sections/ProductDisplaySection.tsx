@@ -3,27 +3,20 @@ import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 import { useGetCategoriesQuery } from '../../api/productsApi';
 
-// Маппинг названий категорий на файлы иконок (нормализация для case-insensitive поиска)
-const getCategoryIcon = (categoryName: string): string | null => {
-  const normalized = categoryName.toLowerCase().trim();
-  
-  const iconMap: Record<string, string> = {
-    'варочные панели': '/icons/Варочные панели.png',
-    'винные шкафы': '/icons/Винные шкафы.png',
-    'встраиваемые кофемашины': '/icons/Встраиваемые-кофемашины.png',
-    'вытяжки': '/icons/Вытяжки.png',
-    'духовые шкафы': '/icons/Духовые шкафы.png',
-    'климатическое оборудование': '/icons/Климатическое-оборудование.png',
-    'микроволновые печи': '/icons/микроволновые печи.png',
-    'морозильные камеры': '/icons/Морозильные камеры.png',
-    'посудомоечные машины': '/icons/Посудомоечные машины.png',
-    'стиральные машины': '/icons/Стиральные машины.png',
-    'сушильные машины': '/icons/Сушильные машины.png',
-    'холодильники': '/icons/Холодильники.png',
-    'колонки': '/icons/Избранное.png', // временный fallback
-  };
-  
-  return iconMap[normalized] || null;
+// Маппинг slug категорий на файлы иконок и отображаемые названия
+const categoryData: Record<string, { icon: string; name: string }> = {
+  'varochnye-paneli': { icon: '/icons/Варочные панели.png', name: 'Варочные панели' },
+  'vinnye-shkafy': { icon: '/icons/Винные шкафы.png', name: 'Винные шкафы' },
+  'vstraivaemye-kofemashiny': { icon: '/icons/Встраиваемые-кофемашины.png', name: 'Встраиваемые кофемашины' },
+  'vytyazhki': { icon: '/icons/Вытяжки.png', name: 'Вытяжки' },
+  'duhovye-shkafy': { icon: '/icons/Духовые шкафы.png', name: 'Духовые шкафы' },
+  'klimaticheskoe-oborudovanie': { icon: '/icons/Климатическое-оборудование.png', name: 'Климатическое оборудование' },
+  'mikrovolnovye-pechi': { icon: '/icons/микроволновые печи.png', name: 'Микроволновые печи' },
+  'morozilnye-kamery': { icon: '/icons/Морозильные камеры.png', name: 'Морозильные камеры' },
+  'posudomoechnye-mashiny': { icon: '/icons/Посудомоечные машины.png', name: 'Посудомоечные машины' },
+  'stiralnye-mashiny': { icon: '/icons/Стиральные машины.png', name: 'Стиральные машины' },
+  'sushilnye-mashiny': { icon: '/icons/Сушильные машины.png', name: 'Сушильные машины' },
+  'holodilniki': { icon: '/icons/Холодильники.png', name: 'Холодильники' },
 };
 
 export const ProductDisplaySection = (): JSX.Element => {
@@ -47,25 +40,28 @@ export const ProductDisplaySection = (): JSX.Element => {
         ) : (
           <div className="flex items-start gap-4 w-full overflow-x-auto scrollbar-hide" ref={trackRef}>
             {categories?.map((category) => {
-              const iconPath = getCategoryIcon(category.name);
+              const data = categoryData[category.slug];
+              const displayName = data?.name || category.slug;
+              const iconPath = data?.icon;
+              
               return (
                 <button 
                   key={category.id} 
                   className="flex flex-col items-center gap-3 flex-shrink-0"
-                  onClick={() => { window.location.href = `/?chip=${encodeURIComponent(category.name)}`; }}
+                  onClick={() => { window.location.href = `/?chip=${encodeURIComponent(displayName)}`; }}
                 >
                   <div className="w-[200px] h-[211px] bg-[#EEF1FF] rounded-[16px] border border-[#E7E7E7] grid place-items-center">
                     {iconPath ? (
                       <img 
                         src={iconPath} 
-                        alt={category.name} 
+                        alt={displayName} 
                         className="w-[160px] h-[160px] object-contain"
                       />
                     ) : (
                       <div className="text-6xl opacity-30">📦</div>
                     )}
                   </div>
-                  <span className="text-black text-xl font-light">{category.name}</span>
+                  <span className="text-black text-xl font-light">{displayName}</span>
                 </button>
               );
             })}
