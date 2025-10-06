@@ -93,8 +93,6 @@ export const ProductDisplaySection = (): JSX.Element => {
           </button>
           </>
         )}
-      </div>
-
         </div>
       </div>
 
