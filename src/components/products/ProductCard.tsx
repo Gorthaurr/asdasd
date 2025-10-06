@@ -83,26 +83,26 @@ export default function ProductCard({ p }: { p: Product }) {
   const displayImage = primaryImage || (p.images && p.images.length > 0 ? p.images[0] : null);
 
   return (
-    <article className="relative bg-white rounded-lg overflow-hidden flex flex-col h-full">
+    <article className="relative bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col h-full border border-gray-100">
       {/* Бейдж скидки */}
       {discount > 0 && (
-        <div className="absolute top-2 left-2 z-10 bg-[#EBBA1A] text-white text-xs font-medium px-2 py-1 rounded">
+        <div className="absolute top-3 left-3 z-10 bg-[#EBBA1A] text-white text-xs font-medium px-2.5 py-1 rounded-md">
           -{discount}%
         </div>
       )}
 
       {/* Изображение товара */}
-      <Link to={`/product/${p.originalId || p.id}`} className="block relative aspect-square bg-gray-50">
+      <Link to={`/product/${p.originalId || p.id}`} className="block relative w-full pt-[100%] bg-white">
         {displayImage ? (
           <img 
             src={displayImage.url} 
             alt={displayImage.alt_text || p.name} 
-            className="w-full h-full object-contain p-4"
+            className="absolute inset-0 w-full h-full object-contain p-6"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-300">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+          <div className="absolute inset-0 flex items-center justify-center text-gray-200">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
               <circle cx="8.5" cy="8.5" r="1.5"/>
               <polyline points="21 15 16 10 5 21"/>
@@ -112,38 +112,38 @@ export default function ProductCard({ p }: { p: Product }) {
       </Link>
 
       {/* Контент карточки */}
-      <div className="flex flex-col flex-1 p-3 gap-2">
+      <div className="flex flex-col flex-1 p-4 gap-3">
         {/* Название */}
-        <h3 className="text-sm font-normal line-clamp-2 min-h-[40px]">
+        <h3 className="text-base font-normal line-clamp-2 min-h-[48px] leading-6">
           <Link to={`/product/${p.originalId || p.id}`} className="hover:text-[#091D9E] transition-colors">
             {p.name}
           </Link>
         </h3>
 
         {/* Цены */}
-        <div className="flex items-center gap-2 mt-auto">
-          <span className="text-lg font-medium text-black">{fmtCurrency(p.price)}</span>
+        <div className="flex items-baseline gap-2 mt-auto">
+          <span className="text-xl font-medium text-black">{fmtCurrency(p.price)}</span>
           {p.oldPrice && (
             <span className="text-sm text-gray-400 line-through">{fmtCurrency(p.oldPrice)}</span>
           )}
         </div>
 
         {/* Наличие */}
-        <div className="text-xs text-green-600">В наличии</div>
+        <div className="text-xs text-green-600 font-medium">В наличии</div>
 
         {/* Кнопки */}
-        <div className="flex gap-2 mt-2">
+        <div className="flex gap-2">
           <button 
-            className="flex-1 bg-[#091D9E] text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-[#0a1a85] transition-colors"
+            className="flex-1 bg-[#091D9E] text-white text-sm font-medium py-2.5 px-4 rounded-lg hover:bg-[#0a1a85] active:scale-[0.98] transition-all"
             onClick={handleAddToCart}
           >
             В корзину
           </button>
           <button
-            className={`w-10 h-10 flex items-center justify-center rounded-lg border transition-colors ${
+            className={`w-11 h-11 flex items-center justify-center rounded-lg border-2 transition-all ${
               isFav 
                 ? 'bg-[#091D9E] border-[#091D9E] text-white' 
-                : 'border-gray-300 text-gray-400 hover:border-[#091D9E] hover:text-[#091D9E]'
+                : 'border-gray-200 text-gray-400 hover:border-[#091D9E] hover:text-[#091D9E]'
             }`}
             onClick={() => dispatch(toggleFav(p.id))}
             aria-label="В избранное"
