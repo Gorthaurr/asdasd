@@ -36,6 +36,7 @@ export const ProductDisplaySection = (): JSX.Element => {
         <div className="flex items-center justify-end gap-5">
           <h3 className="text-[32px]">Каталог</h3>
         </div>
+        <div className="relative">
         {isLoading ? (
           <div className="w-full text-center py-10 text-gray-500">Загрузка категорий...</div>
         ) : (
@@ -72,21 +73,21 @@ export const ProductDisplaySection = (): JSX.Element => {
           
           {/* Простые кнопки навигации */}
           <button
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-[52px] h-[52px] rounded-full bg-[#091D9E] shadow-lg flex items-center justify-center hover:bg-[#0a1a85] transition-all z-10"
+            className="carousel-btn"
             onClick={() => scroll(-1)}
             aria-label="Предыдущая категория"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
           </button>
 
           <button
-            className="absolute right-0 top-1/2 -translate-y-1/2 w-[52px] h-[52px] rounded-full bg-[#091D9E] shadow-lg flex items-center justify-center hover:bg-[#0a1a85] transition-all z-10"
+            className="carousel-btn"
             onClick={() => scroll(1)}
             aria-label="Следующая категория"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
           </button>

@@ -201,12 +201,20 @@ h6, .h6 {
 .promo-scroll::before,
 .promo-scroll::after {
   content: '';
-  position: absolute;
+  position: fixed;
   left: 0;
   right: 0;
   height: 1px;
   background-color: #BCC5FF;
-  z-index: 1;
+  z-index: 1000;
+}
+
+.promo-scroll::before {
+  top: 140px; /* Позиция под хедером */
+}
+
+.promo-scroll::after {
+  bottom: 0; /* Внизу экрана */
 }
 
 .promo-card-wrapper {
@@ -294,31 +302,36 @@ h6, .h6 {
   100% { transform: rotate(360deg); }
 }
 
-/* Промо: стрелки как в карусели категорий - белый фон, синий контур */
-.promo-arrow {
+/* Карусельные стрелки - прозрачные с черной обводкой */
+.promo-arrow, .carousel-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   width: 52px;
   height: 52px;
   border-radius: 9999px;
-  background: white;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #091D9E;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 3px solid black;
   transition: all 0.2s;
   z-index: 10;
   cursor: pointer;
 }
 
-.promo-arrow:hover {
-  background: #f8f9ff;
-  border-color: #0a1a85;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+.promo-arrow:hover, .carousel-btn:hover {
+  border-color: #091D9E;
+  background: rgba(9, 29, 158, 0.05);
 }
 
 .promo-arrow:active { transform: translateY(-50%) scale(0.98); }
 .promo-arrow--left { left: 0; }
 .promo-arrow--right { right: 0; }
+
+/* Позиционирование стрелок в карусели категорий */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
