@@ -22,46 +22,12 @@ const categoryData: Record<string, { name: string; icon: string }> = {
 export const ProductDisplaySection = (): JSX.Element => {
   const trackRef = useRef<HTMLDivElement>(null);
   const { data: categories, isLoading } = useGetCategoriesQuery();
-  const [showLeftArrow, setShowLeftArrow] = React.useState(false);
-  const [showRightArrow, setShowRightArrow] = React.useState(true);
   
   const scroll = (dir: 1 | -1) => {
     const el = trackRef.current; if (!el) return;
     el.scrollBy({ left: dir * el.clientWidth * 0.9, behavior: 'smooth' });
   };
 
-  const handleScroll = () => {
-    const el = trackRef.current;
-    if (!el) return;
-    
-    const isAtStart = el.scrollLeft <= 10;
-    const isAtEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 10;
-    
-    setShowLeftArrow(!isAtStart);
-    setShowRightArrow(!isAtEnd);
-  };
-
-  React.useEffect(() => {
-    let isMounted = true;
-    const el = trackRef.current;
-    if (!el) return;
-
-    const scrollHandler = () => {
-      if (!isMounted) return;
-      handleScroll();
-    };
-
-    el.addEventListener('scroll', scrollHandler);
-    const timer = setTimeout(() => {
-      if (isMounted) handleScroll();
-    }, 100);
-
-    return () => {
-      isMounted = false;
-      el.removeEventListener('scroll', scrollHandler);
-      clearTimeout(timer);
-    };
-  }, []);
 
   return (
     <section className="flex flex-col items-start gap-10 w-full px-20 py-10">
@@ -104,30 +70,26 @@ export const ProductDisplaySection = (): JSX.Element => {
             })}
           </div>
           
-          {/* Кнопки навигации карусели */}
-          {showLeftArrow && (
-            <button 
-              className="absolute left-0 top-1/2 -translate-y-1/2 w-[52px] h-[52px] rounded-full bg-[#091D9E] shadow-lg flex items-center justify-center hover:bg-[#0a1a85] transition-all z-10"
-              onClick={() => scroll(-1)}
-              aria-label="Предыдущая категория"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
-          )}
-          
-          {showRightArrow && (
-            <button 
-              className="absolute right-0 top-1/2 -translate-y-1/2 w-[52px] h-[52px] rounded-full bg-[#091D9E] shadow-lg flex items-center justify-center hover:bg-[#0a1a85] transition-all z-10"
-              onClick={() => scroll(1)}
-              aria-label="Следующая категория"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          )}
+          {/* Простые кнопки навигации */}
+          <button
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-[52px] h-[52px] rounded-full bg-[#091D9E] shadow-lg flex items-center justify-center hover:bg-[#0a1a85] transition-all z-10"
+            onClick={() => scroll(-1)}
+            aria-label="Предыдущая категория"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+
+          <button
+            className="absolute right-0 top-1/2 -translate-y-1/2 w-[52px] h-[52px] rounded-full bg-[#091D9E] shadow-lg flex items-center justify-center hover:bg-[#0a1a85] transition-all z-10"
+            onClick={() => scroll(1)}
+            aria-label="Следующая категория"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
           </>
         )}
       </div>
