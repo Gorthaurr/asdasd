@@ -95,6 +95,9 @@ export const ProductDisplaySection = (): JSX.Element => {
         )}
       </div>
 
+        </div>
+      </div>
+
       {/* Заглушка для промо карточек — используем существующий PromoSection в Home */}
     </section>
   );
