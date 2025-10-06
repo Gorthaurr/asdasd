@@ -13,15 +13,6 @@ export default function CartDrawer() {
   const { rows, sum } = useSelector(selectCartDetailedApi);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Отладка изображений
-  console.log('Cart items with images:', rows.map(r => ({
-    id: r.id, 
-    name: r.name, 
-    hasImages: !!r.images, 
-    imageCount: r.images?.length || 0,
-    firstImage: r.images?.[0]
-  })));
-
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && open) dispatch(closeDrawer());

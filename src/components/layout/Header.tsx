@@ -12,30 +12,6 @@ export default function Header() {
   const dispatch = useDispatch();
   const cartCount = useSelector(selectCartCount);
   const favCount = useSelector(selectFavCount);
-  
-  // Отладочная информация
-  useEffect(() => {
-    console.log('Header favCount:', favCount);
-  }, [favCount]);
-  
-  // Принудительно очищаем избранное при первой загрузке
-  useEffect(() => {
-    const needsClearing = localStorage.getItem('needs_fav_clearing');
-    if (!needsClearing) {
-      console.log('Force clearing favorites and cart to fix React issues');
-      localStorage.removeItem('techhome_favs');
-      localStorage.removeItem('techhome_cart');
-      localStorage.setItem('needs_fav_clearing', 'done');
-      window.location.reload();
-    }
-  }, []);
-  const { toggleFavorites } = useCatalogUrlActions();
-  const favOnly = useSelector((s: RootState) => s.catalog.favoriteOnly);
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   return (
     <header className="w-full h-20 flex bg-white border-b border-[#c1c1c1]">
