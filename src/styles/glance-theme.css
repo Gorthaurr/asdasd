@@ -305,7 +305,7 @@ h6, .h6 {
 /* Карусельные стрелки - прозрачные с черной обводкой */
 .promo-arrow, .carousel-btn {
   position: absolute;
-  top: 50%;
+  top: 35%;
   transform: translateY(-50%);
   width: 52px;
   height: 52px;
@@ -332,6 +332,15 @@ h6, .h6 {
 /* Позиционирование стрелок в карусели категорий */
 .carousel-btn {
   position: absolute;
-  top: 50%;
+  top: 35%;
   transform: translateY(-50%);
+  z-index: 10;
+}
+
+.carousel-btn:first-child {
+  left: -26px;
+}
+
+.carousel-btn:last-child {
+  right: -26px;
 }
