@@ -160,7 +160,58 @@ h6, .h6 {
   word-wrap: break-word;
 }
 
-/* Промо: стрелки как в карусели категорий */
+/* Промо секция */
+.promo-section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 32px;
+  font-weight: 400;
+  margin: 0 0 24px 0;
+  color: #0c0c0c;
+}
+
+/* Промо карусель */
+.promo-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 8px 0;
+  scroll-snap-type: x mandatory;
+}
+
+.promo-card-wrapper {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+/* Состояния загрузки и ошибок */
+.loading-state, .error-state, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  gap: 16px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #091D9E;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Промо: стрелки как в карусели категорий - без заливки */
 .promo-arrow {
   position: absolute;
   top: 50%;
@@ -168,18 +219,21 @@ h6, .h6 {
   width: 52px;
   height: 52px;
   border-radius: 9999px;
-  background: #091D9E;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 25px rgba(9,29,158,0.25);
-  transition: background-color 0.2s, transform 0.2s;
+  border: 2px solid #091D9E;
+  transition: all 0.2s;
   z-index: 10;
-  border: none;
   cursor: pointer;
 }
 
-.promo-arrow:hover { background: #0a1a85; }
+.promo-arrow:hover {
+  background: #091D9E;
+  border-color: #091D9E;
+}
+
 .promo-arrow:active { transform: translateY(-50%) scale(0.98); }
 .promo-arrow--left { left: 0; }
 .promo-arrow--right { right: 0; }
