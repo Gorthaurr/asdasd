@@ -16,6 +16,64 @@ const TopProducts = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Обработчики для кнопок
+  const handleViewProduct = async (productId: string) => {
+    try {
+      const product = await adminApi.getProduct(productId);
+      console.log('Product details:', product);
+      // Открываем товар на сайте
+      window.open(`/product/${productId}`, '_blank');
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      alert('Ошибка загрузки товара');
+    }
+  };
+
+  const handleEditProduct = async (productId: string) => {
+    try {
+      const product = await adminApi.getProduct(productId);
+      console.log('Product for editing:', product);
+      
+      // Создаем более удобный интерфейс для редактирования
+      const currentPrice = product.price_cents ? (product.price_cents / 100).toLocaleString('ru-RU') : 'Не указана';
+      
+      const editChoice = prompt(
+        `Редактировать товар #${productId}\n\n` +
+        `Название: ${product.name}\n` +
+        `Цена: ${currentPrice} ₽\n` +
+        `Категория: ${product.category_name || 'Не указана'}\n\n` +
+        `Что хотите изменить?\n` +
+        `1 - Название\n` +
+        `2 - Цену\n` +
+        `Введите номер (1 или 2):`
+      );
+      
+      if (editChoice === '1') {
+        const newName = prompt(`Изменить название товара\nТекущее название: ${product.name}\nВведите новое название:`, product.name);
+        if (newName && newName !== product.name) {
+          await adminApi.updateProduct(productId, { name: newName });
+          alert(`Название товара изменено с "${product.name}" на "${newName}"`);
+          window.location.reload();
+        }
+      } else if (editChoice === '2') {
+        const newPrice = prompt(`Изменить цену товара\nТекущая цена: ${currentPrice} ₽\nВведите новую цену в рублях:`, currentPrice.replace(/\s/g, ''));
+        if (newPrice && newPrice !== currentPrice.replace(/\s/g, '')) {
+          const priceInCents = Math.round(parseFloat(newPrice) * 100);
+          if (!isNaN(priceInCents) && priceInCents > 0) {
+            await adminApi.updateProduct(productId, { price_cents: priceInCents });
+            alert(`Цена товара изменена с ${currentPrice} ₽ на ${newPrice} ₽`);
+            window.location.reload();
+          } else {
+            alert('Неверная цена. Введите корректное число.');
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error updating product:', error);
+      alert('Ошибка обновления товара');
+    }
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -99,14 +157,14 @@ const TopProducts = () => {
             <div className="product-actions">
               <button 
                 className="action-btn view-btn"
-                onClick={() => window.location.href = `/product/${product.id}`}
+                onClick={() => handleViewProduct(product.id)}
                 title="Просмотр товара"
               >
                 👁️
               </button>
               <button 
                 className="action-btn edit-btn"
-                onClick={() => window.location.href = `/admin/products/${product.id}/edit`}
+                onClick={() => handleEditProduct(product.id)}
                 title="Редактировать товар"
               >
                 ✏️

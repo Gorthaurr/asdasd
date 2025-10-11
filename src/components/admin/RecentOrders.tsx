@@ -16,6 +16,63 @@ const RecentOrders = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Обработчики для кнопок
+  const handleViewOrder = async (orderId: string) => {
+    try {
+      const order = await adminApi.getOrder(orderId);
+      console.log('Order details:', order);
+      // Можно открыть модальное окно или перейти на страницу заказа
+      alert(`Заказ #${orderId}\nКлиент: ${order.customer_name}\nСумма: ${(order.total_cents / 100).toLocaleString('ru-RU')} ₽\nСтатус: ${order.status}`);
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      alert('Ошибка загрузки заказа');
+    }
+  };
+
+  const handleEditOrder = async (orderId: string) => {
+    try {
+      const order = await adminApi.getOrder(orderId);
+      console.log('Order for editing:', order);
+      
+      // Создаем более удобный интерфейс для редактирования
+      const statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+      const statusLabels = {
+        'pending': 'Ожидает',
+        'processing': 'В обработке', 
+        'shipped': 'Отправлен',
+        'delivered': 'Доставлен',
+        'cancelled': 'Отменен'
+      };
+      
+      const currentStatusLabel = statusLabels[order.status as keyof typeof statusLabels] || order.status;
+      
+      const newStatus = prompt(
+        `Редактировать заказ #${orderId}\n\n` +
+        `Клиент: ${order.customer_name}\n` +
+        `Сумма: ${(order.total_cents / 100).toLocaleString('ru-RU')} ₽\n` +
+        `Текущий статус: ${currentStatusLabel}\n\n` +
+        `Доступные статусы:\n${statuses.map(s => `- ${s}`).join('\n')}\n\n` +
+        `Введите новый статус:`,
+        order.status
+      );
+      
+      if (newStatus && newStatus !== order.status) {
+        if (statuses.includes(newStatus)) {
+          await adminApi.updateOrderStatus(orderId, newStatus);
+          const newStatusLabel = statusLabels[newStatus as keyof typeof statusLabels] || newStatus;
+          alert(`Статус заказа #${orderId} изменен с "${currentStatusLabel}" на "${newStatusLabel}"`);
+          // Обновляем список заказов
+          window.location.reload();
+        } else {
+          alert('Неверный статус. Используйте один из доступных статусов.');
+        }
+      }
+    } catch (error) {
+      console.error('Error updating order:', error);
+      alert('Ошибка обновления заказа');
+    }
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -128,13 +185,15 @@ const RecentOrders = () => {
             <div className="order-actions">
               <button 
                 className="action-btn view-btn"
-                onClick={() => window.location.href = `/admin/orders/${order.id}`}
+                onClick={() => handleViewOrder(order.id)}
+                title="Просмотреть заказ"
               >
                 👁️ Просмотр
               </button>
               <button 
                 className="action-btn edit-btn"
-                onClick={() => window.location.href = `/admin/orders/${order.id}/edit`}
+                onClick={() => handleEditOrder(order.id)}
+                title="Редактировать заказ"
               >
                 ✏️ Редактировать
               </button>
