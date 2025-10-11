@@ -11,9 +11,9 @@ const CategoryIcon: React.FC<CategoryIconProps> = ({
   size = 24, 
   className = '' 
 }) => {
-  // Жесткий меппинг категорий к иконкам
+  // Жесткий меппинг категорий к иконкам (точные имена файлов)
   const categoryIconMap: { [key: string]: string } = {
-    'все': '/icons/favicon.png', // Используем favicon для "Все"
+    'все': '/icons/favicon.png',
     'холодильники': '/icons/Холодильники.png',
     'стиральные-машины': '/icons/Стиральные машины.png',
     'посудомоечные-машины': '/icons/Посудомоечные машины.png',
@@ -41,13 +41,16 @@ const CategoryIcon: React.FC<CategoryIconProps> = ({
         width: size,
         height: size,
         objectFit: 'contain',
+        display: 'inline-block',
       }}
       onError={(e) => {
+        console.log(`Failed to load icon for category: ${categorySlug}, path: ${iconPath}`);
         // Fallback на эмодзи если иконка не загрузилась
         const target = e.target as HTMLImageElement;
         target.style.display = 'none';
         if (target.parentElement) {
-          target.parentElement.innerHTML = getEmojiFallback(categorySlug);
+          const emoji = getEmojiFallback(categorySlug);
+          target.parentElement.innerHTML = `<span style="font-size: ${size}px; display: inline-block; vertical-align: middle;">${emoji}</span>`;
         }
       }}
     />

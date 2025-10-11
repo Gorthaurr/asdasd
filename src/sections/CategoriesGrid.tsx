@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useGetCategoriesQuery } from '../api/productsApi';
 import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
+import CategoryIcon from '../components/common/CategoryIcon';
 import type { RootState } from '../app/store';
 
 export default function CategoriesGrid() {
@@ -20,67 +21,6 @@ export default function CategoriesGrid() {
     setIsVisible(true);
   }, []);
 
-  // Иконки для категорий - эмодзи иконки
-  const getCategoryIcon = (categoryName: string) => {
-    switch (categoryName) {
-      case 'варочные-панели':
-      case 'Плиты':
-        return '🔥'; // огонь для варочной панели
-      case 'винные-шкафы':
-        return '🍷'; // вино для винных шкафов
-      case 'холодильники':
-      case 'Холодильники':
-        return '❄️'; // снежинка для холодильника
-      case 'встраиваемые-кофемашины':
-      case 'Кофемашины':
-        return '☕';
-      case 'вытяжки':
-      case 'Вытяжки':
-        return '💨';
-      case 'духовые-шкафы':
-      case 'Духовые шкафы':
-        return '🔥';
-      case 'климатическое-оборудование':
-      case 'Кондиционеры':
-        return '🌡️';
-      case 'микроволновые-печи':
-      case 'Микроволновые печи':
-        return '📡'; // антенна/волны для микроволновки
-      case 'морозильные-камеры':
-      case 'Морозильные камеры':
-        return '🧊';
-      case 'посудомоечные-машины':
-      case 'Посудомоечные машины':
-        return '🧽';
-      case 'стиральные-машины':
-      case 'Стиральные машины':
-        return '👕';
-      case 'сушильные-машины':
-      case 'Сушильные машины':
-        return '🌬️'; // ветер для сушилки
-      case 'Водонагреватели':
-        return '🚿';
-      case 'Телевизоры':
-        return '📺';
-      case 'Ноутбуки':
-        return '💻';
-      case 'Смартфоны':
-      case 'Планшеты':
-        return '📱';
-      case 'Блендеры':
-        return '🥤';
-      case 'Мультиварки':
-        return '🍲';
-      case 'Пароварки':
-        return '🍽️';
-      case 'Утюги':
-        return '👔';
-      case 'Пылесосы':
-        return '🧹';
-      default:
-        return '📦';
-    }
-  };
 
   // Цвета для категорий
   const categoryColors: { [key: string]: string } = {
@@ -166,7 +106,7 @@ export default function CategoriesGrid() {
             }}
           >
             <div className="category-icon">
-              {getCategoryIcon(category.slug)}
+              <CategoryIcon categorySlug={category.slug} size={48} />
             </div>
             <h3 className="category-name">{category.slug}</h3>
             <p className="category-description">

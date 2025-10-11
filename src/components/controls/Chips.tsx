@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useCatalogUrlActions } from '../../routing/useCatalogUrlActions';
 import { selectCategories } from '../../features/catalog/selectors';
+import CategoryIcon from '../common/CategoryIcon';
 import type { RootState } from '../../app/store';
 
 export default function Chips() {
@@ -29,6 +30,7 @@ export default function Chips() {
           onClick={() => setChip(c)}
           style={{ animationDelay: `${index * 0.1}s` }}
         >
+          <CategoryIcon categorySlug={c} size={20} className="chip-icon" />
           <span className="chip-text">{c}</span>
           <div className="chip-ripple"></div>
           <div className="chip-glow"></div>
