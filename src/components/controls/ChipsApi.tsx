@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useGetCategoriesQuery } from '../../api/productsApi';
 import { useCatalogUrlActions } from '../../routing/useCatalogUrlActions';
+import CategoryIcon from '../common/CategoryIcon';
 import type { RootState } from '../../app/store';
 
 export default function ChipsApi() {
@@ -26,19 +27,6 @@ export default function ChipsApi() {
     setIsVisible(true);
   }, []);
 
-  // Добавляем "Все" в начало списка категорий с иконками
-  const categoryIcons: { [key: string]: string } = {
-    'Все': '🏠',
-    'Холодильники': '❄️',
-    'Стиральные машины': '🌀',
-    'Посудомоечные машины': '🍽️',
-    'Плиты': '🔥',
-    'Духовые шкафы': '🥧',
-    'Микроволновые печи': '📡',
-    'Вытяжки': '💨',
-    'Кондиционеры': '❄️',
-    'Водонагреватели': '🚿'
-  };
 
   // Добавляем "Все" в начало списка категорий
   const allCategories = ['Все', ...categories.map((cat: any) => cat.slug)];
@@ -68,7 +56,8 @@ export default function ChipsApi() {
           onClick={() => setChip(c)}
           style={{ animationDelay: `${index * 0.1}s` }}
         >
-          <span className="chip-text">{categoryIcons[c] || '📦'} {c}</span>
+          <CategoryIcon categorySlug={c} size={20} className="chip-icon" />
+          <span className="chip-text">{c}</span>
           <div className="chip-ripple"></div>
           <div className="chip-glow"></div>
         </button>

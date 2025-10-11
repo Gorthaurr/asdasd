@@ -14,6 +14,7 @@ import { toggleFav } from '../../features/favs/favsSlice';
 import { addToCart, changeQty } from '../../features/cart/cartSlice';
 import { selectFavIds, selectCartItems } from '../../features/catalog/selectors';
 import { fmtCurrency } from '../../utils/format';
+import CategoryIcon from '../common/CategoryIcon';
 import type { Product } from '../../types/product';
 
 /**
@@ -28,8 +29,8 @@ export default function ProductCard({ p }: { p: Product }) {
   const dispatch = useDispatch();
   const favIds = useSelector(selectFavIds);
   const cartItems = useSelector(selectCartItems);
-  const isFav = favIds.includes(p.id);
-  const qty = cartItems[p.id] ?? 0;
+  const isFav = favIds.includes(Number(p.id));
+  const qty = cartItems[Number(p.id)] ?? 0;
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   
@@ -94,7 +95,7 @@ export default function ProductCard({ p }: { p: Product }) {
             aria-label="Избранное"
             onClick={() => {
               console.log('Toggling favorite for product:', p.id, 'current isFav:', isFav);
-              dispatch(toggleFav(p.id));
+              dispatch(toggleFav(Number(p.id)));
             }}
           >
             {/* Иконка избранного */}
@@ -112,7 +113,7 @@ export default function ProductCard({ p }: { p: Product }) {
 
         {/* Превью — ссылка на страницу товара */}
         <Link
-          to={`/product/${p.originalId || p.id}`}
+          to={`/product/${p.id}`}
           aria-label={`Перейти к товару: ${p.name}`}
           className="product-link"
         >
@@ -199,7 +200,7 @@ export default function ProductCard({ p }: { p: Product }) {
         {/* Название — тоже ссылка */}
         <div className="name">
           <Link
-            to={`/product/${p.originalId || p.id}`}
+            to={`/product/${p.id}`}
             style={{ color: 'inherit', textDecoration: 'none' }}
           >
             {p.name}
@@ -207,7 +208,10 @@ export default function ProductCard({ p }: { p: Product }) {
         </div>
 
         <div className="meta">
-          <span className="cat">📂 {p.category}</span> • {ratingStars}
+          <span className="cat">
+            <CategoryIcon categorySlug={p.category} size={16} className="category-icon-inline" />
+            {p.category}
+          </span> • {ratingStars}
           <span className="rating" style={{ marginLeft: 6 }}>
             ⭐ {p.rating.toFixed(1)}
           </span>
