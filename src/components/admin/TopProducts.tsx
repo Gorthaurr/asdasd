@@ -97,8 +97,20 @@ const TopProducts = () => {
             </div>
 
             <div className="product-actions">
-              <button className="action-btn view-btn">👁️</button>
-              <button className="action-btn edit-btn">✏️</button>
+              <button 
+                className="action-btn view-btn"
+                onClick={() => window.location.href = `/product/${product.id}`}
+                title="Просмотр товара"
+              >
+                👁️
+              </button>
+              <button 
+                className="action-btn edit-btn"
+                onClick={() => window.location.href = `/admin/products/${product.id}/edit`}
+                title="Редактировать товар"
+              >
+                ✏️
+              </button>
             </div>
           </div>
         ))}

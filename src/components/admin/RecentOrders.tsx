@@ -126,8 +126,18 @@ const RecentOrders = () => {
             </div>
 
             <div className="order-actions">
-              <button className="action-btn view-btn">👁️ Просмотр</button>
-              <button className="action-btn edit-btn">✏️ Редактировать</button>
+              <button 
+                className="action-btn view-btn"
+                onClick={() => window.location.href = `/admin/orders/${order.id}`}
+              >
+                👁️ Просмотр
+              </button>
+              <button 
+                className="action-btn edit-btn"
+                onClick={() => window.location.href = `/admin/orders/${order.id}/edit`}
+              >
+                ✏️ Редактировать
+              </button>
             </div>
           </div>
         ))}

@@ -54,11 +54,16 @@ export default function App(){
                     <Route path="/admin/login" element={<AdminLogin />} />
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/admin/products" element={<AdminProducts />} />
+                    <Route path="/admin/products/new" element={<AdminProducts />} />
+                    <Route path="/admin/products/:id/edit" element={<AdminProducts />} />
                     <Route path="/admin/orders" element={<AdminOrders />} />
+                    <Route path="/admin/orders/:id" element={<AdminOrders />} />
+                    <Route path="/admin/orders/:id/edit" element={<AdminOrders />} />
                     <Route path="/admin/categories" element={<AdminCategories />} />
                     <Route path="/admin/users" element={<AdminUsers />} />
                     <Route path="/admin/settings" element={<AdminSettings />} />
                     <Route path="/admin/test" element={<AdminTest />} />
+                    <Route path="/admin/analytics" element={<Admin />} />
                 </Routes>
             </ConditionalLayout>
         </BrowserRouter>
