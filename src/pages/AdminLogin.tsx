@@ -65,19 +65,16 @@ const AdminLogin = () => {
           </div>
 
           <button type="submit" className="login-button" disabled={isLoading}>
-            {isLoading ? <LoadingSpinner size="small" /> : 'Войти'}
+            {isLoading ? (
+              <>
+                <LoadingSpinner size="small" />
+                <span>Загрузка...</span>
+              </>
+            ) : (
+              'Войти'
+            )}
           </button>
         </form>
-
-        <div className="login-footer">
-          <p>Демо-доступ:</p>
-          <p>
-            <strong>Логин:</strong> admin
-          </p>
-          <p>
-            <strong>Пароль:</strong> admin123
-          </p>
-        </div>
       </div>
     </div>
   );
