@@ -813,6 +813,10 @@
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .error-message {
