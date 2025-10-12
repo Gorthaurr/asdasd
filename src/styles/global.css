@@ -618,7 +618,8 @@ header{
     transform: translateY(0);
 }
 
-.category-image {
+/* Стили ТОЛЬКО для категорий - изолированные от продуктов */
+.category-card-inner .category-image {
     position: absolute;
     top: 0;
     left: 0;
@@ -633,8 +634,8 @@ header{
     overflow: hidden;
 }
 
-.category-image img,
-.category-image .category-icon-img {
+.category-card-inner .category-image img,
+.category-card-inner .category-image .category-icon-img {
     width: 100% !important;
     height: 100% !important;
     max-width: 100% !important;
@@ -645,46 +646,38 @@ header{
     background: transparent;
 }
 
-  /* Для вертикальной техники используем contain чтобы она полностью помещалась */
-  .category-card:has([src*="Холодильники"]) .category-image img,
-  .category-card:has([src*="Холодильники"]) .category-image .category-icon-img,
-  .category-card:has([src*="Стиральные машины"]) .category-image img,
-  .category-card:has([src*="Стиральные машины"]) .category-image .category-icon-img,
-  .category-card:has([src*="Сушильные машины"]) .category-image img,
-  .category-card:has([src*="Сушильные машины"]) .category-image .category-icon-img,
-  .category-card:has([src*="Встраиваемые-кофемашины"]) .category-image img,
-  .category-card:has([src*="Встраиваемые-кофемашины"]) .category-image .category-icon-img {
+/* Для вертикальной техники используем contain чтобы она полностью помещалась */
+.category-card:has([src*="Холодильники"]) .category-card-inner .category-image img,
+.category-card:has([src*="Холодильники"]) .category-card-inner .category-image .category-icon-img,
+.category-card:has([src*="Стиральные машины"]) .category-card-inner .category-image img,
+.category-card:has([src*="Стиральные машины"]) .category-card-inner .category-image .category-icon-img,
+.category-card:has([src*="Сушильные машины"]) .category-card-inner .category-image img,
+.category-card:has([src*="Сушильные машины"]) .category-card-inner .category-image .category-icon-img,
+.category-card:has([src*="Встраиваемые-кофемашины"]) .category-card-inner .category-image img,
+.category-card:has([src*="Встраиваемые-кофемашины"]) .category-card-inner .category-image .category-icon-img {
     object-fit: contain !important;
     padding: 20px;
-  }
+}
 
 .category-card:hover .category-card-inner .category-image img,
 .category-card:hover .category-card-inner .category-image .category-icon-img {
     transform: scale(1.05);
 }
 
-/* Удаление белого фона у изображений */
-.category-image img[src*=".png"],
-.category-image img[src*=".jpg"],
-.category-image img[src*=".jpeg"],
-.category-image .category-icon-img {
+/* Удаление белого фона у изображений КАТЕГОРИЙ */
+.category-card-inner .category-image img[src*=".png"],
+.category-card-inner .category-image img[src*=".jpg"],
+.category-card-inner .category-image img[src*=".jpeg"],
+.category-card-inner .category-image .category-icon-img {
     background: transparent !important;
     mix-blend-mode: normal;
 }
 
-/* Специальные стили для изображений с белым фоном */
-.category-image img,
-.category-image .category-icon-img {
+/* Специальные стили для изображений с белым фоном КАТЕГОРИЙ */
+.category-card-inner .category-image img,
+.category-card-inner .category-image .category-icon-img {
     background-color: transparent !important;
     background-image: none !important;
-}
-
-/* Стили для иконки избранного - убираем белый фон */
-.fav img,
-.icon-btn img {
-    background: transparent !important;
-    mix-blend-mode: multiply;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 
 .category-fallback {
