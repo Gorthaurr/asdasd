@@ -241,16 +241,20 @@ export default function Hero(){
     }, []);
 
     return (
-        <section className={`hero animated-hero ${isVisible ? 'visible' : ''}`} aria-label="Промо">
+        <section className={`hero animated-hero ${isVisible ? 'visible' : ''} ${showBackToCategories ? 'compact' : ''}`} aria-label="Промо">
             <div className="hero-card">
-                <h1 className="hero-title">
-                    <span className="title-line">Каталог товаров</span>
-                    <span className="title-line highlight">с поиском и сортировкой</span>
-                </h1>
-                <p className="hero-description">
-                    <span className="description-line">Найдите нужный товар</span>
-                    <span className="description-line">с помощью поиска и фильтров</span>
-                </p>
+                {!showBackToCategories && (
+                    <>
+                        <h1 className="hero-title">
+                            <span className="title-line">Каталог товаров</span>
+                            <span className="title-line highlight">с поиском и сортировкой</span>
+                        </h1>
+                        <p className="hero-description">
+                            <span className="description-line">Найдите нужный товар</span>
+                            <span className="description-line">с помощью поиска и фильтров</span>
+                        </p>
+                    </>
+                )}
 
                 {showBackToCategories && (
                     <div className="back-to-categories">
