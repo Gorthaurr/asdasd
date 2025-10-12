@@ -34,15 +34,7 @@ const CategoryIcon: React.FC<CategoryIconProps> = ({
     <img
       src={iconPath}
       alt={categorySlug}
-      width={size}
-      height={size}
-      className={`category-icon ${className}`}
-      style={{
-        width: size,
-        height: size,
-        objectFit: 'contain',
-        display: 'inline-block',
-      }}
+      className={`category-icon-img ${className}`}
       onError={(e) => {
         console.log(`Failed to load icon for category: ${categorySlug}, path: ${iconPath}`);
         // Fallback на эмодзи если иконка не загрузилась

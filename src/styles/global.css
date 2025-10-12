@@ -618,21 +618,12 @@ header{
     transform: translateY(0);
 }
 
-  .category-card-inner .category-icon {
+.category-image {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-  }
-
-.category-image {
-    position: relative;
     width: 100%;
     height: 100%;
     display: flex;
@@ -642,39 +633,49 @@ header{
     overflow: hidden;
 }
 
-  .category-image img {
-    width: 100%;
-    height: 100%;
+.category-image img,
+.category-image .category-icon-img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
     object-fit: cover;
     border-radius: 0;
     transition: transform 0.3s ease;
     background: transparent;
-  }
+}
 
   /* Для вертикальной техники используем contain чтобы она полностью помещалась */
   .category-card:has([src*="Холодильники"]) .category-image img,
+  .category-card:has([src*="Холодильники"]) .category-image .category-icon-img,
   .category-card:has([src*="Стиральные машины"]) .category-image img,
+  .category-card:has([src*="Стиральные машины"]) .category-image .category-icon-img,
   .category-card:has([src*="Сушильные машины"]) .category-image img,
-  .category-card:has([src*="Встраиваемые-кофемашины"]) .category-image img {
-    object-fit: contain;
-    padding: 10px;
+  .category-card:has([src*="Сушильные машины"]) .category-image .category-icon-img,
+  .category-card:has([src*="Встраиваемые-кофемашины"]) .category-image img,
+  .category-card:has([src*="Встраиваемые-кофемашины"]) .category-image .category-icon-img {
+    object-fit: contain !important;
+    padding: 20px;
   }
 
-.category-card:hover .category-card-inner .category-image img {
+.category-card:hover .category-card-inner .category-image img,
+.category-card:hover .category-card-inner .category-image .category-icon-img {
     transform: scale(1.05);
 }
 
 /* Удаление белого фона у изображений */
 .category-image img[src*=".png"],
 .category-image img[src*=".jpg"],
-.category-image img[src*=".jpeg"] {
+.category-image img[src*=".jpeg"],
+.category-image .category-icon-img {
     background: transparent !important;
     mix-blend-mode: multiply;
     filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4)) contrast(1.1) brightness(1.1);
 }
 
 /* Специальные стили для изображений с белым фоном */
-.category-image img {
+.category-image img,
+.category-image .category-icon-img {
     background-color: transparent !important;
     background-image: none !important;
 }
@@ -1076,7 +1077,7 @@ header{
         height: 260px;
     }
 
-    .category-card-inner .category-icon {
+    .category-image {
         font-size: 2.2rem;
     }
 

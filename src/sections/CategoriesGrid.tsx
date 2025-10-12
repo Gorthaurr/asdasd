@@ -110,8 +110,8 @@ export default function CategoriesGrid() {
                 background: categoryColors[category.slug] || 'linear-gradient(135deg, #374151, #1f2937)'
               }}
             >
-              <div className="category-icon">
-                <CategoryIcon categorySlug={category.slug} size={48} />
+              <div className="category-image">
+                <CategoryIcon categorySlug={category.slug} size={320} />
               </div>
               <div className="category-arrow">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
