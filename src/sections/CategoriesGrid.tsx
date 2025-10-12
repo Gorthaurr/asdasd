@@ -92,8 +92,7 @@ export default function CategoriesGrid() {
             key={category.id}
             className={`category-card animated-category ${isVisible ? 'visible' : ''}`}
             style={{
-              animationDelay: `${index * 0.1}s`,
-              background: categoryColors[category.slug] || 'linear-gradient(135deg, #374151, #1f2937)'
+              animationDelay: `${index * 0.1}s`
             }}
             onClick={() => setChip(category.slug)}
             role="button"
@@ -105,25 +104,29 @@ export default function CategoriesGrid() {
               }
             }}
           >
-            <div className="category-icon">
-              <CategoryIcon categorySlug={category.slug} size={48} />
+            <div 
+              className="category-card-inner"
+              style={{
+                background: categoryColors[category.slug] || 'linear-gradient(135deg, #374151, #1f2937)'
+              }}
+            >
+              <div className="category-icon">
+                <CategoryIcon categorySlug={category.slug} size={48} />
+              </div>
+              <div className="category-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M9 18l6-6-6-6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <div className="category-overlay"></div>
             </div>
             <h3 className="category-name">{category.slug}</h3>
-            <p className="category-description">
-              Лучшие товары категории
-            </p>
-            <div className="category-arrow">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M9 18l6-6-6-6"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <div className="category-overlay"></div>
           </div>
         ))}
       </div>
