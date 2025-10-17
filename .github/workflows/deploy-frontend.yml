@@ -22,22 +22,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # Диагностика: убедимся, что бежит именно этот workflow и на этой версии
-      - name: Debug workflow file presence
-        shell: bash
-        run: |
-          echo "Branch: ${GITHUB_REF}"
-          echo "Commit: ${GITHUB_SHA}"
-          echo "Workflow: ${GITHUB_WORKFLOW}"
-          echo "Workflows in repo:"
-          ls -la .github/workflows || true
-          echo "----- deploy-frontend.yml (first 200 lines) -----"
-          sed -n '1,200p' .github/workflows/deploy-frontend.yml || true
-          echo "-----------------------------------------------"
-
+      # СНАЧАЛА ставим Node — этот шаг меняет PATH
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -45,42 +33,34 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      # 1) Основной способ: установить pnpm как standalone-бинарь и добавить в PATH
-      - name: Setup pnpm (standalone)
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.17.1
-          standalone: true
-          run_install: false
-
-      # 2) Fallback: если по какой-то причине pnpm ещё не виден — активируем через corepack
-      # 3) Super-fallback: если и corepack не помог — ставим pnpm через npm -g
-      - name: Ensure pnpm is available
+      # ТЕПЕРЬ активируем pnpm — после setup-node, чтобы PATH не потерялся
+      - name: Setup PNPM via Corepack
         shell: bash
         run: |
           set -euo pipefail
-          echo "PATH: $PATH"
-          if command -v pnpm >/dev/null 2>&1; then
-            echo "pnpm available from pnpm/action-setup"
-          else
-            echo "pnpm not found -> enabling via corepack..."
-            corepack enable || true
-            corepack prepare pnpm@10.17.1 --activate || true
-          fi
-
-          if ! command -v pnpm >/dev/null 2>&1; then
-            echo "corepack not effective -> installing pnpm globally via npm..."
-            npm i -g pnpm@10.17.1
-          fi
-
+          corepack enable
+          corepack prepare pnpm@10.17.1 --activate
           echo "Node: $(node -v)"
           echo "NPM:  $(npm -v)"
-          echo "PNPM: $(pnpm -v)"
+          echo "PNPM: $(pnpm -v) via corepack"
+          which pnpm || true
 
-      - name: Install dependencies (locked)
+      # Короткий fallback: если по какой-то причине pnpm всё ещё не в PATH — ставим глобально
+      - name: Ensure pnpm is available (fallback)
+        if: ${{ success() }}
+        shell: bash
+        run: |
+          if ! command -v pnpm >/dev/null 2>&1; then
+            echo "pnpm not found after corepack — installing via npm -g…"
+            npm i -g pnpm@10.17.1
+          fi
+          echo "PNPM final: $(pnpm -v)"
+          which pnpm || true
+
+      - name: Install deps
         run: pnpm install --frozen-lockfile
 
-      - name: Build frontend
+      - name: Build
         env:
           VITE_API_URL: https://api.technofame.store
         run: pnpm run build
@@ -89,19 +69,19 @@ jobs:
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
+          username: ${{ secrets.SSH_USER }}     # deploy
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "dist/**"
           target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
           overwrite: true
-          strip_components: 1
+          strip_components: 1   # кладём содержимое dist прямо в frontend_upload/
 
       - name: Atomic deploy on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
+          username: ${{ secrets.SSH_USER }}     # deploy
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
