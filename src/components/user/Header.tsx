@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, Heart, Menu } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../app/store';
-import { openDrawer } from '../../features/catalog/catalogSlice';
+import { setDrawerOpen } from '../../features/catalog/catalogSlice';
 import { useGetProductsQuery } from '../../api/productsApi';
 import SearchAutocomplete from './SearchAutocomplete';
 import type { Product } from '../../types/product';
@@ -33,8 +33,16 @@ const Header: React.FC = () => {
       rating: 4.5,
       images: apiProduct.images,
       brand: apiProduct.name.split(' ')[0],
+      reviews: 127,
+      inStock: true,
+      image: apiProduct.images?.[0]?.urls?.original || '',
     }));
   }, [productsData]);
+
+  const handleSearch = (query: string) => {
+    // TODO: implement search
+    console.log('Search:', query);
+  };
 
   return (
     <header className="header">
@@ -43,7 +51,7 @@ const Header: React.FC = () => {
           <button className="menu-toggle" onClick={() => {}}>
             <Menu size={24} />
           </button>
-          <div className="logo" onClick={() => navigate('/')}>
+          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <h1>TechnoFame</h1>
             <span>Бытовая техника</span>
           </div>
@@ -52,6 +60,7 @@ const Header: React.FC = () => {
         <div className="header-center">
           <SearchAutocomplete
             products={products}
+            onSearch={handleSearch}
             placeholder="Поиск товаров..."
           />
         </div>
@@ -62,7 +71,7 @@ const Header: React.FC = () => {
             <span className="action-label">Избранное</span>
             {wishlistCount > 0 && <span className="wishlist-badge">{wishlistCount}</span>}
           </button>
-          <button className="header-action cart-button" onClick={() => dispatch(openDrawer())}>
+          <button className="header-action cart-button" onClick={() => dispatch(setDrawerOpen(true))}>
             <ShoppingCart size={24} />
             <span className="action-label">Корзина</span>
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
@@ -78,4 +87,3 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-

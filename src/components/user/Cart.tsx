@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../app/store';
@@ -8,16 +8,16 @@ import type { Product } from '../../types/product';
 import type { ProductApi } from '../../types/api';
 import './Cart.css';
 
+interface CartItem extends Product {
+  quantity: number;
+}
+
 interface CartProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface CartItem extends Product {
-  quantity: number;
-}
-
-export default function Cart({ isOpen, onClose }: CartProps) {
+const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -46,15 +46,18 @@ export default function Cart({ isOpen, onClose }: CartProps) {
     originalPrice: apiProduct.price_cents ? (apiProduct.price_cents / 100) * 1.2 : undefined,
   });
 
-  const items: CartItem[] = productsData?.items
-    .filter(p => cart[p.id] && cart[p.id] > 0)
-    .map(p => {
-      const product = transformProduct(p);
-      return {
-        ...product,
-        quantity: cart[p.id]
-      };
-    }) || [];
+  const items: CartItem[] = useMemo(() => {
+    if (!productsData?.items) return [];
+    return productsData.items
+      .filter(p => cart[p.id] && cart[p.id] > 0)
+      .map(p => {
+        const product = transformProduct(p);
+        return {
+          ...product,
+          quantity: cart[p.id]
+        };
+      });
+  }, [productsData, cart]);
 
   const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -88,7 +91,6 @@ export default function Cart({ isOpen, onClose }: CartProps) {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    // focus first actionable element
     closeBtnRef.current?.focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -228,5 +230,6 @@ export default function Cart({ isOpen, onClose }: CartProps) {
       </div>
     </div>
   );
-}
+};
 
+export default Cart;

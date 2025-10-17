@@ -242,6 +242,12 @@
   color: var(--text-primary, #111827);
 }
 
+.brand-count {
+  font-size: var(--text-sm, 14px);
+  color: var(--text-secondary, #6b7280);
+  font-weight: var(--font-medium, 500);
+}
+
 /* Availability */
 .availability-checkbox {
   display: flex;
@@ -276,6 +282,13 @@
 .availability-checkbox span:not(.checkmark) {
   font-size: var(--text-base, 16px);
   color: var(--text-primary, #111827);
+}
+
+.availability-count {
+  font-size: var(--text-sm, 14px);
+  color: var(--text-secondary, #6b7280);
+  font-weight: var(--font-medium, 500);
+  margin-left: auto;
 }
 
 /* Footer */
@@ -358,4 +371,3 @@
     flex-direction: column;
   }
 }
-

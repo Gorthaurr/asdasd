@@ -29,15 +29,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }).format(price);
   };
 
-  // Mock data for rating and reviews (not in API yet)
-  const rating = product.rating || 4.5;
-  const reviews = 127;
-  const inStock = true;
-
-  // Get primary image
-  const primaryImage = product.images && product.images.length > 0 
-    ? product.images[0].urls?.original 
-    : 'https://via.placeholder.com/300x300/f3f4f6/9ca3af?text=No+Image';
+  // Получаем первое изображение товара
+  const productImage = product.images?.[0]?.urls?.original || product.image || 'https://via.placeholder.com/300x300/f3f4f6/9ca3af?text=No+Image';
 
   return (
     <div 
@@ -47,7 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Image Section */}
       <div className={`product-image-container ${imageLoaded ? 'loaded' : ''}`}>
         <img 
-          src={imageError ? 'https://via.placeholder.com/300x300/f3f4f6/9ca3af?text=No+Image' : primaryImage} 
+          src={imageError ? 'https://via.placeholder.com/300x300/f3f4f6/9ca3af?text=No+Image' : productImage} 
           alt={product.name}
           className={`product-image ${imageLoaded ? 'loaded' : ''}`}
           loading="lazy"
@@ -72,7 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </button>
 
         {/* Stock Badge */}
-        {!inStock && (
+        {product.inStock === false && (
           <div className="stock-badge">
             Нет в наличии
           </div>
@@ -83,7 +76,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="product-content">
         {/* Brand & Name */}
         <div className="product-header">
-          <div className="product-brand">{product.category || 'Техника'}</div>
+          <div className="product-brand">{product.brand || 'Brand'}</div>
           <h3 className="product-name" title={product.name}>
             {product.name}
           </h3>
@@ -96,11 +89,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <Star 
                 key={star}
                 size={14}
-                className={star <= rating ? 'filled' : 'empty'}
+                className={star <= (product.rating || 4.5) ? 'filled' : 'empty'}
               />
             ))}
           </div>
-          <span className="rating-count">({reviews})</span>
+          <span className="rating-count">({product.reviews || 0})</span>
         </div>
 
         {/* Price */}
@@ -108,24 +101,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <span className="current-price">
             {formatPrice(product.price)}
           </span>
-          {product.oldPrice && (
-            <span className="old-price">
-              {formatPrice(product.oldPrice)}
-            </span>
-          )}
         </div>
 
         {/* Add to Cart Button */}
         <button 
-          className={`add-to-cart-button ${!inStock ? 'disabled' : ''}`}
+          className={`add-to-cart-button ${product.inStock === false ? 'disabled' : ''}`}
           onClick={(e) => {
             e.stopPropagation();
             onAddToCart(product);
           }}
-          disabled={!inStock}
+          disabled={product.inStock === false}
         >
           <ShoppingCart size={16} />
-          {inStock ? 'В корзину' : 'Нет в наличии'}
+          {product.inStock !== false ? 'В корзину' : 'Нет в наличии'}
         </button>
       </div>
     </div>
@@ -133,4 +121,3 @@ const ProductCard: React.FC<ProductCardProps> = ({
 };
 
 export default ProductCard;
-

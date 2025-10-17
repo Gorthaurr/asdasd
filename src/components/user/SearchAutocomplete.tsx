@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
-import { useDispatch } from 'react-redux';
-import { setQ } from '../../features/catalog/catalogSlice';
 import type { Product } from '../../types/product';
 import './SearchAutocomplete.css';
 
 interface SearchAutocompleteProps {
-  products?: Product[];
+  products: Product[];
+  onSearch: (query: string) => void;
   placeholder?: string;
 }
 
@@ -17,10 +16,10 @@ interface SearchSuggestion {
 }
 
 const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
-  products = [],
+  products,
+  onSearch,
   placeholder = "Поиск товаров..."
 }) => {
-  const dispatch = useDispatch();
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -32,19 +31,20 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
 
   // Генерируем предложения на основе запроса
   const generateSuggestions = (searchQuery: string): SearchSuggestion[] => {
-    const q = searchQuery.toLowerCase().trim();
+    const query = searchQuery.toLowerCase().trim();
     const suggestions: SearchSuggestion[] = [];
 
-    if (q.length === 0) {
+    if (query.length === 0) {
       // Показываем популярные товары без ввода
       const popularProducts = products
+        .filter(product => product.inStock !== false)
         .sort((a, b) => (b.rating || 0) - (a.rating || 0))
         .slice(0, 6);
 
       popularProducts.forEach(product => {
         suggestions.push({
           title: product.name,
-          subtitle: `${product.brand || product.category} • ${product.price.toLocaleString()} ₽`,
+          subtitle: `${product.brand || 'Brand'} • ${product.price.toLocaleString()} ₽`,
           query: product.name
         });
       });
@@ -52,16 +52,16 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
       // Поиск по товарам при вводе
       const productMatches = products
         .filter(product => 
-          product.name.toLowerCase().includes(q) ||
-          (product.brand && product.brand.toLowerCase().includes(q)) ||
-          product.category.toLowerCase().includes(q)
+          product.name.toLowerCase().includes(query) ||
+          (product.brand && product.brand.toLowerCase().includes(query)) ||
+          product.category.toLowerCase().includes(query)
         )
         .slice(0, 8);
 
       productMatches.forEach(product => {
         suggestions.push({
           title: product.name,
-          subtitle: `${product.brand || product.category} • ${product.price.toLocaleString()} ₽`,
+          subtitle: `${product.brand || 'Brand'} • ${product.price.toLocaleString()} ₽`,
           query: product.name
         });
       });
@@ -89,7 +89,7 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
   const selectSuggestion = (suggestion: SearchSuggestion) => {
     setQuery(suggestion.query);
     setIsOpen(false);
-    dispatch(setQ(suggestion.query));
+    onSearch(suggestion.query);
     inputRef.current?.blur();
   };
 
@@ -98,7 +98,7 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
     e.preventDefault();
     if (query.trim()) {
       setIsOpen(false);
-      dispatch(setQ(query));
+      onSearch(query);
     }
   };
 
@@ -107,7 +107,7 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
     setQuery('');
     setSuggestions([]);
     setIsOpen(false);
-    dispatch(setQ(''));
+    onSearch('');
     inputRef.current?.focus();
   };
 
@@ -131,7 +131,7 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
         if (selectedIndex >= 0) {
           selectSuggestion(suggestions[selectedIndex]);
         } else if (query.trim()) {
-          dispatch(setQ(query));
+          onSearch(query);
           setIsOpen(false);
         }
         break;
@@ -274,4 +274,3 @@ const highlightMatch = (text: string, query: string): React.ReactNode => {
 };
 
 export default SearchAutocomplete;
-

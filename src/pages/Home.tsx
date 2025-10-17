@@ -4,7 +4,7 @@ import type { RootState } from '../app/store';
 import { useGetProductsQuery, useGetCategoriesQuery } from '../api/productsApi';
 import { setChip, setPage, applyFilters } from '../features/catalog/catalogSlice';
 import { addToCart } from '../features/cart/cartSlice';
-import { toggleFavorite } from '../features/favs/favsSlice';
+import { toggleFav } from '../features/favs/favsSlice';
 import ProductGrid from '../components/user/ProductGrid';
 import CategoryIcon from '../components/user/CategoryIcon';
 import Pagination from '../components/user/Pagination';
@@ -100,11 +100,11 @@ export default function Home() {
   };
 
   const handleAddToCart = (product: Product) => {
-    dispatch(addToCart({ productId: product.id, quantity: 1 }));
+    dispatch(addToCart(product.id));
   };
 
   const handleAddToWishlist = (productId: string) => {
-    dispatch(toggleFavorite(productId));
+    dispatch(toggleFav(productId));
   };
 
   const isInWishlist = (productId: string): boolean => {
