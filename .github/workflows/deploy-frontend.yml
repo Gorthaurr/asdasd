@@ -25,7 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # СНАЧАЛА ставим Node — этот шаг меняет PATH
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -33,31 +32,20 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      # ТЕПЕРЬ активируем pnpm — после setup-node, чтобы PATH не потерялся
-      - name: Setup PNPM via Corepack
+      # УСТАНОВКА PNPM БЕЗ COREPACK/ЕКШЕНОВ: официальный install.sh + добавление в PATH
+      - name: Install pnpm (install.sh -> $GITHUB_PATH)
         shell: bash
         run: |
           set -euo pipefail
-          corepack enable
-          corepack prepare pnpm@10.17.1 --activate
-          echo "Node: $(node -v)"
-          echo "NPM:  $(npm -v)"
-          echo "PNPM: $(pnpm -v) via corepack"
+          curl -fsSL https://get.pnpm.io/install.sh | sh -
+          # pnpm кладётся в ~/.local/share/pnpm — добавляем в PATH раннера
+          echo "$HOME/.local/share/pnpm" >> "$GITHUB_PATH"
+          echo "PATH after export:"
+          echo "$PATH"
           which pnpm || true
+          pnpm -v
 
-      # Короткий fallback: если по какой-то причине pnpm всё ещё не в PATH — ставим глобально
-      - name: Ensure pnpm is available (fallback)
-        if: ${{ success() }}
-        shell: bash
-        run: |
-          if ! command -v pnpm >/dev/null 2>&1; then
-            echo "pnpm not found after corepack — installing via npm -g…"
-            npm i -g pnpm@10.17.1
-          fi
-          echo "PNPM final: $(pnpm -v)"
-          which pnpm || true
-
-      - name: Install deps
+      - name: Install dependencies (locked)
         run: pnpm install --frozen-lockfile
 
       - name: Build
@@ -69,19 +57,19 @@ jobs:
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}     # deploy
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "dist/**"
           target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
           overwrite: true
-          strip_components: 1   # кладём содержимое dist прямо в frontend_upload/
+          strip_components: 1
 
       - name: Atomic deploy on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}     # deploy
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
