@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://technofame.store/sitemap.xml
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /admin/login
+Disallow: /admin/products
+Disallow: /admin/orders
+Disallow: /admin/categories
+Disallow: /admin/users
+Disallow: /admin/settings
+Disallow: /admin/test
+
+# Allow product pages
+Allow: /product/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

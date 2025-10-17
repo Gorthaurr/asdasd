@@ -227,22 +227,12 @@
 /* Price */
 .product-price {
   margin-top: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .current-price {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
-}
-
-.old-price {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-tertiary);
-  text-decoration: line-through;
 }
 
 /* Add to Cart Button */
@@ -332,4 +322,3 @@
     right: 8px;
   }
 }
-

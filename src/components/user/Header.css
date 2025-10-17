@@ -41,10 +41,6 @@
   background-color: var(--surface-tertiary);
 }
 
-.logo {
-  cursor: pointer;
-}
-
 .logo h1 {
   font-size: var(--text-3xl);
   font-weight: var(--font-extrabold);
@@ -222,4 +218,3 @@
     font-size: 10px;
   }
 }
-

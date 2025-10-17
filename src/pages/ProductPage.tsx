@@ -17,7 +17,7 @@ export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   
-  const favorites = useSelector((s: RootState) => s.favs.items);
+  const favorites = useSelector((s: RootState) => s.favs.ids);
   
   // Получаем продукт по ID
   const { data: productData, isLoading, error } = useGetProductQuery(id || '');
