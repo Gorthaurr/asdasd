@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'package.json'
-      - 'pnpm-lock.yaml'
+      - 'package-lock.json'
       - 'vite.config.*'
       - 'tsconfig*.json'
       - 'src/**'
@@ -38,37 +38,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      # УСТАНОВКА PNPM ЧЕРЕЗ NPM-GLOBAL + ЖЁСТКО ДОБАВЛЯЕМ В PATH
-      - name: Install pnpm globally
-        id: pnpm_install
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm i -g pnpm@10.17.1
-          PNPM_BIN="$(npm bin -g)"
-          echo "PNPM_BIN=${PNPM_BIN}" >> "$GITHUB_OUTPUT"
-          echo "$PNPM_BIN" >> "$GITHUB_PATH"
-
-      # Проверяем, что pnpm действительно доступен (в отдельном шаге, т.к. $GITHUB_PATH работает со следующего шага)
+      # Проверяем toolchain
       - name: Verify toolchain
         shell: bash
         run: |
           echo "PATH: $PATH"
           echo "Node: $(node -v)"
           echo "NPM:  $(npm -v)"
-          echo "PNPM which: $(which pnpm)"
-          echo "PNPM ver: $(pnpm -v)"
 
       - name: Install dependencies (locked)
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Build
         env:
           VITE_API_URL: https://api.technofame.store
-        run: pnpm run build
+        run: npm run build
 
       - name: Upload dist via SCP
         uses: appleboy/scp-action@v0.1.7

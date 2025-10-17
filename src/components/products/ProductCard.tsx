@@ -29,8 +29,8 @@ export default function ProductCard({ p }: { p: Product }) {
   const dispatch = useDispatch();
   const favIds = useSelector(selectFavIds);
   const cartItems = useSelector(selectCartItems);
-  const isFav = favIds.includes(Number(p.id));
-  const qty = cartItems[Number(p.id)] ?? 0;
+  const isFav = favIds.includes(p.id);
+  const qty = cartItems[p.id] ?? 0;
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   
@@ -95,7 +95,7 @@ export default function ProductCard({ p }: { p: Product }) {
             aria-label="Избранное"
             onClick={() => {
               console.log('Toggling favorite for product:', p.id, 'current isFav:', isFav);
-              dispatch(toggleFav(Number(p.id)));
+              dispatch(toggleFav(p.id));
             }}
           >
             {/* Иконка избранного */}

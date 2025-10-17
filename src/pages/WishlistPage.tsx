@@ -386,9 +386,9 @@ export default function WishlistPage() {
       <FiltersPanel
         filters={filters}
         onFiltersChange={setFilters}
-        availableBrands={Array.from(new Set(wishlistItems.map(p => p.brand).filter(Boolean)))}
-        minPrice={Math.min(...wishlistItems.map(p => p.price), 0)}
-        maxPrice={Math.max(...wishlistItems.map(p => p.price), 1000000)}
+        availableBrands={Array.from(new Set(wishlistItems.map(p => p.brand).filter((b): b is string => Boolean(b))))}
+        minPrice={wishlistItems.length > 0 ? Math.min(...wishlistItems.map(p => p.price)) : 0}
+        maxPrice={wishlistItems.length > 0 ? Math.max(...wishlistItems.map(p => p.price)) : 1000000}
         isOpen={filtersPanelOpen}
         onClose={() => setFiltersPanelOpen(false)}
       />
