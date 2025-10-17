@@ -34,24 +34,31 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
 
   // Загружаем товары по ID'ам из корзины (максимум нужно загрузить отдельно)
   const items: CartItem[] = useMemo(() => {
-    if (!productsData?.items || cartIds.length === 0) return [];
+    const key = 'techhome_cart_products';
+    const raw = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
+    const snapshot: Record<string, Product> = raw ? (()=>{ try { return JSON.parse(raw); } catch { return {}; } })() : {};
+
+    if (!productsData?.items && Object.keys(snapshot).length === 0) return [];
     
-    // Создаем map всех товаров из API для быстрого поиска
-    const productsMap = new Map(productsData.items.map(p => [String(p.id), p]));
+    const productsMap = new Map((productsData?.items || []).map(p => [String(p.id), p]));
     
-    // Получаем товары из корзины
-    return cartIds
+    return Object.keys(cart)
+      .filter(id => cart[id] > 0)
       .map(id => {
         const apiProduct = productsMap.get(id);
-        if (!apiProduct) return null;
-        const product = transformProduct(apiProduct);
-        return {
-          ...product,
-          quantity: cart[id]
-        };
+        if (apiProduct) {
+          const product = transformProduct(apiProduct);
+          return { ...product, quantity: cart[id] };
+        }
+        // fallback к снапшоту
+        const snap = snapshot[id];
+        if (snap) {
+          return { ...snap, quantity: cart[id] } as CartItem;
+        }
+        return null;
       })
       .filter((item): item is CartItem => item !== null);
-  }, [productsData, cart, cartIds]);
+  }, [productsData, cart]);
 
   const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);

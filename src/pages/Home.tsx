@@ -132,10 +132,28 @@ export default function Home() {
   };
 
   const handleAddToCart = (product: Product) => {
+    try {
+      const key = 'techhome_cart_products';
+      const raw = localStorage.getItem(key);
+      const map = raw ? JSON.parse(raw) as Record<string, Product> : {};
+      map[product.id] = product;
+      localStorage.setItem(key, JSON.stringify(map));
+    } catch {}
     dispatch(addToCart(product.id));
   };
 
   const handleAddToWishlist = (productId: string) => {
+    try {
+      // найдём продукт в текущем списке (если он есть на странице)
+      const product = products.find(p => p.id === productId);
+      if (product) {
+        const key = 'techhome_favs_products';
+        const raw = localStorage.getItem(key);
+        const map = raw ? JSON.parse(raw) as Record<string, Product> : {};
+        map[product.id] = product;
+        localStorage.setItem(key, JSON.stringify(map));
+      }
+    } catch {}
     dispatch(toggleFav(productId));
   };
 

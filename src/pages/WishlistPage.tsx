@@ -34,12 +34,23 @@ export default function WishlistPage() {
   });
 
   // Transform и filter только избранные с датой добавления
-  const wishlistItems = productsData?.items
-    .filter(p => favorites.includes(p.id))
-    .map(p => ({
-      ...transformProduct(p),
-      addedAt: new Date().toISOString()
-    })) || [];
+  const wishlistItems = useMemo(() => {
+    const key = 'techhome_favs_products';
+    const raw = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
+    const snapshot: Record<string, Product> = raw ? (()=>{ try { return JSON.parse(raw); } catch { return {}; } })() : {};
+
+    const base = (productsData?.items || [])
+      .filter(p => favorites.includes(p.id))
+      .map(p => transformProduct(p));
+
+    // добавляем те, что есть в избранном, но их нет в API-странице
+    const missing = favorites
+      .filter(id => !base.find(x => x.id === id))
+      .map(id => snapshot[id])
+      .filter((p): p is Product => !!p);
+
+    return [...base, ...missing].map(p => ({ ...p, addedAt: new Date().toISOString() }));
+  }, [productsData, favorites]);
 
   // Получаем товары из избранного с фильтрацией и сортировкой
   const wishlistProducts = useMemo(() => {
