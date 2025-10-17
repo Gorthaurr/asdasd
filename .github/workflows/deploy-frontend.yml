@@ -20,8 +20,9 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -31,6 +32,7 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
+      # Устанавливаем pnpm гарантированно
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -38,19 +40,21 @@ jobs:
           standalone: true
           run_install: false
 
+      # Fallback на npm -g, если pnpm не найден (редко, но спасает CI)
       - name: Ensure pnpm is available
+        shell: bash
         run: |
           if ! command -v pnpm >/dev/null 2>&1; then
-            corepack enable
-            corepack prepare pnpm@10.17.1 --activate
+            echo "pnpm not found, installing via npm -g..."
+            npm install -g pnpm@10.17.1
           fi
-          node -v
-          pnpm -v
+          echo "Node: $(node -v)"
+          echo "pnpm: $(pnpm -v)"
 
-      - name: Install deps (locked)
+      - name: Install dependencies (locked)
         run: pnpm install --frozen-lockfile
 
-      - name: Build
+      - name: Build frontend
         env:
           VITE_API_URL: https://api.technofame.store
         run: pnpm run build
