@@ -24,20 +24,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Оставляю как у тебя (Corepack перед setup-node), раз так стабильно работало
-      - name: Setup PNPM via Corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@10.17.1 --activate
-          pnpm -v
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
-      - name: Install deps
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+          run_install: false
+
+      - name: Verify tool versions
+        run: |
+          node -v
+          pnpm -v
+
+      - name: Install deps (locked)
         run: pnpm install --frozen-lockfile
 
       - name: Build
@@ -49,19 +54,19 @@ jobs:
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}     # deploy
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "dist/**"
           target: "/home/${{ secrets.SSH_USER }}/frontend_upload"
           overwrite: true
-          strip_components: 1   # кладём содержимое dist прямо в frontend_upload/
+          strip_components: 1
 
       - name: Atomic deploy on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}     # deploy
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
