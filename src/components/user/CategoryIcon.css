@@ -1,0 +1,50 @@
+/* Base Category Icon Styles */
+.category-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+.icon-symbol {
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.category-icon-sm .icon-symbol {
+  font-size: 14px;
+}
+
+.category-icon-md .icon-symbol {
+  font-size: 16px;
+}
+
+.category-icon-lg .icon-symbol {
+  font-size: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .category-icon-sm .icon-symbol {
+    font-size: 12px;
+  }
+  
+  .category-icon-md .icon-symbol {
+    font-size: 14px;
+  }
+  
+  .category-icon-lg .icon-symbol {
+    font-size: 16px;
+  }
+}
+

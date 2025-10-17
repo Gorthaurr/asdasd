@@ -1,346 +1,328 @@
-/// <reference types="vite/client" />
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ShoppingCart, User, MapPin, CheckCircle } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import type { RootState } from '../app/store';
+import { clearCart } from '../features/cart/cartSlice';
+import { useGetProductsQuery } from '../api/productsApi';
+import type { Product } from '../types/product';
+import type { ProductApi } from '../types/api';
+import './CheckoutPage.css';
 
-// Страница оформления заказа: форма + сводка корзины (без кнопки «Назад в каталог»)
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image: string;
+}
 
-import { FormEvent, useState, useEffect } from 'react'; // локальное состояние/типы формы
-import { useDispatch, useSelector } from 'react-redux'; // Redux-хуки
-import { useNavigate } from 'react-router-dom'; // навигация (Link удалён)
-import { selectCartDetailed as selectCartDetailedApi, selectCartItems } from '../features/catalog/apiSelectors'; // строки корзины и сумма
-import { clearCart } from '../features/cart/cartSlice'; // экшен очистки корзины
-import { fmtCurrency } from '../utils/format';
-import { toast } from '../utils/toast'; // форматирование суммы
-import { useGetProductsQuery } from '../api/productsApi'; // хук для загрузки товаров
-import AddressAutocomplete from '../components/forms/AddressAutocomplete'; // компонент автодополнения адресов
-import http from '../api/http';  // Импорт кастомного http с baseURL
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.technofame.store';
+interface OrderForm {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  city: string;
+  address: string;
+  apartment: string;
+  comment: string;
+}
 
 export default function Checkout() {
-  const dispatch = useDispatch(); // отправка экшенов
-  const navigate = useNavigate(); // переходы между страницами
-  
-  // Получаем ID товаров из корзины
-  const cartItems = useSelector(selectCartItems);
-  const cartIds = Object.keys(cartItems).map(id => Number(id));
-  
-  // Загружаем первую страницу товаров чтобы заполнить кэш
-  // Это позволит selectCartDetailed найти хотя бы некоторые товары
-  const { isLoading } = useGetProductsQuery({
-    page: 1,
-    page_size: 50, // загружаем побольше товаров
-    include_images: true,
-    include_attributes: true
-  }, {
-    skip: cartIds.length === 0 // не делаем запрос если корзина пуста
-  });
-  
-  const { rows, sum } = useSelector(selectCartDetailedApi); // данные корзины
-
-  // Простое состояние формы (валидация базовая на required)
-  const [form, setForm] = useState({
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const cart = useSelector((s: RootState) => s.cart.items);
+  const [orderForm, setOrderForm] = useState<OrderForm>({
     firstName: '',
     lastName: '',
-    phone: '',
     email: '',
-    address: '', // Полный адрес в одном поле
-    comment: '',
+    phone: '',
+    city: '',
+    address: '',
+    apartment: '',
+    comment: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Получаем все товары для отображения информации о товарах в корзине
+  const { data: productsData } = useGetProductsQuery({
+    page: 1,
+    page_size: 100,
   });
 
-  // Состояние ошибок валидации
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  // Transform и filter только товары из корзины
+  const transformProduct = (apiProduct: ProductApi): Product => ({
+    id: apiProduct.id,
+    name: apiProduct.name,
+    category: String(apiProduct.category_id),
+    price: (apiProduct.price_cents || 0) / 100,
+    rating: 4.5,
+    images: apiProduct.images,
+    brand: apiProduct.name.split(' ')[0],
+    reviews: 127,
+    inStock: true,
+    image: apiProduct.images?.[0]?.urls?.original || '',
+  });
 
-  // Валидация формы
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+  const cartItems: CartItem[] = productsData?.items
+    .filter(p => cart[p.id] && cart[p.id] > 0)
+    .map(p => {
+      const product = transformProduct(p);
+      return {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: cart[p.id],
+        image: product.image || ''
+      };
+    }) || [];
 
-    if (!form.firstName.trim()) newErrors.firstName = 'Укажите ваше имя';
-    if (!form.lastName.trim()) newErrors.lastName = 'Укажите вашу фамилию';
-    if (!form.phone.trim()) newErrors.phone = 'Укажите номер телефона';
-    if (!form.email.trim()) newErrors.email = 'Укажите email адрес';
-    else if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = 'Некорректный email адрес';
-    if (!form.address.trim()) newErrors.address = 'Укажите адрес';
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const calculateSubtotal = () => {
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  // Кастомизация стандартных сообщений валидации
-  const handleInvalid = (e: React.FormEvent<HTMLInputElement>) => {
+  const calculateTotal = () => {
+    return calculateSubtotal();
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setOrderForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const input = e.currentTarget;
-    const field = input.id;
-    
-    const customMessages: Record<string, string> = {
-      firstName: '👤 Пожалуйста, укажите ваше имя',
-      lastName: '👥 Пожалуйста, укажите вашу фамилию', 
-      phone: '📱 Пожалуйста, укажите номер телефона',
-      email: '📧 Пожалуйста, укажите корректный email',
-      address: '🏠 Пожалуйста, укажите адрес'
-    };
+    setIsSubmitting(true);
 
-    setErrors(prev => ({ ...prev, [field]: customMessages[field] || 'Заполните это поле' }));
-    input.focus();
+    // Симуляция отправки заказа
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    setIsSubmitting(false);
+    setShowSuccess(true);
+    
+    // Очищаем корзину
+    dispatch(clearCart());
+    
+    setTimeout(() => {
+      navigate('/');
+    }, 3000);
   };
 
-  // Submit: (демо) логируем, показываем toast, чистим корзину и уводим на главную
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    
-    if (!rows.length) {
-      toast.warning('Добавьте товары перед оформлением заказа', 'Корзина пуста');
-      return;
-    }
-    
-    if (!validateForm()) {
-      toast.error('Пожалуйста, заполните все обязательные поля', 'Проверьте форму');
-      return;
-    }
+  if (showSuccess) {
+    return (
+      <div className="checkout-success">
+        <div className="success-content">
+          <CheckCircle className="success-icon" />
+          <h1>Заказ успешно оформлен!</h1>
+          <p>Спасибо за покупку в TechnoFame!</p>
+          <p>Номер заказа: #TF-{Date.now().toString().slice(-6)}</p>
+          <p>Мы свяжемся с вами в ближайшее время.</p>
+          <div className="success-actions">
+            <button onClick={() => navigate('/')} className="btn-primary">
+              Вернуться в магазин
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-    console.log('Cart rows before submit:', rows);  // Debug: смотри id здесь
-    console.log('Cart items:', cartItems);
-
-    const orderData = {
-      customer: {
-        name: `${form.firstName} ${form.lastName}`,
-        email: form.email,
-        phone: form.phone,
-        address: form.address,
-      },
-      items: rows.map(row => ({
-        product_id: String(row.id),
-        qty: cartItems[row.id]
-      })),
-      comment: form.comment,
-      shipping_cents: 0, // или рассчитать
-      currency: 'EUR'
-    };
-
-    try {
-      const response = await http.post('/api/v1/orders', orderData);  // Теперь с baseURL
-      console.log('Order created:', response.data);
-      toast.success('Спасибо за заказ! Мы свяжемся с вами в ближайшее время', 'Заказ оформлен');
-      dispatch(clearCart());
-      setTimeout(() => navigate('/'), 2000);
-    } catch (error) {
-      console.error('Error creating order:', error);
-      toast.error('Ошибка при создании заказа. Попробуйте позже.', 'Ошибка');
-    }
-  };
+  if (cartItems.length === 0) {
+    return (
+      <div className="checkout-empty">
+        <div className="empty-content">
+          <ShoppingCart className="empty-icon" />
+          <h1>Корзина пуста</h1>
+          <p>Добавьте товары в корзину, чтобы оформить заказ</p>
+          <button onClick={() => navigate('/')} className="btn-primary">
+            Перейти к покупкам
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <main className="container checkout-page">
-      {/* Заголовок страницы (кнопка «Назад в каталог» удалена по просьбе) */}
-      <h1>Оформление заказа</h1>
+    <div className="checkout-page">
+      <div className="checkout-container">
+        <div className="checkout-header">
+          <h1>Оформление заказа</h1>
+          <p>Заполните контактные данные для связи с вами</p>
+        </div>
 
-      {/* Две колонки: форма (слева) + сводка (справа) */}
-      <div className="checkout-grid">
-        {/* Левая колонка — форма */}
-        <form className="checkout-form" onSubmit={onSubmit}>
-          <fieldset>
-            <legend data-section="personal">Контакты</legend>
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="firstName">Имя*</label>
-                <input
-                  id="firstName"
-                  required
-                  className={errors.firstName ? 'error' : ''}
-                  value={form.firstName}
-                  onChange={(e) => {
-                    setForm((f) => ({ ...f, firstName: e.target.value }));
-                    if (errors.firstName) {
-                      setErrors(prev => ({ ...prev, firstName: '' }));
-                    }
-                  }}
-                  placeholder="Иван"
-                  title="👤 Укажите ваше имя"
-                  onInvalid={handleInvalid}
-                />
-                {errors.firstName && <div className="form-error">{errors.firstName}</div>}
-              </div>
-              <div className="form-group">
-                <label htmlFor="lastName">Фамилия*</label>
-                <input
-                  id="lastName"
-                  required
-                  className={errors.lastName ? 'error' : ''}
-                  value={form.lastName}
-                  onChange={(e) => {
-                    setForm((f) => ({ ...f, lastName: e.target.value }));
-                    if (errors.lastName) {
-                      setErrors(prev => ({ ...prev, lastName: '' }));
-                    }
-                  }}
-                  placeholder="Иванов"
-                  title="👥 Укажите вашу фамилию"
-                  onInvalid={handleInvalid}
-                />
-                {errors.lastName && <div className="form-error">{errors.lastName}</div>}
-              </div>
-            </div>
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="phone">Телефон*</label>
-                <input
-                  id="phone"
-                  required
-                  type="tel"
-                  className={errors.phone ? 'error' : ''}
-                  value={form.phone}
-                  onChange={(e) => {
-                    setForm((f) => ({ ...f, phone: e.target.value }));
-                    if (errors.phone) {
-                      setErrors(prev => ({ ...prev, phone: '' }));
-                    }
-                  }}
-                  placeholder="+7 999 000-00-00"
-                  title="📱 Укажите номер телефона"
-                  onInvalid={handleInvalid}
-                />
-                {errors.phone && <div className="form-error">{errors.phone}</div>}
-              </div>
-              <div className="form-group">
-                <label htmlFor="email">Email*</label>
-                <input
-                  id="email"
-                  required
-                  type="email"
-                  className={errors.email ? 'error' : ''}
-                  value={form.email}
-                  onChange={(e) => {
-                    setForm((f) => ({ ...f, email: e.target.value }));
-                    if (errors.email) {
-                      setErrors(prev => ({ ...prev, email: '' }));
-                    }
-                  }}
-                  placeholder="you@example.com"
-                  title="📧 Укажите email адрес"
-                  onInvalid={handleInvalid}
-                />
-                {errors.email && <div className="form-error">{errors.email}</div>}
-              </div>
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <div className="form-group">
-              <label htmlFor="address">Адрес*</label>
-              <AddressAutocomplete
-                id="address"
-                value={form.address}
-                onChange={(value) => setForm((f) => ({ ...f, address: value }))}
-                onAddressSelect={(suggestion) => {
-                  // Используем полный адрес в одном поле
-                  setForm(prev => ({
-                    ...prev,
-                    address: suggestion.value,
-                    // Очищаем город и индекс, так как они уже включены в полный адрес
-                    city: '',
-                    zip: ''
-                  }));
-                  // Очищаем ошибки
-                  setErrors(prev => {
-                    const newErrors = { ...prev };
-                    delete newErrors.address;
-                    delete newErrors.city;
-                    delete newErrors.zip;
-                    return newErrors;
-                  });
-                }}
-                placeholder="г Москва, ул Тверская, д 1"
-                required
-              />
-            </div>
-            {/* Город и индекс включены в полный адрес */}
-            <div className="form-group">
-              <label htmlFor="comment">Комментарий к заказу</label>
-              <textarea
-                id="comment"
-                rows={3}
-                value={form.comment}
-                onChange={(e) => setForm((f) => ({ ...f, comment: e.target.value }))}
-                placeholder="Например: укажите предпочтительное время получения"
-              />
-            </div>
-          </fieldset>
-
-
-
-          <button className="checkout-submit" type="submit" disabled={!rows.length}>
-            Подтвердить заказ
-          </button>
-          {!rows.length && (
-            <p style={{ color: 'var(--muted)', marginTop: 8 }}>
-              Корзина пуста — добавьте товары, чтобы оформить заказ.
-            </p>
-          )}
-        </form>
-
-        {/* Правая колонка — сводка заказа */}
-        <aside className="order-summary">
-          <h2>Ваш заказ</h2>
-          <div className="order-items">
-            {isLoading ? (
-              <div className="loading-cart" style={{ textAlign: 'center', padding: '40px 20px' }}>
-                🔄 Загружаем товары...
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: '8px 0 0 0' }}>
-                  Пожалуйста, подождите
-                </p>
-              </div>
-            ) : rows.length === 0 ? (
-              <div className="empty-cart">
-                🛒 Корзина пуста
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: '8px 0 0 0' }}>
-                  Вернитесь в каталог и добавьте товары
-                </p>
-              </div>
-            ) : (
-              rows.map((it) => (
-                <div key={it.id} className="order-row">
-                  {it.images?.[0]?.url ? (
-                    <img 
-                      src={it.images[0].url} 
-                      alt={it.name}
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
+        <div className="checkout-content">
+          <div className="checkout-form-section">
+            <form onSubmit={handleSubmit} className="checkout-form">
+              {/* Контактная информация */}
+              <div className="form-section">
+                <h3 className="section-title">
+                  <User className="section-icon" />
+                  Контактная информация
+                </h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="firstName">Имя *</label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      name="firstName"
+                      value={orderForm.firstName}
+                      onChange={handleInputChange}
+                      required
                     />
-                  ) : (
-                    <div style={{ 
-                      width: '48px', 
-                      height: '48px', 
-                      background: 'var(--bg-muted)', 
-                      borderRadius: 'var(--radius)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '1.5rem'
-                    }}>
-                      📦
-                    </div>
-                  )}
-                  <div className="order-row-info">
-                    <div className="order-row-name">
-                      {it.name === 'Товар не найден' ? `🔄 Товар #${it.id}` : it.name}
-                    </div>
-                    <div className="order-row-details">×{it.qty}</div>
                   </div>
-                  <div className="row-sum">
-                    {fmtCurrency(it.price * it.qty)}
+                  <div className="form-group">
+                    <label htmlFor="lastName">Фамилия *</label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      name="lastName"
+                      value={orderForm.lastName}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </div>
                 </div>
-              ))
-            )}
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="email">Email *</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={orderForm.email}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="phone">Телефон *</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={orderForm.phone}
+                      onChange={handleInputChange}
+                      placeholder="+7 (999) 123-45-67"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Адрес доставки */}
+              <div className="form-section">
+                <h3 className="section-title">
+                  <MapPin className="section-icon" />
+                  Адрес доставки
+                </h3>
+                <div className="form-group">
+                  <label htmlFor="city">Город *</label>
+                  <input
+                    type="text"
+                    id="city"
+                    name="city"
+                    value={orderForm.city}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="address">Адрес *</label>
+                  <input
+                    type="text"
+                    id="address"
+                    name="address"
+                    value={orderForm.address}
+                    onChange={handleInputChange}
+                    placeholder="Улица, дом"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="apartment">Квартира/офис</label>
+                  <input
+                    type="text"
+                    id="apartment"
+                    name="apartment"
+                    value={orderForm.apartment}
+                    onChange={handleInputChange}
+                    placeholder="Квартира, офис, этаж"
+                  />
+                </div>
+              </div>
+
+              {/* Комментарий */}
+              <div className="form-section">
+                <div className="form-group">
+                  <label htmlFor="comment">Комментарий к заказу</label>
+                  <textarea
+                    id="comment"
+                    name="comment"
+                    value={orderForm.comment}
+                    onChange={handleInputChange}
+                    rows={3}
+                    placeholder="Дополнительная информация для курьера..."
+                  />
+                </div>
+              </div>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  onClick={() => navigate('/')}
+                  className="btn-secondary"
+                >
+                  Вернуться к покупкам
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="btn-primary"
+                >
+                  {isSubmitting ? 'Оформляем заказ...' : `Оформить заказ за ${calculateTotal().toLocaleString()} ₽`}
+                </button>
+              </div>
+            </form>
           </div>
-          <div className="sepline" />
-          <div className="totals">
-            <div className="total-line">💎 Итого</div>
-            <div className="total-line">
-              <strong>{fmtCurrency(sum)}</strong>
+
+          <div className="checkout-summary">
+            <div className="summary-header">
+              <h3>Ваш заказ</h3>
+              <span>{cartItems.length} товар{cartItems.length > 1 ? 'а' : ''}</span>
+            </div>
+
+            <div className="summary-items">
+              {cartItems.map((item) => (
+                <div key={item.id} className="summary-item">
+                  <img src={item.image} alt={item.name} className="item-image" />
+                  <div className="item-details">
+                    <h4 className="item-name">{item.name}</h4>
+                    <span className="item-quantity">× {item.quantity}</span>
+                  </div>
+                  <span className="item-price">
+                    {(item.price * item.quantity).toLocaleString()} ₽
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="summary-totals">
+              <div className="total-row total-final">
+                <span>Итого</span>
+                <span>{calculateTotal().toLocaleString()} ₽</span>
+              </div>
+              <div className="delivery-note">
+                <p>📞 После оформления заказа с вами свяжется менеджер для уточнения деталей доставки и оплаты</p>
+              </div>
             </div>
           </div>
-        </aside>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

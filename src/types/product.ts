@@ -9,4 +9,22 @@ export interface Product {
     oldPrice?: number;
     rating: number;
     images?: ProductImage[]; // images for the product
+    brand?: string;
+    reviews?: number;
+    inStock?: boolean;
+    features?: string[];
+    description?: string;
+    specifications?: Record<string, string>;
+    image?: string; // primary image URL
+    originalPrice?: number;
+}
+
+// Тип состояния фильтров
+export interface FilterState {
+    category: string;
+    priceRange: [number, number];
+    brands: string[];
+    inStock: boolean;
+    sortBy: 'name' | 'price' | 'rating' | 'newest';
+    sortDirection: 'asc' | 'desc';
 }
