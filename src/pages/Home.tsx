@@ -1,11 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../app/store';
 import { useGetProductsQuery, useGetCategoriesQuery } from '../api/productsApi';
-import { setChip, setPage, setSort, applyFilters } from '../features/catalog/catalogSlice';
+import { setChip, setPage, setSort, applyFilters, setQ } from '../features/catalog/catalogSlice';
 import { addToCart } from '../features/cart/cartSlice';
 import { toggleFav } from '../features/favs/favsSlice';
 import ProductGrid from '../components/user/ProductGrid';
+import SearchAutocomplete from '../components/user/SearchAutocomplete';
 import CategoryIcon from '../components/user/CategoryIcon';
 import Pagination from '../components/user/Pagination';
 import FiltersPanel from '../components/user/FiltersPanel';
@@ -20,7 +21,6 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filtersPanelOpen, setFiltersPanelOpen] = useState(false);
 
-  // Слушаем событие для открытия sidebar
   React.useEffect(() => {
     const handleToggleSidebar = () => {
       setSidebarOpen(prev => !prev);
@@ -32,7 +32,7 @@ export default function Home() {
   // Получаем категории
   const { data: categoriesData } = useGetCategoriesQuery();
   
-  // Получаем товары (используем СЕРВЕРНУЮ пагинацию)
+  // Получаем товары с поиском, фильтром категории и пагинацией
   const { data: productsData, isLoading } = useGetProductsQuery({
     page: catalogState.page,
     page_size: catalogState.pageSize,
@@ -40,19 +40,16 @@ export default function Home() {
     q: catalogState.q || undefined,
   });
 
-  // Transform API products to UI products (прямо с сервера, без клиентской обработки)
+  // Transform API products to UI products
   const products: Product[] = useMemo(() => {
     if (!productsData?.items) return [];
-    const transformed = productsData.items.map(transformProduct);
-    console.log('📦 Products from API:', transformed.length);
-    return transformed;
+    return productsData.items.map(transformProduct);
   }, [productsData]);
 
   // Categories list for sidebar
   const categories = useMemo(() => {
     const cats = [{ id: 'Все', slug: 'Все', name: 'Все категории', count: productsData?.meta.total || 0 }];
     if (categoriesData) {
-      console.log('📁 Categories from API:', categoriesData);
       cats.push(...categoriesData.map(cat => ({
         id: cat.slug,
         slug: cat.slug,
@@ -60,16 +57,51 @@ export default function Home() {
         count: 0
       })));
     }
-    console.log('📁 Final categories:', cats);
     return cats;
   }, [categoriesData, productsData]);
 
-  // Available brands (from current products)
+  // Фильтрация на клиенте (для локальных фильтров)
+  const filteredProducts = useMemo(() => {
+    let filtered = products;
+
+    // Сортировка
+    filtered.sort((a, b) => {
+      let result = 0;
+      
+      switch (catalogState.sort) {
+        case 'priceAsc':
+          result = a.price - b.price;
+          break;
+        case 'priceDesc':
+          result = b.price - a.price;
+          break;
+        case 'name':
+          result = a.name.localeCompare(b.name);
+          break;
+        case 'rating':
+          result = (b.rating || 0) - (a.rating || 0);
+          break;
+        case 'new':
+          result = new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+          break;
+        case 'popular':
+        default:
+          result = (b.rating || 0) - (a.rating || 0);
+          break;
+      }
+      
+      return result;
+    });
+
+    return filtered;
+  }, [products, catalogState.sort]);
+
+  // Available brands
   const availableBrands = useMemo(() => {
     return Array.from(new Set(products.map(p => p.brand || 'Unknown'))).filter(b => b !== 'Unknown');
   }, [products]);
 
-  // Price range (from current products)
+  // Price range
   const priceRange = useMemo(() => {
     if (products.length === 0) return { min: 0, max: 1000000 };
     const prices = products.map(p => p.price);
@@ -79,7 +111,6 @@ export default function Home() {
     };
   }, [products]);
 
-  // Current filters
   const filters: FilterState = {
     category: catalogState.chip,
     priceRange: catalogState.priceRange,
@@ -90,15 +121,20 @@ export default function Home() {
   };
 
   // Handlers
+  const handleSearch = (query: string) => {
+    dispatch(setPage(1));
+    dispatch(setQ(query));
+  };
+
   const handleCategoryChange = (categorySlug: string) => {
-    console.log('🔄 Category change:', categorySlug);
-    console.log('📊 Current chip:', catalogState.chip);
     dispatch(setChip(categorySlug));
+    dispatch(setPage(1));
     setSidebarOpen(false);
   };
 
   const handleFiltersChange = (newFilters: FilterState) => {
     dispatch(applyFilters(newFilters));
+    dispatch(setPage(1));
   };
 
   const handleAddToCart = (product: Product) => {
@@ -114,9 +150,12 @@ export default function Home() {
   };
 
   const handlePageChange = (page: number) => {
-    console.log('📄 Page change:', page);
     dispatch(setPage(page));
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSortChange = (sortValue: string) => {
+    dispatch(setSort(sortValue));
   };
 
   return (
@@ -129,6 +168,9 @@ export default function Home() {
               <span className="sidebar-icon">📂</span>
               <h2>Категории товаров</h2>
             </div>
+            <button className="close-button" onClick={() => setSidebarOpen(false)}>
+              ✕
+            </button>
           </div>
           
           <div className="categories-section">
@@ -167,6 +209,17 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Search Bar */}
+        <section className="search-section">
+          <div className="search-container">
+            <SearchAutocomplete 
+              products={products}
+              onSearch={handleSearch}
+              placeholder="Поиск товаров..."
+            />
+          </div>
+        </section>
+
         {/* Filters and Sort Bar */}
         <section className="filters-sort-bar">
           <div className="filters-sort-content">
@@ -177,6 +230,10 @@ export default function Home() {
               >
                 <span className="filter-icon">⚙️</span>
                 <span>Фильтры</span>
+                {(filters.category !== 'Все' || filters.brands.length > 0 || filters.inStock || 
+                  filters.priceRange[0] > priceRange.min || filters.priceRange[1] < priceRange.max) && (
+                  <span className="active-indicator"></span>
+                )}
               </button>
             </div>
             
@@ -184,7 +241,7 @@ export default function Home() {
               <span className="sort-label">Сортировка:</span>
               <select 
                 value={catalogState.sort}
-                onChange={(e) => dispatch(setSort(e.target.value))}
+                onChange={(e) => handleSortChange(e.target.value)}
                 className="sort-select"
               >
                 <option value="popular">Популярные</option>
@@ -198,7 +255,7 @@ export default function Home() {
             
             <div className="results-info">
               <span className="results-count">
-                {productsData?.meta.total || 0} товаров
+                {filteredProducts.length} товаров
               </span>
             </div>
           </div>
@@ -207,25 +264,25 @@ export default function Home() {
         {/* Products Grid */}
         <section className="products-section">
           <ProductGrid
-            products={products}
+            products={filteredProducts}
             onAddToCart={handleAddToCart}
             onAddToWishlist={handleAddToWishlist}
             isInWishlist={isInWishlist}
             loading={isLoading}
           />
           
-            {/* Pagination */}
-            {productsData && productsData.meta.total_pages > 1 && (
-              <Pagination
-                currentPage={catalogState.page}
-                totalPages={productsData.meta.total_pages}
-                onPageChange={handlePageChange}
-                totalItems={productsData.meta.total}
-                itemsPerPage={catalogState.pageSize}
-              />
-            )}
+          {/* Pagination */}
+          {productsData && productsData.meta.total_pages > 1 && (
+            <Pagination
+              currentPage={catalogState.page}
+              totalPages={productsData.meta.total_pages}
+              onPageChange={handlePageChange}
+              totalItems={productsData.meta.total}
+              itemsPerPage={catalogState.pageSize}
+            />
+          )}
         </section>
-    </main>
+      </main>
 
       {/* Filters Panel */}
       <FiltersPanel
@@ -246,7 +303,6 @@ export default function Home() {
           position: relative;
         }
 
-        /* Sidebar */
         .sidebar {
           position: fixed;
           top: 80px;
@@ -273,6 +329,9 @@ export default function Home() {
           margin-bottom: var(--space-8);
           padding-bottom: var(--space-4);
           border-bottom: 1px solid var(--border-light);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
 
         .sidebar-title {
@@ -290,6 +349,19 @@ export default function Home() {
           font-weight: var(--font-bold);
           color: var(--text-primary);
           margin: 0;
+        }
+
+        .close-button {
+          background: none;
+          border: none;
+          font-size: 24px;
+          cursor: pointer;
+          color: var(--text-secondary);
+          display: none;
+        }
+
+        .sidebar-open .close-button {
+          display: block;
         }
 
         .categories-description {
@@ -340,13 +412,11 @@ export default function Home() {
           opacity: 0.7;
         }
 
-        /* Main Content */
         .main-content {
           padding: 0;
           background: var(--surface-secondary);
         }
 
-        /* Hero Section */
         .hero-section {
           background: var(--gradient-primary);
           color: var(--text-inverse);
@@ -366,7 +436,17 @@ export default function Home() {
           margin: 0;
         }
 
-        /* Filters and Sort Bar */
+        .search-section {
+          background: var(--surface-primary);
+          padding: 20px;
+          border-bottom: 1px solid var(--border-light);
+        }
+
+        .search-container {
+          max-width: 1400px;
+          margin: 0 auto;
+        }
+
         .filters-sort-bar {
           background: var(--surface-primary);
           border-bottom: 1px solid var(--border-light);
@@ -396,11 +476,22 @@ export default function Home() {
           cursor: pointer;
           transition: all 0.2s ease;
           font-weight: var(--font-medium);
+          position: relative;
         }
 
         .filters-toggle-btn:hover {
           border-color: var(--primary);
           transform: translateY(-1px);
+        }
+
+        .active-indicator {
+          position: absolute;
+          top: -4px;
+          right: -4px;
+          width: 8px;
+          height: 8px;
+          background: var(--primary);
+          border-radius: 50%;
         }
 
         .sort-section {
@@ -417,20 +508,6 @@ export default function Home() {
           cursor: pointer;
         }
 
-        .sort-direction-btn {
-          width: 40px;
-          height: 40px;
-          background: var(--surface-secondary);
-          border: 1px solid var(--border-light);
-          border-radius: var(--radius-lg);
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .sort-direction-btn:hover {
-          border-color: var(--primary);
-        }
-
         .results-count {
           font-size: var(--text-sm);
           color: var(--text-secondary);
@@ -439,7 +516,6 @@ export default function Home() {
           border-radius: var(--radius-md);
         }
 
-        /* Products Section */
         .products-section {
           padding: 20px;
           max-width: 1400px;
@@ -459,6 +535,10 @@ export default function Home() {
             height: 100%;
             box-shadow: none;
             border-right: 1px solid var(--border-light);
+          }
+
+          .close-button {
+            display: none;
           }
         }
 
