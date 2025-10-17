@@ -45,6 +45,7 @@ const catalogSlice = createSlice({
 
         openDrawer: (s) => { s.drawerOpen = true; },
         closeDrawer: (s) => { s.drawerOpen = false; },
+        setDrawerOpen: (s, a: PayloadAction<boolean>) => { s.drawerOpen = a.payload; },
 
         // ВАЖНО: один атомарный экшен для накатки URL -> Redux БЕЗ скрытых сбросов
         applyQuery: (s, a: PayloadAction<{
@@ -106,7 +107,7 @@ const catalogSlice = createSlice({
 export const {
     setQ, setChip, setSort, setPage, setPageSize,
     toggleFavoriteOnly, setFavoriteOnly,
-    openDrawer, closeDrawer,
+    openDrawer, closeDrawer, setDrawerOpen,
     applyQuery,
     setPriceRange, setBrands, toggleBrand, setInStock, setSortDirection,
     applyFilters, clearFilters,
