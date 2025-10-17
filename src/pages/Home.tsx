@@ -2,11 +2,10 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../app/store';
 import { useGetProductsQuery, useGetCategoriesQuery } from '../api/productsApi';
-import { setChip, setPage, setSort, applyFilters, setQ } from '../features/catalog/catalogSlice';
+import { setChip, setPage, setSort, applyFilters } from '../features/catalog/catalogSlice';
 import { addToCart } from '../features/cart/cartSlice';
 import { toggleFav } from '../features/favs/favsSlice';
 import ProductGrid from '../components/user/ProductGrid';
-import SearchAutocomplete from '../components/user/SearchAutocomplete';
 import CategoryIcon from '../components/user/CategoryIcon';
 import Pagination from '../components/user/Pagination';
 import FiltersPanel from '../components/user/FiltersPanel';
@@ -121,11 +120,6 @@ export default function Home() {
   };
 
   // Handlers
-  const handleSearch = (query: string) => {
-    dispatch(setPage(1));
-    dispatch(setQ(query));
-  };
-
   const handleCategoryChange = (categorySlug: string) => {
     dispatch(setChip(categorySlug));
     dispatch(setPage(1));
@@ -206,17 +200,6 @@ export default function Home() {
             <p className="hero-subtitle">
               {productsData?.meta.total || 0} товаров по выгодным ценам
             </p>
-          </div>
-        </section>
-
-        {/* Search Bar */}
-        <section className="search-section">
-          <div className="search-container">
-            <SearchAutocomplete 
-              products={products}
-              onSearch={handleSearch}
-              placeholder="Поиск товаров..."
-            />
           </div>
         </section>
 
@@ -434,17 +417,6 @@ export default function Home() {
           font-size: var(--text-xl);
           opacity: 0.9;
           margin: 0;
-        }
-
-        .search-section {
-          background: var(--surface-primary);
-          padding: 20px;
-          border-bottom: 1px solid var(--border-light);
-        }
-
-        .search-container {
-          max-width: 1400px;
-          margin: 0 auto;
         }
 
         .filters-sort-bar {

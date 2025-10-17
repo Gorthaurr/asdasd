@@ -36,14 +36,15 @@ const Header: React.FC = () => {
     }
   };
 
+  const handleMenuToggle = () => {
+    window.dispatchEvent(new CustomEvent('toggleSidebar'));
+  };
+
   return (
     <header className="header">
       <div className="header-container">
         <div className="header-left">
-          <button className="menu-toggle" onClick={() => {
-            // Отправляем событие для открытия sidebar
-            window.dispatchEvent(new CustomEvent('toggleSidebar'));
-          }}>
+          <button className="menu-toggle" onClick={handleMenuToggle}>
             <Menu size={24} />
           </button>
           <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>

@@ -30,7 +30,7 @@ export default function WishlistPage() {
   // Получаем все товары
   const { data: productsData } = useGetProductsQuery({
     page: 1,
-    page_size: 100,
+    page_size: 1000,
   });
 
   // Transform и filter только избранные с датой добавления

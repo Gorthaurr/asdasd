@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../app/store';
 import { changeQty, removeFromCart, clearCart } from '../../features/cart/cartSlice';
-import { useGetProductsQuery } from '../../api/productsApi';
+import { useGetProductsQuery, useGetProductQuery } from '../../api/productsApi';
 import type { Product } from '../../types/product';
 import { transformProduct } from '../../utils/productTransform';
 import './Cart.css';
@@ -24,26 +24,34 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   
   const cart = useSelector((s: RootState) => s.cart.items);
+  const cartIds = useMemo(() => Object.keys(cart).filter(id => cart[id] > 0), [cart]);
   
-  // Получаем все товары
+  // Для первоначальной загрузки товаров из большого набора
   const { data: productsData } = useGetProductsQuery({
     page: 1,
-    page_size: 100,
+    page_size: 1000,
   });
 
-  // Transform и filter только товары из корзины
+  // Загружаем товары по ID'ам из корзины (максимум нужно загрузить отдельно)
   const items: CartItem[] = useMemo(() => {
-    if (!productsData?.items) return [];
-    return productsData.items
-      .filter(p => cart[p.id] && cart[p.id] > 0)
-      .map(p => {
-        const product = transformProduct(p);
+    if (!productsData?.items || cartIds.length === 0) return [];
+    
+    // Создаем map всех товаров из API для быстрого поиска
+    const productsMap = new Map(productsData.items.map(p => [String(p.id), p]));
+    
+    // Получаем товары из корзины
+    return cartIds
+      .map(id => {
+        const apiProduct = productsMap.get(id);
+        if (!apiProduct) return null;
+        const product = transformProduct(apiProduct);
         return {
           ...product,
-          quantity: cart[p.id]
+          quantity: cart[id]
         };
-      });
-  }, [productsData, cart]);
+      })
+      .filter((item): item is CartItem => item !== null);
+  }, [productsData, cart, cartIds]);
 
   const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
