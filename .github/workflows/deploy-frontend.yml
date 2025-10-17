@@ -22,8 +22,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
+
+      # Диагностика: убедимся, что бежит именно этот workflow и на этой версии
+      - name: Debug workflow file presence
+        shell: bash
+        run: |
+          echo "Branch: ${GITHUB_REF}"
+          echo "Commit: ${GITHUB_SHA}"
+          echo "Workflow: ${GITHUB_WORKFLOW}"
+          echo "Workflows in repo:"
+          ls -la .github/workflows || true
+          echo "----- deploy-frontend.yml (first 200 lines) -----"
+          sed -n '1,200p' .github/workflows/deploy-frontend.yml || true
+          echo "-----------------------------------------------"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -32,7 +45,7 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      # 1) Ставим pnpm как standalone-бинарь (обычно достаточно)
+      # 1) Основной способ: установить pnpm как standalone-бинарь и добавить в PATH
       - name: Setup pnpm (standalone)
         uses: pnpm/action-setup@v4
         with:
@@ -40,28 +53,29 @@ jobs:
           standalone: true
           run_install: false
 
-      # 2) Гарантируем, что pnpm существует: corepack -> npm -g (fallback)
-      - name: Bootstrap pnpm
+      # 2) Fallback: если по какой-то причине pnpm ещё не виден — активируем через corepack
+      # 3) Super-fallback: если и corepack не помог — ставим pnpm через npm -g
+      - name: Ensure pnpm is available
         shell: bash
         run: |
           set -euo pipefail
           echo "PATH: $PATH"
           if command -v pnpm >/dev/null 2>&1; then
-            echo "pnpm already available via action-setup"
+            echo "pnpm available from pnpm/action-setup"
           else
-            echo "pnpm not in PATH -> enabling via corepack…"
-            corepack enable
+            echo "pnpm not found -> enabling via corepack..."
+            corepack enable || true
             corepack prepare pnpm@10.17.1 --activate || true
           fi
 
           if ! command -v pnpm >/dev/null 2>&1; then
-            echo "corepack failed or not found -> installing pnpm globally via npm…"
+            echo "corepack not effective -> installing pnpm globally via npm..."
             npm i -g pnpm@10.17.1
           fi
 
           echo "Node: $(node -v)"
-          echo "npm:  $(npm -v)"
-          echo "pnpm: $(pnpm -v)"
+          echo "NPM:  $(npm -v)"
+          echo "PNPM: $(pnpm -v)"
 
       - name: Install dependencies (locked)
         run: pnpm install --frozen-lockfile
