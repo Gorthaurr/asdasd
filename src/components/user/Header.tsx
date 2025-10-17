@@ -13,8 +13,8 @@ import './Header.css';
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const cartCount = useSelector((s: RootState) => s.cart.items.reduce((sum, item) => sum + item.quantity, 0));
-  const wishlistCount = useSelector((s: RootState) => s.favs.items.length);
+  const cartCount = useSelector((s: RootState) => Object.values(s.cart.items).reduce((sum, qty) => sum + qty, 0));
+  const wishlistCount = useSelector((s: RootState) => s.favs.ids.length);
 
   // Получаем товары для автокомплита
   const { data: productsData } = useGetProductsQuery({

@@ -20,8 +20,16 @@ interface ChangePayload {
 const cartSlice = createSlice({
     name: 'cart', // имя ветки
     initialState: { 
-        items: getJSON('techhome_cart', {} as Record<string, number>) 
-    }, // читаем корзину из localStorage
+        items: (() => {
+            const stored = getJSON('techhome_cart', {} as Record<string, number>);
+            // Если это массив (старый формат) или не объект - сбрасываем
+            if (Array.isArray(stored) || typeof stored !== 'object' || stored === null) {
+                localStorage.removeItem('techhome_cart');
+                return {};
+            }
+            return stored;
+        })()
+    }, // читаем корзину из localStorage с валидацией
     reducers: {
         /**
          * Добавить 1 шт товара в корзину
