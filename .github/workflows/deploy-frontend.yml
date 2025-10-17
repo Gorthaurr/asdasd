@@ -32,23 +32,35 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      # Устанавливаем pnpm гарантированно
-      - name: Setup pnpm
+      # 1) Ставим pnpm как standalone-бинарь (обычно достаточно)
+      - name: Setup pnpm (standalone)
         uses: pnpm/action-setup@v4
         with:
           version: 10.17.1
           standalone: true
           run_install: false
 
-      # Fallback на npm -g, если pnpm не найден (редко, но спасает CI)
-      - name: Ensure pnpm is available
+      # 2) Гарантируем, что pnpm существует: corepack -> npm -g (fallback)
+      - name: Bootstrap pnpm
         shell: bash
         run: |
-          if ! command -v pnpm >/dev/null 2>&1; then
-            echo "pnpm not found, installing via npm -g..."
-            npm install -g pnpm@10.17.1
+          set -euo pipefail
+          echo "PATH: $PATH"
+          if command -v pnpm >/dev/null 2>&1; then
+            echo "pnpm already available via action-setup"
+          else
+            echo "pnpm not in PATH -> enabling via corepack…"
+            corepack enable
+            corepack prepare pnpm@10.17.1 --activate || true
           fi
+
+          if ! command -v pnpm >/dev/null 2>&1; then
+            echo "corepack failed or not found -> installing pnpm globally via npm…"
+            npm i -g pnpm@10.17.1
+          fi
+
           echo "Node: $(node -v)"
+          echo "npm:  $(npm -v)"
           echo "pnpm: $(pnpm -v)"
 
       - name: Install dependencies (locked)
