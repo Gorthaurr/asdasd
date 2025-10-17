@@ -1,3 +1,22 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'vite.config.*'
+      - 'tsconfig*.json'
+      - 'src/**'
+      - 'public/**'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-frontend-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -5,7 +24,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Устанавливаем Node и включаем кеш по pnpm-lock.yaml
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -13,7 +31,6 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      # Устанавливаем pnpm (стендэлон-бинарь; гарантированно в PATH)
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -21,15 +38,14 @@ jobs:
           standalone: true
           run_install: false
 
-      # Опционально: fallback через corepack (если вдруг что-то пойдёт не так)
       - name: Ensure pnpm is available
         run: |
           if ! command -v pnpm >/dev/null 2>&1; then
             corepack enable
             corepack prepare pnpm@10.17.1 --activate
           fi
-          pnpm -v
           node -v
+          pnpm -v
 
       - name: Install deps (locked)
         run: pnpm install --frozen-lockfile
