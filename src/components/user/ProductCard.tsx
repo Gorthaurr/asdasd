@@ -32,10 +32,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
   // Получаем первое изображение товара
   const productImage = product.images?.[0]?.urls?.original || product.image || 'https://via.placeholder.com/300x300/f3f4f6/9ca3af?text=No+Image';
 
+  const handleCardClick = () => {
+    console.log('🖱️ Product card clicked:', product.id, product.name);
+    navigate(`/product/${product.id}`);
+  };
+
   return (
     <div 
       className="product-card"
-      onClick={() => navigate(`/product/${product.id}`)}
+      onClick={handleCardClick}
     >
       {/* Image Section */}
       <div className={`product-image-container ${imageLoaded ? 'loaded' : ''}`}>

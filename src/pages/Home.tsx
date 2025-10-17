@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../app/store';
 import { useGetProductsQuery, useGetCategoriesQuery } from '../api/productsApi';
-import { setChip, setPage, applyFilters } from '../features/catalog/catalogSlice';
+import { setChip, setPage, setSort, applyFilters } from '../features/catalog/catalogSlice';
 import { addToCart } from '../features/cart/cartSlice';
 import { toggleFav } from '../features/favs/favsSlice';
 import ProductGrid from '../components/user/ProductGrid';
@@ -32,24 +32,92 @@ export default function Home() {
   // Получаем категории
   const { data: categoriesData } = useGetCategoriesQuery();
   
-  // Получаем товары
+  // Получаем товары (загружаем ВСЕ для клиентской фильтрации)
   const { data: productsData, isLoading } = useGetProductsQuery({
-    page: catalogState.page,
-    page_size: catalogState.pageSize,
+    page: 1,
+    page_size: 100, // Загружаем больше товаров для клиентской фильтрации
     category_slug: catalogState.chip !== 'Все' ? catalogState.chip : undefined,
     q: catalogState.q || undefined,
   });
 
   // Transform API products to UI products
-  const products: Product[] = useMemo(() => {
+  const allProducts: Product[] = useMemo(() => {
     if (!productsData?.items) return [];
     return productsData.items.map(transformProduct);
   }, [productsData]);
+
+  // Apply client-side filters and sorting
+  const products: Product[] = useMemo(() => {
+    let filtered = [...allProducts];
+
+    // Filter by price range
+    if (catalogState.priceRange[0] > 0 || catalogState.priceRange[1] < 1000000) {
+      filtered = filtered.filter(product =>
+        product.price >= catalogState.priceRange[0] && 
+        product.price <= catalogState.priceRange[1]
+      );
+    }
+
+    // Filter by brands
+    if (catalogState.brands.length > 0) {
+      filtered = filtered.filter(product => 
+        product.brand && catalogState.brands.includes(product.brand)
+      );
+    }
+
+    // Filter by in stock
+    if (catalogState.inStock) {
+      filtered = filtered.filter(product => product.inStock !== false);
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let result = 0;
+      
+      switch (catalogState.sort) {
+        case 'priceAsc':
+          result = a.price - b.price;
+          break;
+        case 'priceDesc':
+          result = b.price - a.price;
+          break;
+        case 'name':
+          result = a.name.localeCompare(b.name);
+          break;
+        case 'rating':
+          result = (b.rating || 0) - (a.rating || 0);
+          break;
+        case 'new':
+        case 'newest':
+          result = b.id.localeCompare(a.id);
+          break;
+        case 'popular':
+        default:
+          result = (b.rating || 0) - (a.rating || 0);
+          break;
+      }
+      
+      // Apply sort direction
+      return catalogState.sortDirection === 'asc' ? result : -result;
+    });
+
+    console.log('🔍 Filtered products:', filtered.length);
+    return filtered;
+  }, [allProducts, catalogState.priceRange, catalogState.brands, catalogState.inStock, catalogState.sort, catalogState.sortDirection]);
+
+  // Apply pagination to filtered products
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (catalogState.page - 1) * catalogState.pageSize;
+    const paginated = products.slice(startIndex, startIndex + catalogState.pageSize);
+    console.log('📄 Paginated products:', paginated.map(p => ({ id: p.id, name: p.name })));
+    return paginated;
+  }, [products, catalogState.page, catalogState.pageSize]);
 
   // Categories list for sidebar
   const categories = useMemo(() => {
     const cats = [{ id: 'Все', slug: 'Все', name: 'Все категории', count: productsData?.meta.total || 0 }];
     if (categoriesData) {
+      console.log('📁 Categories from API:', categoriesData);
       cats.push(...categoriesData.map(cat => ({
         id: cat.slug,
         slug: cat.slug,
@@ -57,23 +125,24 @@ export default function Home() {
         count: 0
       })));
     }
+    console.log('📁 Final categories:', cats);
     return cats;
   }, [categoriesData, productsData]);
 
-  // Available brands
+  // Available brands (from all products, not filtered)
   const availableBrands = useMemo(() => {
-    return Array.from(new Set(products.map(p => p.brand || 'Unknown'))).filter(b => b !== 'Unknown');
-  }, [products]);
+    return Array.from(new Set(allProducts.map(p => p.brand || 'Unknown'))).filter(b => b !== 'Unknown');
+  }, [allProducts]);
 
-  // Price range
+  // Price range (from all products, not filtered)
   const priceRange = useMemo(() => {
-    if (products.length === 0) return { min: 0, max: 1000000 };
-    const prices = products.map(p => p.price);
+    if (allProducts.length === 0) return { min: 0, max: 1000000 };
+    const prices = allProducts.map(p => p.price);
     return {
       min: Math.floor(Math.min(...prices)),
       max: Math.ceil(Math.max(...prices))
     };
-  }, [products]);
+  }, [allProducts]);
 
   // Current filters
   const filters: FilterState = {
@@ -87,6 +156,8 @@ export default function Home() {
 
   // Handlers
   const handleCategoryChange = (categorySlug: string) => {
+    console.log('🔄 Category change:', categorySlug);
+    console.log('📊 Current chip:', catalogState.chip);
     dispatch(setChip(categorySlug));
     setSidebarOpen(false);
   };
@@ -108,6 +179,7 @@ export default function Home() {
   };
 
   const handlePageChange = (page: number) => {
+    console.log('📄 Page change:', page);
     dispatch(setPage(page));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -122,9 +194,6 @@ export default function Home() {
               <span className="sidebar-icon">📂</span>
               <h2>Категории товаров</h2>
             </div>
-            <button className="close-button" onClick={() => setSidebarOpen(false)}>
-              ✕
-            </button>
           </div>
           
           <div className="categories-section">
@@ -179,30 +248,22 @@ export default function Home() {
             <div className="sort-section">
               <span className="sort-label">Сортировка:</span>
               <select 
-                value={filters.sortBy}
-                onChange={(e) => handleFiltersChange({...filters, sortBy: e.target.value as any})}
+                value={catalogState.sort}
+                onChange={(e) => dispatch(setSort(e.target.value))}
                 className="sort-select"
               >
-                <option value="newest">Сначала новые</option>
-                <option value="price">По цене</option>
+                <option value="popular">Популярные</option>
+                <option value="new">Сначала новые</option>
+                <option value="priceAsc">Цена: по возрастанию</option>
+                <option value="priceDesc">Цена: по убыванию</option>
                 <option value="name">По названию</option>
                 <option value="rating">По рейтингу</option>
               </select>
-              <button 
-                className="sort-direction-btn"
-                onClick={() => handleFiltersChange({
-                  ...filters, 
-                  sortDirection: filters.sortDirection === 'asc' ? 'desc' : 'asc'
-                })}
-                title={filters.sortDirection === 'asc' ? 'По возрастанию' : 'По убыванию'}
-              >
-                {filters.sortDirection === 'asc' ? '↑' : '↓'}
-              </button>
             </div>
             
             <div className="results-info">
               <span className="results-count">
-                {productsData?.meta.total || 0} товаров
+                {products.length} товаров
               </span>
             </div>
           </div>
@@ -211,25 +272,34 @@ export default function Home() {
         {/* Products Grid */}
         <section className="products-section">
           <ProductGrid
-            products={products}
+            products={paginatedProducts}
             onAddToCart={handleAddToCart}
             onAddToWishlist={handleAddToWishlist}
             isInWishlist={isInWishlist}
             loading={isLoading}
           />
           
-          {/* Pagination */}
-          {productsData && (
-            <Pagination
-              currentPage={catalogState.page}
-              totalPages={productsData.meta.total_pages}
-              onPageChange={handlePageChange}
-              totalItems={productsData.meta.total}
-              itemsPerPage={catalogState.pageSize}
-            />
-          )}
+            {/* Pagination */}
+            {products.length > 0 && (() => {
+              const totalPages = Math.ceil(products.length / catalogState.pageSize);
+              console.log('📊 Pagination:', { 
+                currentPage: catalogState.page, 
+                totalPages, 
+                totalItems: products.length, 
+                itemsPerPage: catalogState.pageSize 
+              });
+              return (
+                <Pagination
+                  currentPage={catalogState.page}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  totalItems={products.length}
+                  itemsPerPage={catalogState.pageSize}
+                />
+              );
+            })()}
         </section>
-      </main>
+    </main>
 
       {/* Filters Panel */}
       <FiltersPanel
@@ -274,9 +344,6 @@ export default function Home() {
         }
 
         .sidebar-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
           margin-bottom: var(--space-8);
           padding-bottom: var(--space-4);
           border-bottom: 1px solid var(--border-light);
@@ -297,22 +364,6 @@ export default function Home() {
           font-weight: var(--font-bold);
           color: var(--text-primary);
           margin: 0;
-        }
-
-        .close-button {
-          background: none;
-          border: none;
-          font-size: 24px;
-          color: var(--text-tertiary);
-          cursor: pointer;
-          padding: var(--space-2);
-          border-radius: var(--radius-md);
-          transition: all 0.2s ease;
-        }
-
-        .close-button:hover {
-          background: var(--surface-tertiary);
-          color: var(--text-primary);
         }
 
         .categories-description {
