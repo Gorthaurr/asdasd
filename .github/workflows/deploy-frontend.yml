@@ -50,7 +50,7 @@ jobs:
           echo "NPM:  $(npm -v)"
 
       - name: Install dependencies (locked)
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Build
         env:
