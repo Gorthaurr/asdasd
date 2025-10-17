@@ -31,15 +31,21 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: pnpm-lock.yaml
 
+      # Устанавливаем pnpm и добавляем в PATH
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.17.1
           run_install: false
 
-      - name: Verify tool versions
+      # Fallback на corepack, если по какой-то причине pnpm не попал в PATH
+      - name: Ensure pnpm is available
         run: |
-          node -v
+          if ! command -v pnpm >/dev/null 2>&1; then
+            echo "pnpm not found, enabling via corepack…"
+            corepack enable
+            corepack prepare pnpm@10.17.1 --activate
+          fi
           pnpm -v
 
       - name: Install deps (locked)
