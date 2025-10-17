@@ -7,7 +7,7 @@ import { toggleFavorite } from '../features/favs/favsSlice';
 import { addToCart } from '../features/cart/cartSlice';
 import { useGetProductQuery } from '../api/productsApi';
 import type { Product } from '../types/product';
-import type { ProductApi } from '../types/api';
+import { transformProduct } from '../utils/productTransform';
 import './ProductPage.css';
 
 export default function ProductPage() {
@@ -45,31 +45,6 @@ export default function ProductPage() {
   }
 
   // Transform API product to UI product
-  const transformProduct = (apiProduct: ProductApi): Product => ({
-    id: apiProduct.id,
-    name: apiProduct.name,
-    category: String(apiProduct.category_id),
-    price: (apiProduct.price_cents || 0) / 100,
-    rating: 4.5,
-    images: apiProduct.images,
-    brand: apiProduct.name.split(' ')[0],
-    reviews: 127,
-    inStock: true,
-    image: apiProduct.images?.[0]?.urls?.original || '',
-    features: [
-      'Высокое качество',
-      'Гарантия производителя',
-      'Быстрая доставка',
-      'Энергоэффективность'
-    ],
-    specifications: {
-      'Модель': apiProduct.name,
-      'Категория': String(apiProduct.category_id),
-      'Артикул': apiProduct.id.substring(0, 8),
-      'Гарантия': '12 месяцев'
-    }
-  });
-
   const product = transformProduct(productData);
   const isInWishlist = favorites.includes(product.id);
 

@@ -5,7 +5,7 @@ import type { RootState } from '../../app/store';
 import { changeQty, removeFromCart, clearCart } from '../../features/cart/cartSlice';
 import { useGetProductsQuery } from '../../api/productsApi';
 import type { Product } from '../../types/product';
-import type { ProductApi } from '../../types/api';
+import { transformProduct } from '../../utils/productTransform';
 import './Cart.css';
 
 interface CartItem extends Product {
@@ -32,20 +32,6 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose }) => {
   });
 
   // Transform и filter только товары из корзины
-  const transformProduct = (apiProduct: ProductApi): Product => ({
-    id: apiProduct.id,
-    name: apiProduct.name,
-    category: String(apiProduct.category_id),
-    price: (apiProduct.price_cents || 0) / 100,
-    rating: 4.5,
-    images: apiProduct.images,
-    brand: apiProduct.name.split(' ')[0],
-    reviews: 127,
-    inStock: true,
-    image: apiProduct.images?.[0]?.urls?.original || '',
-    originalPrice: apiProduct.price_cents ? (apiProduct.price_cents / 100) * 1.2 : undefined,
-  });
-
   const items: CartItem[] = useMemo(() => {
     if (!productsData?.items) return [];
     return productsData.items

@@ -10,7 +10,7 @@ import CategoryIcon from '../components/user/CategoryIcon';
 import Pagination from '../components/user/Pagination';
 import FiltersPanel from '../components/user/FiltersPanel';
 import type { Product, FilterState } from '../types/product';
-import type { ProductApi } from '../types/api';
+import { transformProduct } from '../utils/productTransform';
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -19,6 +19,15 @@ export default function Home() {
   
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filtersPanelOpen, setFiltersPanelOpen] = useState(false);
+
+  // Слушаем событие для открытия sidebar
+  React.useEffect(() => {
+    const handleToggleSidebar = () => {
+      setSidebarOpen(prev => !prev);
+    };
+    window.addEventListener('toggleSidebar', handleToggleSidebar);
+    return () => window.removeEventListener('toggleSidebar', handleToggleSidebar);
+  }, []);
 
   // Получаем категории
   const { data: categoriesData } = useGetCategoriesQuery();
@@ -32,19 +41,6 @@ export default function Home() {
   });
 
   // Transform API products to UI products
-  const transformProduct = (apiProduct: ProductApi): Product => ({
-    id: apiProduct.id,
-    name: apiProduct.name,
-    category: String(apiProduct.category_id),
-    price: (apiProduct.price_cents || 0) / 100,
-    rating: 4.5, // Mock
-    images: apiProduct.images,
-    brand: apiProduct.name.split(' ')[0], // Mock: first word as brand
-    reviews: 127, // Mock
-    inStock: true, // Mock
-    description: apiProduct.description,
-  });
-
   const products: Product[] = useMemo(() => {
     if (!productsData?.items) return [];
     return productsData.items.map(transformProduct);

@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, Heart, Menu } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../app/store';
-import { setDrawerOpen } from '../../features/catalog/catalogSlice';
+import { setDrawerOpen, setQ } from '../../features/catalog/catalogSlice';
 import { useGetProductsQuery } from '../../api/productsApi';
 import SearchAutocomplete from './SearchAutocomplete';
 import type { Product } from '../../types/product';
-import type { ProductApi } from '../../types/api';
+import { transformProduct } from '../../utils/productTransform';
 import './Header.css';
 
 const Header: React.FC = () => {
@@ -25,30 +25,25 @@ const Header: React.FC = () => {
   // Transform API products to UI products for search
   const products: Product[] = useMemo(() => {
     if (!productsData?.items) return [];
-    return productsData.items.map((apiProduct: ProductApi) => ({
-      id: apiProduct.id,
-      name: apiProduct.name,
-      category: String(apiProduct.category_id),
-      price: (apiProduct.price_cents || 0) / 100,
-      rating: 4.5,
-      images: apiProduct.images,
-      brand: apiProduct.name.split(' ')[0],
-      reviews: 127,
-      inStock: true,
-      image: apiProduct.images?.[0]?.urls?.original || '',
-    }));
+    return productsData.items.map(transformProduct);
   }, [productsData]);
 
   const handleSearch = (query: string) => {
-    // TODO: implement search
-    console.log('Search:', query);
+    dispatch(setQ(query));
+    // Если мы не на главной странице, переходим туда
+    if (window.location.pathname !== '/') {
+      navigate('/');
+    }
   };
 
   return (
     <header className="header">
       <div className="header-container">
         <div className="header-left">
-          <button className="menu-toggle" onClick={() => {}}>
+          <button className="menu-toggle" onClick={() => {
+            // Отправляем событие для открытия sidebar
+            window.dispatchEvent(new CustomEvent('toggleSidebar'));
+          }}>
             <Menu size={24} />
           </button>
           <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>

@@ -8,7 +8,7 @@ import { addToCart, changeQty } from '../features/cart/cartSlice';
 import { useGetProductsQuery } from '../api/productsApi';
 import FiltersPanel from '../components/user/FiltersPanel';
 import type { Product, FilterState } from '../types/product';
-import type { ProductApi } from '../types/api';
+import { transformProduct } from '../utils/productTransform';
 import './WishlistPage.css';
 
 export default function WishlistPage() {
@@ -34,27 +34,12 @@ export default function WishlistPage() {
   });
 
   // Transform и filter только избранные с датой добавления
-  const transformProduct = (apiProduct: ProductApi): Product & { addedAt: string } => ({
-    id: apiProduct.id,
-    name: apiProduct.name,
-    category: String(apiProduct.category_id),
-    price: (apiProduct.price_cents || 0) / 100,
-    rating: 4.5,
-    images: apiProduct.images,
-    brand: apiProduct.name.split(' ')[0],
-    reviews: 127,
-    inStock: true,
-    image: apiProduct.images?.[0]?.urls?.original || '',
-    originalPrice: undefined,
-    features: [],
-    description: '',
-    specifications: {},
-    addedAt: new Date().toISOString()
-  });
-
   const wishlistItems = productsData?.items
     .filter(p => favorites.includes(p.id))
-    .map(transformProduct) || [];
+    .map(p => ({
+      ...transformProduct(p),
+      addedAt: new Date().toISOString()
+    })) || [];
 
   // Получаем товары из избранного с фильтрацией и сортировкой
   const wishlistProducts = useMemo(() => {
