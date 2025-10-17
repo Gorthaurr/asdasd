@@ -31,11 +31,19 @@ export default function Home() {
   // Получаем категории
   const { data: categoriesData } = useGetCategoriesQuery();
   
+  // Вычисляем ID выбранной категории по slug
+  const selectedCategoryId = React.useMemo(() => {
+    if (!categoriesData) return undefined;
+    const found = categoriesData.find(cat => cat.slug === catalogState.chip);
+    return found?.id;
+  }, [categoriesData, catalogState.chip]);
+  
   // Получаем товары с поиском, фильтром категории и пагинацией
   const { data: productsData, isLoading } = useGetProductsQuery({
     page: catalogState.page,
     page_size: catalogState.pageSize,
     category_slug: catalogState.chip !== 'Все' ? catalogState.chip : undefined,
+    category_id: catalogState.chip !== 'Все' ? selectedCategoryId : undefined,
     q: catalogState.q || undefined,
   });
 

@@ -19,7 +19,7 @@ const Header: React.FC = () => {
   // Получаем товары для автокомплита
   const { data: productsData } = useGetProductsQuery({
     page: 1,
-    page_size: 50,
+    page_size: 1000,
   });
 
   // Transform API products to UI products for search
