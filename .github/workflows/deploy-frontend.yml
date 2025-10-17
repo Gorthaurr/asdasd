@@ -25,6 +25,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Диагностика: убеждаемся, что запускается именно этот YAML
+      - name: Show workflow file (debug)
+        shell: bash
+        run: |
+          echo "== Repo workflows =="
+          ls -la .github/workflows || true
+          echo "== This file head =="
+          sed -n '1,120p' .github/workflows/deploy-frontend.yml || true
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -32,18 +41,26 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      # УСТАНОВКА PNPM БЕЗ COREPACK/ЕКШЕНОВ: официальный install.sh + добавление в PATH
-      - name: Install pnpm (install.sh -> $GITHUB_PATH)
+      # УСТАНОВКА PNPM ЧЕРЕЗ NPM-GLOBAL + ЖЁСТКО ДОБАВЛЯЕМ В PATH
+      - name: Install pnpm globally
+        id: pnpm_install
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL https://get.pnpm.io/install.sh | sh -
-          # pnpm кладётся в ~/.local/share/pnpm — добавляем в PATH раннера
-          echo "$HOME/.local/share/pnpm" >> "$GITHUB_PATH"
-          echo "PATH after export:"
-          echo "$PATH"
-          which pnpm || true
-          pnpm -v
+          npm i -g pnpm@10.17.1
+          PNPM_BIN="$(npm bin -g)"
+          echo "PNPM_BIN=${PNPM_BIN}" >> "$GITHUB_OUTPUT"
+          echo "$PNPM_BIN" >> "$GITHUB_PATH"
+
+      # Проверяем, что pnpm действительно доступен (в отдельном шаге, т.к. $GITHUB_PATH работает со следующего шага)
+      - name: Verify toolchain
+        shell: bash
+        run: |
+          echo "PATH: $PATH"
+          echo "Node: $(node -v)"
+          echo "NPM:  $(npm -v)"
+          echo "PNPM which: $(which pnpm)"
+          echo "PNPM ver: $(pnpm -v)"
 
       - name: Install dependencies (locked)
         run: pnpm install --frozen-lockfile
