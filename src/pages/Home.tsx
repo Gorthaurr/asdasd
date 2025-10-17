@@ -32,86 +32,21 @@ export default function Home() {
   // Получаем категории
   const { data: categoriesData } = useGetCategoriesQuery();
   
-  // Получаем товары (загружаем ВСЕ для клиентской фильтрации)
+  // Получаем товары (используем СЕРВЕРНУЮ пагинацию)
   const { data: productsData, isLoading } = useGetProductsQuery({
-    page: 1,
-    page_size: 100, // Загружаем больше товаров для клиентской фильтрации
+    page: catalogState.page,
+    page_size: catalogState.pageSize,
     category_slug: catalogState.chip !== 'Все' ? catalogState.chip : undefined,
     q: catalogState.q || undefined,
   });
 
-  // Transform API products to UI products
-  const allProducts: Product[] = useMemo(() => {
-    if (!productsData?.items) return [];
-    return productsData.items.map(transformProduct);
-  }, [productsData]);
-
-  // Apply client-side filters and sorting
+  // Transform API products to UI products (прямо с сервера, без клиентской обработки)
   const products: Product[] = useMemo(() => {
-    let filtered = [...allProducts];
-
-    // Filter by price range
-    if (catalogState.priceRange[0] > 0 || catalogState.priceRange[1] < 1000000) {
-      filtered = filtered.filter(product =>
-        product.price >= catalogState.priceRange[0] && 
-        product.price <= catalogState.priceRange[1]
-      );
-    }
-
-    // Filter by brands
-    if (catalogState.brands.length > 0) {
-      filtered = filtered.filter(product => 
-        product.brand && catalogState.brands.includes(product.brand)
-      );
-    }
-
-    // Filter by in stock
-    if (catalogState.inStock) {
-      filtered = filtered.filter(product => product.inStock !== false);
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      let result = 0;
-      
-      switch (catalogState.sort) {
-        case 'priceAsc':
-          result = a.price - b.price;
-          break;
-        case 'priceDesc':
-          result = b.price - a.price;
-          break;
-        case 'name':
-          result = a.name.localeCompare(b.name);
-          break;
-        case 'rating':
-          result = (b.rating || 0) - (a.rating || 0);
-          break;
-        case 'new':
-        case 'newest':
-          result = b.id.localeCompare(a.id);
-          break;
-        case 'popular':
-        default:
-          result = (b.rating || 0) - (a.rating || 0);
-          break;
-      }
-      
-      // Apply sort direction
-      return catalogState.sortDirection === 'asc' ? result : -result;
-    });
-
-    console.log('🔍 Filtered products:', filtered.length);
-    return filtered;
-  }, [allProducts, catalogState.priceRange, catalogState.brands, catalogState.inStock, catalogState.sort, catalogState.sortDirection]);
-
-  // Apply pagination to filtered products
-  const paginatedProducts = useMemo(() => {
-    const startIndex = (catalogState.page - 1) * catalogState.pageSize;
-    const paginated = products.slice(startIndex, startIndex + catalogState.pageSize);
-    console.log('📄 Paginated products:', paginated.map(p => ({ id: p.id, name: p.name })));
-    return paginated;
-  }, [products, catalogState.page, catalogState.pageSize]);
+    if (!productsData?.items) return [];
+    const transformed = productsData.items.map(transformProduct);
+    console.log('📦 Products from API:', transformed.length);
+    return transformed;
+  }, [productsData]);
 
   // Categories list for sidebar
   const categories = useMemo(() => {
@@ -129,20 +64,20 @@ export default function Home() {
     return cats;
   }, [categoriesData, productsData]);
 
-  // Available brands (from all products, not filtered)
+  // Available brands (from current products)
   const availableBrands = useMemo(() => {
-    return Array.from(new Set(allProducts.map(p => p.brand || 'Unknown'))).filter(b => b !== 'Unknown');
-  }, [allProducts]);
+    return Array.from(new Set(products.map(p => p.brand || 'Unknown'))).filter(b => b !== 'Unknown');
+  }, [products]);
 
-  // Price range (from all products, not filtered)
+  // Price range (from current products)
   const priceRange = useMemo(() => {
-    if (allProducts.length === 0) return { min: 0, max: 1000000 };
-    const prices = allProducts.map(p => p.price);
+    if (products.length === 0) return { min: 0, max: 1000000 };
+    const prices = products.map(p => p.price);
     return {
       min: Math.floor(Math.min(...prices)),
       max: Math.ceil(Math.max(...prices))
     };
-  }, [allProducts]);
+  }, [products]);
 
   // Current filters
   const filters: FilterState = {
@@ -263,7 +198,7 @@ export default function Home() {
             
             <div className="results-info">
               <span className="results-count">
-                {products.length} товаров
+                {productsData?.meta.total || 0} товаров
               </span>
             </div>
           </div>
@@ -272,7 +207,7 @@ export default function Home() {
         {/* Products Grid */}
         <section className="products-section">
           <ProductGrid
-            products={paginatedProducts}
+            products={products}
             onAddToCart={handleAddToCart}
             onAddToWishlist={handleAddToWishlist}
             isInWishlist={isInWishlist}
@@ -280,24 +215,15 @@ export default function Home() {
           />
           
             {/* Pagination */}
-            {products.length > 0 && (() => {
-              const totalPages = Math.ceil(products.length / catalogState.pageSize);
-              console.log('📊 Pagination:', { 
-                currentPage: catalogState.page, 
-                totalPages, 
-                totalItems: products.length, 
-                itemsPerPage: catalogState.pageSize 
-              });
-              return (
-                <Pagination
-                  currentPage={catalogState.page}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                  totalItems={products.length}
-                  itemsPerPage={catalogState.pageSize}
-                />
-              );
-            })()}
+            {productsData && productsData.meta.total_pages > 1 && (
+              <Pagination
+                currentPage={catalogState.page}
+                totalPages={productsData.meta.total_pages}
+                onPageChange={handlePageChange}
+                totalItems={productsData.meta.total}
+                itemsPerPage={catalogState.pageSize}
+              />
+            )}
         </section>
     </main>
 
