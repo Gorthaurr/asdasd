@@ -13,7 +13,9 @@ const DashboardStats = () => {
         setIsLoading(true);
         const data = await adminApi.getDashboardStats();
         setStats(data);
+        setError(null);
       } catch (err) {
+        console.error('Error fetching dashboard stats:', err);
         setError('Ошибка загрузки статистики');
       } finally {
         setIsLoading(false);

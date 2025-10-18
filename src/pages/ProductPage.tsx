@@ -208,8 +208,8 @@ export default function ProductPage() {
                   onClick={handleAddToCart}
                   disabled={!product.inStock}
                 >
-                  <ShoppingCart size={18} />
-                  {product.inStock ? 'Добавить в корзину' : 'Нет в наличии'}
+                  <ShoppingCart size={18} style={{ marginRight: '4px' }} />
+                  <span>{product.inStock ? 'Добавить в корзину' : 'Нет в наличии'}</span>
             </button>
 
             <button

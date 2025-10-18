@@ -316,8 +316,8 @@ header, .header {
   animation: scaleIn 0.9s ease-out 0.3s backwards;
 }
 
-/* Form Elements */
-.search-input, input[type="search"], input[type="text"] {
+/* Form Elements - УБРАНО .search-input чтобы не конфликтовать с SearchAutocomplete.css */
+input[type="search"], input[type="text"] {
   flex: 1;
   padding: var(--space-4) var(--space-5);
   background: var(--bg-surface);
@@ -329,7 +329,7 @@ header, .header {
   box-shadow: var(--shadow-xs);
 }
 
-.search-input:focus, input[type="search"]:focus {
+input[type="search"]:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-light), var(--shadow-md);

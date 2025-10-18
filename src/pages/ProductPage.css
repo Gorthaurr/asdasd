@@ -394,25 +394,35 @@
   display: flex;
   gap: 16px;
   align-items: stretch;
+  margin-top: 16px;
 }
 
 .add-to-cart-btn {
-  padding: 10px 16px;
+  flex: 1;
+  padding: 12px 24px;
   background: var(--primary);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  min-height: 40px;
+  min-height: 48px;
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-to-cart-btn svg {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .add-to-cart-btn:hover:not(.disabled) {
