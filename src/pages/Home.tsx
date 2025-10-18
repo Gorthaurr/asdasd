@@ -21,6 +21,7 @@ export default function Home() {
   
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filtersPanelOpen, setFiltersPanelOpen] = useState(false);
+  const [tempFilters, setTempFilters] = useState<FilterState | null>(null);
 
   React.useEffect(() => {
     const handleToggleSidebar = () => {
@@ -99,14 +100,9 @@ export default function Home() {
     return cats;
   }, [categoriesData, productsData]);
 
-  // Фильтрация на клиенте (по брендам если выбрано > 1, т.к. backend поддерживает только один бренд)
+  // Сортировка товаров
   const filteredProducts = useMemo(() => {
-    let filtered = products;
-
-    // Фильтр по брендам (клиентская фильтрация если выбрано больше одного)
-    if (catalogState.brands.length > 1) {
-      filtered = filtered.filter(p => catalogState.brands.includes(p.brand || ''));
-    }
+    const filtered = [...products];
 
     // Сортировка
     filtered.sort((a, b) => {
@@ -135,7 +131,7 @@ export default function Home() {
     });
 
     return filtered;
-  }, [products, catalogState.sort, catalogState.brands]);
+  }, [products, catalogState.sort]);
 
   // Получаем бренды из API (по категории или все)
   const { data: brandsData } = useGetBrandsQuery({
@@ -170,7 +166,20 @@ export default function Home() {
   };
 
   const handleFiltersChange = (newFilters: FilterState) => {
-    dispatch(applyFilters(newFilters));
+    setTempFilters(newFilters); // Сохраняем временные фильтры, но не применяем их
+  };
+
+  const handleApplyFilters = () => {
+    if (tempFilters) {
+      dispatch(applyFilters(tempFilters));
+      setTempFilters(null);
+    }
+    setFiltersPanelOpen(false);
+  };
+
+  const handleCancelFilters = () => {
+    setTempFilters(null);
+    setFiltersPanelOpen(false);
   };
 
   const handleAddToCart = (product: Product) => {
@@ -271,7 +280,10 @@ export default function Home() {
             <div className="filters-section">
               <button 
                 className="filters-toggle-btn"
-                onClick={() => setFiltersPanelOpen(true)}
+                onClick={() => {
+                  setTempFilters(filters); // Инициализируем временные фильтры текущими
+                  setFiltersPanelOpen(true);
+                }}
               >
                 <span className="filter-icon">⚙️</span>
                 <span>Фильтры</span>
@@ -349,13 +361,14 @@ export default function Home() {
 
       {/* Filters Panel */}
       <FiltersPanel
-        filters={filters}
+        filters={tempFilters || filters}
         onFiltersChange={handleFiltersChange}
         availableBrands={availableBrands}
         minPrice={priceRange.min}
         maxPrice={priceRange.max}
         isOpen={filtersPanelOpen}
-        onClose={() => setFiltersPanelOpen(false)}
+        onClose={handleCancelFilters}
+        onApply={handleApplyFilters}
       />
 
       <style>{`

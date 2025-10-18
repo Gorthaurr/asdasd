@@ -11,6 +11,7 @@ interface FiltersPanelProps {
   maxPrice: number;
   isOpen: boolean;
   onClose: () => void;
+  onApply?: () => void;
 }
 
 const FiltersPanel: React.FC<FiltersPanelProps> = ({
@@ -20,7 +21,8 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
   minPrice,
   maxPrice,
   isOpen,
-  onClose
+  onClose,
+  onApply
 }) => {
   const [expandedSections, setExpandedSections] = useState<{
     price: boolean;
@@ -38,14 +40,19 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
   };
 
   const handleBrandToggle = (brand: string) => {
-    const newBrands = filters.brands.includes(brand)
-      ? filters.brands.filter(b => b !== brand)
-      : [...filters.brands, brand];
-    
-    onFiltersChange({
-      ...filters,
-      brands: newBrands
-    });
+    // Если бренд уже выбран - убираем его
+    if (filters.brands.includes(brand)) {
+      onFiltersChange({
+        ...filters,
+        brands: []
+      });
+    } else {
+      // Иначе выбираем только этот бренд (убираем остальные)
+      onFiltersChange({
+        ...filters,
+        brands: [brand]
+      });
+    }
   };
 
   const handlePriceRangeChange = (index: number, value: string) => {
@@ -159,7 +166,8 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
                     {availableBrands.map(brand => (
                       <label key={brand} className="brand-checkbox">
                         <input
-                          type="checkbox"
+                          type="radio"
+                          name="brand"
                           checked={filters.brands.includes(brand)}
                           onChange={() => handleBrandToggle(brand)}
                         />
@@ -179,9 +187,15 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
           <button className="clear-filters-btn" onClick={clearAllFilters}>
             Очистить все
           </button>
-          <button className="apply-filters-btn" onClick={onClose}>
-            Применить
-          </button>
+          {onApply ? (
+            <button className="apply-filters-btn" onClick={onApply}>
+              Применить
+            </button>
+          ) : (
+            <button className="apply-filters-btn" onClick={onClose}>
+              Применить
+            </button>
+          )}
         </div>
       </div>
     </div>
