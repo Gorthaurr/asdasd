@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../app/store';
-import { useGetProductsQuery, useGetCategoriesQuery } from '../api/productsApi';
+import { useGetProductsQuery, useGetCategoriesQuery, useGetBrandsQuery } from '../api/productsApi';
 import { applyFilters, setPageSize } from '../features/catalog/catalogSlice';
 import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
 import { addToCart } from '../features/cart/cartSlice';
@@ -40,13 +40,16 @@ export default function Home() {
     return found?.id;
   }, [categoriesData, catalogState.chip]);
   
-  // Получаем товары с поиском, фильтром категории и пагинацией
+  // Получаем товары с поиском, фильтром категории, брендов и пагинацией
   const { data: productsData, isLoading, refetch } = useGetProductsQuery({
     page: catalogState.page,
     page_size: catalogState.pageSize,
     category_slug: catalogState.chip !== 'Все' ? catalogState.chip : undefined,
     category_id: catalogState.chip !== 'Все' ? selectedCategoryId : undefined,
+    brand: catalogState.brands.length === 1 ? catalogState.brands[0] : undefined,
     q: catalogState.q || undefined,
+    price_min: catalogState.priceRange[0] > 0 ? catalogState.priceRange[0] : undefined,
+    price_max: catalogState.priceRange[1] < 1000000 ? catalogState.priceRange[1] : undefined,
     include_images: true,
     include_attributes: true,
   }, {
@@ -96,9 +99,14 @@ export default function Home() {
     return cats;
   }, [categoriesData, productsData]);
 
-  // Фильтрация на клиенте (для локальных фильтров)
+  // Фильтрация на клиенте (по брендам если выбрано > 1, т.к. backend поддерживает только один бренд)
   const filteredProducts = useMemo(() => {
     let filtered = products;
+
+    // Фильтр по брендам (клиентская фильтрация если выбрано больше одного)
+    if (catalogState.brands.length > 1) {
+      filtered = filtered.filter(p => catalogState.brands.includes(p.brand || ''));
+    }
 
     // Сортировка
     filtered.sort((a, b) => {
@@ -111,16 +119,13 @@ export default function Home() {
         case 'priceDesc':
           result = b.price - a.price;
           break;
-        case 'name':
+        case 'nameAsc':
           result = a.name.localeCompare(b.name);
           break;
+        case 'nameDesc':
+          result = b.name.localeCompare(a.name);
+          break;
         case 'rating':
-          result = (b.rating || 0) - (a.rating || 0);
-          break;
-        case 'new':
-          result = new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
-          break;
-        case 'popular':
         default:
           result = (b.rating || 0) - (a.rating || 0);
           break;
@@ -130,12 +135,14 @@ export default function Home() {
     });
 
     return filtered;
-  }, [products, catalogState.sort]);
+  }, [products, catalogState.sort, catalogState.brands]);
 
-  // Available brands
-  const availableBrands = useMemo(() => {
-    return Array.from(new Set(products.map(p => p.brand || 'Unknown'))).filter(b => b !== 'Unknown');
-  }, [products]);
+  // Получаем бренды из API (по категории или все)
+  const { data: brandsData } = useGetBrandsQuery({
+    category_id: catalogState.chip !== 'Все' ? selectedCategoryId : undefined
+  });
+  
+  const availableBrands = brandsData || [];
 
   // Price range
   const priceRange = useMemo(() => {
@@ -164,7 +171,6 @@ export default function Home() {
 
   const handleFiltersChange = (newFilters: FilterState) => {
     dispatch(applyFilters(newFilters));
-    dispatch(setPage(1));
   };
 
   const handleAddToCart = (product: Product) => {

@@ -7,7 +7,7 @@ import type { ProductApi } from '../types/api';
 export function transformProduct(apiProduct: ProductApi): Product {
   // Извлекаем бренд из attributes
   const brandAttr = apiProduct.attributes?.find(attr => attr.key === 'Бренд');
-  const brand = brandAttr?.value || apiProduct.name.split(' ')[0] || 'Unknown';
+  const brand = brandAttr?.value || 'Unknown';
 
   // Преобразуем attributes в specifications объект
   const specifications: Record<string, string> = {};

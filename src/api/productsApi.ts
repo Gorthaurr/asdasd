@@ -5,9 +5,10 @@ import type { ProductApi, ProductsResponse, CategoryApi } from '../types/api';
 // Параметры для запроса продуктов
 export interface ProductsQueryParams {
     page?: number;
-    page_size?: number; // Убрано =100, defaults не в interface
+    page_size?: number;
     category_id?: number;
     category_slug?: string;
+    brand?: string;
     q?: string;
     price_min?: number;
     price_max?: number;
@@ -73,11 +74,21 @@ export const productsApi = createApi({
             query: () => '/api/v1/categories',
             providesTags: [{ type: 'Categories', id: 'LIST' }]
         }),
+
+        // GET /api/v1/products/brands - уникальные бренды
+        getBrands: builder.query<string[], { category_id?: number }>({
+            query: (params) => ({
+                url: '/api/v1/products/brands',
+                params: params.category_id ? { category_id: params.category_id } : undefined,
+            }),
+            providesTags: [{ type: 'Products', id: 'BRANDS' }]
+        }),
     })
 });
 
 export const { 
     useGetProductsQuery, 
     useGetProductQuery,
-    useGetCategoriesQuery 
+    useGetCategoriesQuery,
+    useGetBrandsQuery
 } = productsApi; // хуки для компонентов

@@ -25,11 +25,9 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
   const [expandedSections, setExpandedSections] = useState<{
     price: boolean;
     brands: boolean;
-    availability: boolean;
   }>({
-    price: false,
-    brands: false,
-    availability: false
+    price: true,
+    brands: true,
   });
 
   const toggleSection = (section: keyof typeof expandedSections) => {
@@ -59,20 +57,13 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
     });
   };
 
-  const handleInStockToggle = () => {
-    onFiltersChange({
-      ...filters,
-      inStock: !filters.inStock
-    });
-  };
-
   const clearAllFilters = () => {
     onFiltersChange({
       category: 'all',
       priceRange: [minPrice, maxPrice],
       brands: [],
       inStock: false,
-      sortBy: 'newest',
+      sortBy: 'rating',
       sortDirection: 'desc'
     });
   };
@@ -82,7 +73,6 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
     if (filters.category !== 'all') count++;
     if (filters.priceRange[0] !== minPrice || filters.priceRange[1] !== maxPrice) count++;
     if (filters.brands.length > 0) count++;
-    if (filters.inStock) count++;
     return count;
   };
 
@@ -183,32 +173,6 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
             </div>
           )}
 
-          {/* Наличие */}
-          <div className="filter-section">
-            <button 
-              className="filter-section-header"
-              onClick={() => toggleSection('availability')}
-            >
-              <span>Наличие</span>
-              <ChevronDown 
-                size={16} 
-                className={`chevron ${expandedSections.availability ? 'expanded' : ''}`}
-              />
-            </button>
-            {expandedSections.availability && (
-              <div className="filter-section-content">
-                <label className="availability-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={filters.inStock}
-                    onChange={handleInStockToggle}
-                  />
-                  <span className="checkmark"></span>
-                  <span>Только в наличии</span>
-                </label>
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="filters-footer">
