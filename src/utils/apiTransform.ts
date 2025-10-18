@@ -16,7 +16,7 @@ export function transformProduct(apiProduct: ProductApi): Product {
         id: apiProduct.id, // используем UUID напрямую
         name: apiProduct.name,
         category: getCategoryFromApi(apiProduct) || 'Другое',
-        price: apiProduct.price_cents ? apiProduct.price_cents : 0, // конвертируем центы в рубли
+        price: apiProduct.price_cents || 0, // price_cents уже в рублях, НЕ в копейках
         oldPrice: getOldPriceFromAttributes(apiProduct.attributes),
         rating: getRatingFromAttributes(apiProduct.attributes) || 4.5, // дефолтный рейтинг
         images: apiProduct.images, // передаем изображения

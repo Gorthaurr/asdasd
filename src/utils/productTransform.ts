@@ -36,7 +36,7 @@ export function transformProduct(apiProduct: ProductApi): Product {
     id: apiProduct.id,
     name: apiProduct.name,
     category: String(apiProduct.category_id),
-    price: (apiProduct.price_cents || 0) / 100,
+    price: apiProduct.price_cents || 0, // price_cents уже в рублях, НЕ в копейках
     rating: 4.5, // TODO: получать из API когда добавят
     images: apiProduct.images,
     brand: brand,
