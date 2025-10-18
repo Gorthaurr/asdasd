@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../app/store';
 import { toggleFav } from '../features/favs/favsSlice';
 import { addToCart, changeQty } from '../features/cart/cartSlice';
+import { applyFilters } from '../features/catalog/catalogSlice';
 import { useGetProductsQuery } from '../api/productsApi';
 import FiltersPanel from '../components/user/FiltersPanel';
 import type { Product, FilterState } from '../types/product';
@@ -15,17 +16,21 @@ export default function WishlistPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const favorites = useSelector((s: RootState) => s.favs.ids);
+  const catalogState = useSelector((s: RootState) => s.catalog);
   const [filtersPanelOpen, setFiltersPanelOpen] = useState(false);
+  const [tempFilters, setTempFilters] = useState<FilterState | null>(null);
   
-  // Состояние фильтров для избранного
-  const [filters, setFilters] = useState<FilterState>({
-    category: 'all',
-    priceRange: [0, 1000000],
-    brands: [],
-    inStock: false,
-    sortBy: 'rating',
-    sortDirection: 'desc'
-  });
+  // Преобразуем CatalogState в FilterState для совместимости
+  const filters: FilterState = {
+    category: catalogState.chip,
+    priceRange: catalogState.priceRange,
+    brands: catalogState.brands,
+    inStock: catalogState.inStock,
+    sortBy: catalogState.sort === 'rating' ? 'rating' :
+            catalogState.sort === 'priceAsc' || catalogState.sort === 'priceDesc' ? 'price' :
+            catalogState.sort === 'nameAsc' || catalogState.sort === 'nameDesc' ? 'name' : 'rating',
+    sortDirection: catalogState.sortDirection
+  };
   
   // Получаем все товары
   const { data: productsData } = useGetProductsQuery({
@@ -56,11 +61,6 @@ export default function WishlistPage() {
   const wishlistProducts = useMemo(() => {
     let filtered = [...wishlistItems];
 
-    // Фильтр по категории
-    if (filters.category !== 'all') {
-      filtered = filtered.filter(product => product.category === filters.category);
-    }
-
     // Фильтр по цене
     filtered = filtered.filter(product =>
       product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
@@ -80,7 +80,7 @@ export default function WishlistPage() {
     filtered.sort((a, b) => {
       let result = 0;
       
-      switch (filters.sortBy) {
+      switch (catalogState.sort) {
         case 'priceAsc':
           result = a.price - b.price;
           break;
@@ -95,7 +95,7 @@ export default function WishlistPage() {
           break;
         case 'rating':
         default:
-          result = b.rating - a.rating;
+          result = (b.rating || 0) - (a.rating || 0);
           break;
       }
       
@@ -103,7 +103,7 @@ export default function WishlistPage() {
     });
 
     return filtered;
-  }, [wishlistItems, filters]);
+  }, [wishlistItems, filters, catalogState.sort]);
 
   // Группируем товары по категориям
   const productsByCategory = wishlistProducts.reduce((acc, product) => {
@@ -120,6 +120,23 @@ export default function WishlistPage() {
 
   const handleAddToCartFromWishlist = (product: Product) => {
     dispatch(addToCart(product.id));
+  };
+
+  const handleFiltersChange = (newFilters: FilterState) => {
+    setTempFilters(newFilters); // Сохраняем временные фильтры, но не применяем их
+  };
+
+  const handleApplyFilters = () => {
+    if (tempFilters) {
+      dispatch(applyFilters(tempFilters));
+      setTempFilters(null);
+    }
+    setFiltersPanelOpen(false);
+  };
+
+  const handleCancelFilters = () => {
+    setTempFilters(null);
+    setFiltersPanelOpen(false);
   };
 
   const formatPrice = (price: number) => {
@@ -187,11 +204,14 @@ export default function WishlistPage() {
             <div className="filters-section">
               <button 
                 className="filters-toggle-btn"
-                onClick={() => setFiltersPanelOpen(true)}
+                onClick={() => {
+                  setTempFilters(filters); // Инициализируем временные фильтры текущими
+                  setFiltersPanelOpen(true);
+                }}
               >
                 <span className="filter-icon">⚙️</span>
                 <span>Фильтры</span>
-                {(filters.category !== 'all' || filters.brands.length > 0 || filters.inStock || 
+                {(filters.category !== 'Все' || filters.brands.length > 0 || filters.inStock || 
                   filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000) && (
                   <span className="active-indicator"></span>
                 )}
@@ -201,8 +221,17 @@ export default function WishlistPage() {
             <div className="sort-section">
               <span className="sort-label">Сортировка:</span>
               <select 
-                value={filters.sortBy}
-                onChange={(e) => setFilters({...filters, sortBy: e.target.value as any})}
+                value={catalogState.sort}
+                onChange={(e) => {
+                  const newFilters: FilterState = {
+                    ...filters,
+                    sortBy: (e.target.value === 'rating' ? 'rating' :
+                           e.target.value === 'priceAsc' || e.target.value === 'priceDesc' ? 'price' :
+                           e.target.value === 'nameAsc' || e.target.value === 'nameDesc' ? 'name' : 'rating') as 'name' | 'price' | 'rating' | 'newest',
+                    sortDirection: (e.target.value === 'priceAsc' || e.target.value === 'nameAsc' ? 'asc' : 'desc') as 'asc' | 'desc'
+                  };
+                  dispatch(applyFilters(newFilters));
+                }}
                 className="sort-select"
               >
                 <option value="rating">По рейтингу</option>
@@ -373,13 +402,14 @@ export default function WishlistPage() {
 
       {/* Filters Panel */}
       <FiltersPanel
-        filters={filters}
-        onFiltersChange={setFilters}
+        filters={tempFilters || filters}
+        onFiltersChange={handleFiltersChange}
         availableBrands={Array.from(new Set(wishlistItems.map(p => p.brand).filter((b): b is string => Boolean(b))))}
         minPrice={wishlistItems.length > 0 ? Math.min(...wishlistItems.map(p => p.price)) : 0}
         maxPrice={wishlistItems.length > 0 ? Math.max(...wishlistItems.map(p => p.price)) : 1000000}
         isOpen={filtersPanelOpen}
-        onClose={() => setFiltersPanelOpen(false)}
+        onClose={handleCancelFilters}
+        onApply={handleApplyFilters}
       />
     </div>
   );
