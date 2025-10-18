@@ -10,13 +10,30 @@ import { setJSON } from '../utils/storage'; // утилита записи JSON 
 
 
 // Мидлварь: сохраняет избранное/корзину после каждого экшена
-const persistMiddleware = (storeAPI: any) => (next: any) => (action: any) => {
-    const result = next(action); // пробрасываем экшен дальше
-    const st = storeAPI.getState(); // читаем новое состояние
-    setJSON('techhome_favs', st.favs.ids); // сохраняем избранное
-    setJSON('techhome_cart', st.cart.items); // сохраняем корзину
-    return result; // возвращаем результат next
-};
+// const persistMiddleware = (storeAPI: any) => (next: any) => (action: any) => {
+//     const prevState = storeAPI.getState(); // читаем состояние ДО action
+//     const result = next(action); // пробрасываем экшен дальше
+//     const newState = storeAPI.getState(); // читаем новое состояние
+    
+//     // Сравниваем favs
+//     const favsChanged = JSON.stringify(prevState.favs.ids) !== JSON.stringify(newState.favs.ids);
+//     if (favsChanged) {
+//         setJSON('techhome_favs', newState.favs.ids);
+//     } else {
+//         console.log('persistMiddleware: favs not changed, skipping save');
+//     }
+    
+//     // Сравниваем cart
+//     const cartChanged = JSON.stringify(prevState.cart.items) !== JSON.stringify(newState.cart.items);
+//     if (cartChanged) {
+//         setJSON('techhome_cart', newState.cart.items);
+//     } else {
+//         console.log('persistMiddleware: cart not changed, skipping save');
+//     }
+    
+//     return result;
+// };
+console.log('persistMiddleware disabled; using direct storage in slices');
 
 
 export const store = configureStore({
@@ -30,7 +47,7 @@ export const store = configureStore({
     },
     middleware: (gdm) => {
         const base = gdm(); // базовые middleware RTK
-        return base.concat(productsApi.middleware, addressApi.middleware, persistMiddleware); // с RTK Query
+        return base.concat(productsApi.middleware, addressApi.middleware); // без persist
     }
 });
 

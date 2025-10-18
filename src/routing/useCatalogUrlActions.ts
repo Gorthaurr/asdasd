@@ -38,12 +38,15 @@ export function useCatalogUrlActions(){
     }, [location, navigate]);
 
     const setChip = useCallback((chip:string)=>{
+        console.log('setChip called with category:', chip);
         const base = location.pathname === "/" ? new URLSearchParams(location.search) : new URLSearchParams("");
         const next = withParams(base, p=>{
             if (chip && chip!=="Все") p.set("chip", chip); else p.delete("chip");
             p.delete("page"); // смена фильтра -> страница 1
         });
-        navigate("/" + next, { replace: false });
+        const newUrl = "/" + next;
+        console.log('setChip: navigating to:', newUrl);
+        navigate(newUrl, { replace: false });
         // Скролл к началу страницы при смене фильтра
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [location, navigate]);
@@ -60,12 +63,15 @@ export function useCatalogUrlActions(){
     }, [location, navigate]);
 
     const setPage = useCallback((page:number)=>{
+        console.log('setPage called with:', page);
         const base = location.pathname === "/" ? new URLSearchParams(location.search) : new URLSearchParams("");
         const next = withParams(base, p=>{
             const n = Math.max(1, page|0);
             if (n>1) p.set("page", String(n)); else p.delete("page");
         });
-        navigate("/" + next, { replace: false });
+        const newUrl = "/" + next;
+        console.log('setPage: navigating to:', newUrl);
+        navigate(newUrl, { replace: false });
     }, [location, navigate]);
 
     const toggleFavorites = useCallback(()=>{

@@ -5,7 +5,7 @@
  */
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getJSON } from '../../utils/storage';
+import { getJSON, setJSON } from '../../utils/storage';
 
 
 /**
@@ -20,15 +20,7 @@ interface ChangePayload {
 const cartSlice = createSlice({
     name: 'cart', // имя ветки
     initialState: { 
-        items: (() => {
-            const stored = getJSON('techhome_cart', {} as Record<string, number>);
-            // Если это массив (старый формат) или не объект - сбрасываем
-            if (Array.isArray(stored) || typeof stored !== 'object' || stored === null) {
-                localStorage.removeItem('techhome_cart');
-                return {};
-            }
-            return stored;
-        })()
+        items: getJSON('techhome_cart', {} as Record<string, number>)
     }, // читаем корзину из localStorage с валидацией
     reducers: {
         /**
@@ -37,6 +29,8 @@ const cartSlice = createSlice({
         add: (s, a: PayloadAction<string>) => {
             const id = a.payload; // ID товара
             s.items[id] = (s.items[id] || 0) + 1; // инкремент
+            setJSON('techhome_cart', s.items);
+            console.log('Added to cart, saved:', s.items);
         },
         
         /**
@@ -57,6 +51,8 @@ const cartSlice = createSlice({
             } else {
                 s.items[id] = next; // иначе записываем
             }
+            setJSON('techhome_cart', s.items);
+            console.log('Changed quantity, saved:', s.items);
         },
         
         /**
@@ -70,6 +66,8 @@ const cartSlice = createSlice({
                 delete cartProducts[a.payload];
                 localStorage.setItem('techhome_cart_products', JSON.stringify(cartProducts));
             }
+            setJSON('techhome_cart', s.items);
+            console.log('Removed from cart, saved:', s.items);
         },
         
         /**
@@ -81,6 +79,8 @@ const cartSlice = createSlice({
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('techhome_cart_products');
             }
+            setJSON('techhome_cart', s.items);
+            console.log('Cleared cart, saved:', s.items);
         }
     }
 });

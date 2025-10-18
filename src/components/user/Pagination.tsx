@@ -67,7 +67,10 @@ const Pagination: React.FC<PaginationProps> = ({
       <div className="pagination-controls">
         <button
           className="pagination-btn pagination-btn-prev"
-          onClick={() => onPageChange(currentPage - 1)}
+          onClick={() => {
+              console.log('Pagination prev clicked, going to page:', currentPage - 1);
+              onPageChange(currentPage - 1);
+          }}
           disabled={currentPage === 1}
           aria-label="Предыдущая страница"
         >
@@ -85,7 +88,10 @@ const Pagination: React.FC<PaginationProps> = ({
                   className={`pagination-btn pagination-btn-page ${
                     page === currentPage ? 'active' : ''
                   }`}
-                  onClick={() => onPageChange(page as number)}
+                  onClick={() => {
+                      console.log('Pagination page clicked:', page);
+                      onPageChange(page as number);
+                  }}
                   aria-label={`Страница ${page}`}
                   aria-current={page === currentPage ? 'page' : undefined}
                 >
@@ -98,7 +104,10 @@ const Pagination: React.FC<PaginationProps> = ({
 
         <button
           className="pagination-btn pagination-btn-next"
-          onClick={() => onPageChange(currentPage + 1)}
+          onClick={() => {
+              console.log('Pagination next clicked, going to page:', currentPage + 1);
+              onPageChange(currentPage + 1);
+          }}
           disabled={currentPage === totalPages}
           aria-label="Следующая страница"
         >
@@ -119,20 +128,22 @@ const Pagination: React.FC<PaginationProps> = ({
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              const page = parseInt(inputValue);
-              if (page >= 1 && page <= totalPages) {
-                onPageChange(page);
-              } else {
-                setInputValue(currentPage.toString());
-              }
+                console.log('Pagination input Enter pressed, page:', inputValue);
+                const page = parseInt(inputValue);
+                if (page >= 1 && page <= totalPages) {
+                    onPageChange(page);
+                } else {
+                    setInputValue(currentPage.toString());
+                }
             }
           }}
           onBlur={() => {
+            console.log('Pagination input blurred, page:', inputValue);
             const page = parseInt(inputValue);
             if (page >= 1 && page <= totalPages) {
-              onPageChange(page);
+                onPageChange(page);
             } else {
-              setInputValue(currentPage.toString());
+                setInputValue(currentPage.toString());
             }
           }}
           className="pagination-input"

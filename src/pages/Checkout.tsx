@@ -8,6 +8,8 @@ import { useGetProductsQuery } from '../api/productsApi';
 import type { Product } from '../types/product';
 import type { ProductApi } from '../types/api';
 import './CheckoutPage.css';
+import { getJSON } from '../utils/localStorage';
+import { setCart } from '../features/cart/cartSlice';
 
 interface CartItem {
   id: string;
@@ -50,6 +52,14 @@ export default function Checkout() {
     page: 1,
     page_size: 100,
   });
+
+  useEffect(() => {
+    const storedCart = getJSON('techhome_cart', {});
+    if (Object.keys(cart.items).length === 0 && Object.keys(storedCart).length > 0) {
+        dispatch(setCart(storedCart)); // TODO: добавить action setCart в slice
+        console.log('Корзина загружена из storage на checkout:', storedCart);
+    }
+}, []);
 
   // Transform и filter только товары из корзины
   const transformProduct = (apiProduct: ProductApi): Product => ({

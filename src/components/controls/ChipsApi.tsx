@@ -53,7 +53,10 @@ export default function ChipsApi() {
           key={c}
           className={`chip animated-chip ${c === chip ? ' is-active' : ''}`}
           aria-pressed={c === chip}
-          onClick={() => setChip(c)}
+          onClick={() => {
+              console.log('Chip clicked:', c);
+              setChip(c);
+          }}
           style={{ animationDelay: `${index * 0.1}s` }}
         >
           <CategoryIcon categorySlug={c} size={20} className="chip-icon" />
