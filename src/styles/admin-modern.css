@@ -388,7 +388,7 @@
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-.search-input {
+.admin-layout .search-input {
   padding: var(--admin-spacing-sm) var(--admin-spacing);
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius);
@@ -396,7 +396,7 @@
   min-width: 300px;
 }
 
-.search-form {
+.admin-layout .search-form {
   display: flex;
   gap: var(--admin-spacing-sm);
   align-items: center;

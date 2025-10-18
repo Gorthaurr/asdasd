@@ -161,18 +161,20 @@ export default function ProductPage() {
               </div>
             </div>
 
-            {/* Features */}
-            <div className="product-features">
-              <h3>Основные характеристики</h3>
-              <div className="features-grid">
-                {product.features?.map((feature, index) => (
-                  <div key={index} className="feature-item">
-                    <span className="feature-icon">✓</span>
-                    <span className="feature-text">{feature}</span>
-                  </div>
-                ))}
+            {/* Features - только первые 4 */}
+            {product.specifications && Object.keys(product.specifications).length > 0 && (
+              <div className="product-features">
+                <h3>Основные характеристики</h3>
+                <div className="features-grid">
+                  {Object.entries(product.specifications).slice(0, 4).map(([key, value], index) => (
+                    <div key={index} className="feature-item">
+                      <span className="feature-icon">✓</span>
+                      <span className="feature-text">{key}: {value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Actions */}
             <div className="product-actions">
@@ -224,17 +226,29 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* Specifications - moved to bottom */}
+        {/* Особенности (если есть в атрибутах) */}
+        {product.specifications && product.specifications['Особенности'] && (
+          <div className="product-specifications-bottom">
+            <h3>Особенности</h3>
+            <div className="features-list">
+              <p>{product.specifications['Особенности']}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Технические характеристики (без Особенностей) */}
         {product.specifications && Object.keys(product.specifications).length > 0 && (
           <div className="product-specifications-bottom">
             <h3>Технические характеристики</h3>
             <div className="specifications-grid-bottom">
-              {Object.entries(product.specifications).map(([key, value]) => (
-                <div key={key} className="specification-item-bottom">
-                  <span className="specification-key">{key}:</span>
-                  <span className="specification-value">{value}</span>
-                </div>
-              ))}
+              {Object.entries(product.specifications)
+                .filter(([key]) => key !== 'Особенности')
+                .map(([key, value]) => (
+                  <div key={key} className="specification-item-bottom">
+                    <span className="specification-key">{key}:</span>
+                    <span className="specification-value">{value}</span>
+                  </div>
+                ))}
             </div>
           </div>
         )}

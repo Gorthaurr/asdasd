@@ -305,6 +305,24 @@
   color: var(--text-primary);
   font-weight: 600;
   text-align: right;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 65%;
+}
+
+/* Особенности */
+.features-list {
+  padding: 20px;
+  background: var(--surface-secondary);
+  border-radius: 8px;
+  line-height: 1.8;
+}
+
+.features-list p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 15px;
 }
 
 /* Actions */
@@ -312,12 +330,13 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 16px;
+  padding: 16px 20px;
   background: var(--surface-secondary);
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid var(--border-light);
-  width: fit-content;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .quantity-selector {
@@ -339,28 +358,27 @@
   gap: 0;
   background: var(--surface-primary);
   border-radius: 6px;
-  padding: 1px;
+  padding: 0;
   border: 1px solid var(--border-light);
   width: fit-content;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  max-width: 100px;
+  overflow: hidden;
 }
 
 .quantity-btn {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: none;
   background: transparent;
   color: var(--text-primary);
-  border-radius: 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  font-weight: 600;
-  font-size: 14px;
   flex-shrink: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .quantity-btn:hover:not(:disabled) {
@@ -375,15 +393,28 @@
 }
 
 .quantity-input {
-  width: 40px;
-  height: 28px;
+  width: 50px;
+  height: 32px;
   border: none;
   background: transparent;
   text-align: center;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
   flex-shrink: 0;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  padding: 0;
+  margin: 0;
+  line-height: 32px;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  margin: 0 !important;
+  display: none !important;
 }
 
 .quantity-input:focus {
@@ -394,7 +425,8 @@
   display: flex;
   gap: 16px;
   align-items: stretch;
-  margin-top: 16px;
+  margin-left: auto;
+  flex: 1;
 }
 
 .add-to-cart-btn {
