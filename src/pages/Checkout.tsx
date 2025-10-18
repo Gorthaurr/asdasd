@@ -54,7 +54,7 @@ export default function Checkout() {
 
   useEffect(() => {
     const storedCart = getJSON('techhome_cart', {});
-    if (Object.keys(cart.items).length === 0 && Object.keys(storedCart).length > 0) {
+    if (Object.keys(cart?.items || {}).length === 0 && Object.keys(storedCart).length > 0) {
         // dispatch(setCart(storedCart)); // Удалено: action не существует
         // TODO: Добавьте action setCart в cartSlice или используйте replaceReducer
         console.log('Корзина загружена из storage на checkout:', storedCart);
@@ -142,7 +142,9 @@ export default function Checkout() {
     );
   }
 
-  if (cartItems.length === 0) {
+  const cartItemsCount = Object.keys(cart?.items || {}).length; // Проверка на null/undefined
+
+  if (cartItemsCount === 0) {
     return (
       <div className="checkout-empty">
         <div className="empty-content">

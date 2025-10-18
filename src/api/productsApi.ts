@@ -5,7 +5,7 @@ import type { ProductApi, ProductsResponse, CategoryApi } from '../types/api';
 // Параметры для запроса продуктов
 export interface ProductsQueryParams {
     page?: number;
-    page_size?: number;
+    page_size?: number = 100; // Default to 100 to avoid 422
     category_id?: number;
     category_slug?: string;
     q?: string;
@@ -29,14 +29,13 @@ export const productsApi = createApi({
     endpoints: (builder) => ({
         // GET /api/v1/products - список продуктов
         getProducts: builder.query<ProductsResponse, ProductsQueryParams>({
-            query: (params) => ({ 
-                url: '/api/v1/products', 
-                params: {
-                    ...params,
-                    include_images: true, // всегда включаем изображения
-                    include_attributes: true, // всегда включаем атрибуты
-                }
-            }),
+            query: (params) => {
+                console.log('Fetching products with params:', params);
+                return {
+                    url: '/api/v1/products',
+                    params,
+                };
+            },
             transformResponse: (response: ProductsResponse) => ({
                 ...response,
                 items: response.items.map(item => ({ ...item, id: String(item.id) }))
