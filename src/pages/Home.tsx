@@ -283,12 +283,11 @@ export default function Home() {
                 onChange={(e) => handleSortChange(e.target.value)}
                 className="sort-select"
               >
-                <option value="popular">Популярные</option>
-                <option value="new">Сначала новые</option>
+                <option value="rating">По рейтингу</option>
                 <option value="priceAsc">Цена: по возрастанию</option>
                 <option value="priceDesc">Цена: по убыванию</option>
-                <option value="name">По названию</option>
-                <option value="rating">По рейтингу</option>
+                <option value="nameAsc">По названию: А-Я</option>
+                <option value="nameDesc">По названию: Я-А</option>
               </select>
             </div>
             

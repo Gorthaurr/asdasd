@@ -23,7 +23,7 @@ export default function WishlistPage() {
     priceRange: [0, 1000000],
     brands: [],
     inStock: false,
-    sortBy: 'newest',
+    sortBy: 'rating',
     sortDirection: 'desc'
   });
   
@@ -81,23 +81,25 @@ export default function WishlistPage() {
       let result = 0;
       
       switch (filters.sortBy) {
-        case 'price':
+        case 'priceAsc':
           result = a.price - b.price;
           break;
-        case 'name':
+        case 'priceDesc':
+          result = b.price - a.price;
+          break;
+        case 'nameAsc':
           result = a.name.localeCompare(b.name);
           break;
-        case 'rating':
-          result = b.rating - a.rating;
+        case 'nameDesc':
+          result = b.name.localeCompare(a.name);
           break;
-        case 'newest':
+        case 'rating':
         default:
-          result = new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
+          result = b.rating - a.rating;
           break;
       }
       
-      // Применяем направление сортировки
-      return filters.sortDirection === 'asc' ? result : -result;
+      return result;
     });
 
     return filtered;
@@ -203,21 +205,12 @@ export default function WishlistPage() {
                 onChange={(e) => setFilters({...filters, sortBy: e.target.value as any})}
                 className="sort-select"
               >
-                <option value="newest">По дате добавления</option>
-                <option value="price">По цене</option>
-                <option value="name">По названию</option>
                 <option value="rating">По рейтингу</option>
+                <option value="priceAsc">Цена: по возрастанию</option>
+                <option value="priceDesc">Цена: по убыванию</option>
+                <option value="nameAsc">По названию: А-Я</option>
+                <option value="nameDesc">По названию: Я-А</option>
               </select>
-              <button 
-                className="sort-direction-btn"
-                onClick={() => setFilters({
-                  ...filters, 
-                  sortDirection: filters.sortDirection === 'asc' ? 'desc' : 'asc'
-                })}
-                title={filters.sortDirection === 'asc' ? 'По возрастанию' : 'По убыванию'}
-              >
-                {filters.sortDirection === 'asc' ? '↑' : '↓'}
-              </button>
             </div>
             
             <div className="results-info">

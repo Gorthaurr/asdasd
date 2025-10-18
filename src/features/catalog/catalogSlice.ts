@@ -19,7 +19,7 @@ export interface CatalogState {
 const initialState: CatalogState = {
     q: "",
     chip: "Все",
-    sort: "popular",
+    sort: "rating",
     page: 1,
     pageSize: 20,
     favoriteOnly: false,
