@@ -46,43 +46,39 @@ export default function Checkout() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Получаем все товары для отображения информации о товарах в корзине
-  const { data: productsData } = useGetProductsQuery({
-    page: 1,
-    page_size: 100,
-  });
-
+  // Получаем ID товаров из корзины
+  const cartProductIds = Object.keys(cart || {});
+  
   useEffect(() => {
     console.log('Checkout mounted, cart from Redux:', cart);
-    console.log('Cart keys count:', Object.keys(cart || {}).length);
+    console.log('Cart product IDs:', cartProductIds);
   }, [cart]);
 
-  // Transform и filter только товары из корзины
-  const transformProduct = (apiProduct: ProductApi): Product => ({
-    id: apiProduct.id,
-    name: apiProduct.name,
-    category: String(apiProduct.category_id),
-    price: (apiProduct.price_cents || 0) / 100,
-    rating: 4.5,
-    images: apiProduct.images,
-    brand: apiProduct.name.split(' ')[0],
-    reviews: 127,
-    inStock: true,
-    image: apiProduct.images?.[0]?.urls?.original || '',
-  });
-
-  const cartItems: CartItem[] = productsData?.items
-    .filter(p => cart[p.id] && cart[p.id] > 0)
-    .map(p => {
-      const product = transformProduct(p);
-      return {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: cart[p.id],
-        image: product.image || ''
-      };
-    }) || [];
+  // Загружаем товары из localStorage если есть сохраненные данные
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  
+  useEffect(() => {
+    // Пробуем загрузить сохраненные данные товаров
+    const savedProducts = getJSON('techhome_cart_products', {} as Record<string, any>);
+    console.log('Saved cart products from storage:', savedProducts);
+    
+    const items: CartItem[] = cartProductIds.map(id => {
+      const product = savedProducts[id];
+      if (product) {
+        return {
+          id: id,
+          name: product.name || 'Товар',
+          price: product.price || 0,
+          quantity: cart[id] || 1,
+          image: product.image || ''
+        };
+      }
+      return null;
+    }).filter(Boolean) as CartItem[];
+    
+    console.log('Cart items loaded:', items);
+    setCartItems(items);
+  }, [cart]);
 
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);

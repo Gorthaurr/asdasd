@@ -33,7 +33,9 @@ export const productsApi = createApi({
                 console.log('Fetching products with params:', params);
                 const queryParams = {
                     ...params,
-                    page_size: params.page_size ?? 100, // Default здесь
+                    page_size: Math.min(params.page_size ?? 20, 20), // Backend max=20
+                    include_images: params.include_images ?? true,
+                    include_attributes: params.include_attributes ?? true,
                 };
                 return {
                     url: '/api/v1/products',
