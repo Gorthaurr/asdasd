@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../app/store';
 import { useGetProductsQuery, useGetCategoriesQuery } from '../api/productsApi';
-import { setPage, setSort, applyFilters } from '../features/catalog/catalogSlice';
+import { applyFilters } from '../features/catalog/catalogSlice';
 import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
 import { addToCart } from '../features/cart/cartSlice';
 import { toggleFav } from '../features/favs/favsSlice';
@@ -15,7 +15,7 @@ import { transformProduct } from '../utils/productTransform';
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { setChip: setChipUrl } = useCatalogUrlActions();
+  const { setChip: setChipUrl, setPage: setPageUrl, setSort: setSortUrl } = useCatalogUrlActions();
   const catalogState = useSelector((s: RootState) => s.catalog);
   const favorites = useSelector((s: RootState) => s.favs.ids);
   
@@ -54,7 +54,30 @@ export default function Home() {
   // Transform API products to UI products
   const products: Product[] = useMemo(() => {
     if (!productsData?.items) return [];
-    return productsData.items.map(transformProduct);
+    const transformed = productsData.items.map(transformProduct);
+    
+    // Сохраняем все товары для поиска (обновляем при каждой загрузке)
+    try {
+      const existing = localStorage.getItem('techhome_all_products');
+      const existingProducts = existing ? JSON.parse(existing) : [];
+      const merged = [...existingProducts];
+      
+      transformed.forEach(product => {
+        const index = merged.findIndex(p => p.id === product.id);
+        if (index >= 0) {
+          merged[index] = product; // обновляем
+        } else {
+          merged.push(product); // добавляем новый
+        }
+      });
+      
+      localStorage.setItem('techhome_all_products', JSON.stringify(merged));
+      console.log('Updated all products cache for search:', merged.length);
+    } catch (e) {
+      console.error('Error saving products for search:', e);
+    }
+    
+    return transformed;
   }, [productsData]);
 
   // Categories list for sidebar
@@ -173,12 +196,14 @@ export default function Home() {
   };
 
   const handlePageChange = (page: number) => {
-    dispatch(setPage(page));
+    console.log('handlePageChange called with:', page);
+    setPageUrl(page); // Используем URL-синхронизацию
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSortChange = (sortValue: string) => {
-    dispatch(setSort(sortValue));
+    console.log('handleSortChange called with:', sortValue);
+    setSortUrl(sortValue); // Используем URL-синхронизацию
   };
 
   return (

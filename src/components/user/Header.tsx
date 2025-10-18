@@ -18,19 +18,21 @@ const Header: React.FC = () => {
   const cartCount = useSelector((s: RootState) => Object.values(s.cart.items).reduce((sum, qty) => sum + qty, 0));
   const wishlistCount = useSelector((s: RootState) => s.favs.ids.length);
 
-  // Получаем товары для автокомплита (все товары из каталога)
-  const catalogProducts = useSelector((s: RootState) => s.catalog);
-  const { data: productsData } = useGetProductsQuery({
-    page: 1,
-    page_size: 20, // Backend max
-    include_images: true,
-  });
-
-  // Transform API products to UI products for search
+  // Получаем ВСЕ товары для автокомплита из localStorage (как в "Дизайн")
+  // Используем сохраненные данные из каталога вместо API-запроса
   const products: Product[] = useMemo(() => {
-    if (!productsData?.items) return [];
-    return productsData.items.map(transformProduct);
-  }, [productsData]);
+    try {
+      const savedProducts = localStorage.getItem('techhome_all_products');
+      if (savedProducts) {
+        const parsed = JSON.parse(savedProducts);
+        console.log('Loaded products for search from storage:', parsed.length);
+        return parsed;
+      }
+    } catch (e) {
+      console.error('Error loading products for search:', e);
+    }
+    return [];
+  }, []);
 
   const handleSearch = (query: string) => {
     console.log('Search query:', query);
