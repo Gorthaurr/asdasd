@@ -8,8 +8,7 @@ import { useGetProductsQuery } from '../api/productsApi';
 import type { Product } from '../types/product';
 import type { ProductApi } from '../types/api';
 import './CheckoutPage.css';
-import { getJSON } from '../utils/localStorage';
-import { setCart } from '../features/cart/cartSlice';
+import { getJSON } from '../utils/storage'; // Правильный импорт
 
 interface CartItem {
   id: string;
@@ -56,8 +55,10 @@ export default function Checkout() {
   useEffect(() => {
     const storedCart = getJSON('techhome_cart', {});
     if (Object.keys(cart.items).length === 0 && Object.keys(storedCart).length > 0) {
-        dispatch(setCart(storedCart)); // TODO: добавить action setCart в slice
+        // dispatch(setCart(storedCart)); // Удалено: action не существует
+        // TODO: Добавьте action setCart в cartSlice или используйте replaceReducer
         console.log('Корзина загружена из storage на checkout:', storedCart);
+        // Для временного фикса: setCartItems(storedCart); если есть setter
     }
 }, []);
 
