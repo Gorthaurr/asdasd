@@ -124,7 +124,7 @@ export default function Checkout() {
       };
 
       // Отправляем заказ на сервер
-      const response = await fetch('/api/v1/orders', {
+      const response = await fetch('https://api.technofame.store/api/v1/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
