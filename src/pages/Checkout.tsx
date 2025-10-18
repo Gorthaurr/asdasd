@@ -53,14 +53,9 @@ export default function Checkout() {
   });
 
   useEffect(() => {
-    const storedCart = getJSON('techhome_cart', {});
-    if (Object.keys(cart?.items || {}).length === 0 && Object.keys(storedCart).length > 0) {
-        // dispatch(setCart(storedCart)); // Удалено: action не существует
-        // TODO: Добавьте action setCart в cartSlice или используйте replaceReducer
-        console.log('Корзина загружена из storage на checkout:', storedCart);
-        // Для временного фикса: setCartItems(storedCart); если есть setter
-    }
-}, []);
+    console.log('Checkout mounted, cart from Redux:', cart);
+    console.log('Cart keys count:', Object.keys(cart || {}).length);
+  }, [cart]);
 
   // Transform и filter только товары из корзины
   const transformProduct = (apiProduct: ProductApi): Product => ({
@@ -142,7 +137,10 @@ export default function Checkout() {
     );
   }
 
-  const cartItemsCount = Object.keys(cart?.items || {}).length; // Проверка на null/undefined
+  // cart уже является объектом items {id: quantity}, не {items: {...}}
+  const cartItemsCount = Object.keys(cart || {}).length;
+  
+  console.log('Cart items count:', cartItemsCount, 'cartItems array:', cartItems.length);
 
   if (cartItemsCount === 0) {
     return (
