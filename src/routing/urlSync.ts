@@ -41,7 +41,9 @@ export default function LocationSync(){
 
     useEffect(()=>{
         if (location.pathname !== "/") return;
+        console.log('LocationSync: URL changed', { urlShape, stateShape, equal: eq(urlShape, stateShape) });
         if (!eq(urlShape, stateShape)) {
+            console.log('LocationSync: Dispatching applyQuery with:', urlShape);
             dispatch(applyQuery(urlShape)); // БЕЗ побочных сбросов
         }
     }, [location.pathname, urlShape, stateShape, dispatch]);

@@ -24,8 +24,11 @@ export function useCatalogUrlActions(){
     const navigate = useNavigate();
 
     const setQ = useCallback((q:string)=>{
+        console.log('setQ called with:', q);
         if (location.pathname !== "/") {
-            navigate(`/?q=${encodeURIComponent(q)}`, { replace: false });
+            const url = `/?q=${encodeURIComponent(q)}`;
+            console.log('setQ: navigating to:', url);
+            navigate(url, { replace: false });
             return;
         }
         const next = withParams(new URLSearchParams(location.search), p=>{
@@ -33,6 +36,7 @@ export function useCatalogUrlActions(){
             if (q) p.set("q", q); else p.delete("q");
             p.delete("page"); // поиск всегда на 1-й странице
         });
+        console.log('setQ: navigating to:', { pathname: "/", search: next });
         // replace для набора текста — не захламляем историю
         navigate({ pathname: "/", search: next }, { replace: true });
     }, [location, navigate]);
