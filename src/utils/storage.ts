@@ -18,8 +18,16 @@
 export const getJSON = <T>(key: string, def: T): T => {
     try { 
         const raw = localStorage.getItem(key); 
-        return raw ? JSON.parse(raw) as T : def; 
-    } catch { 
+        if (!raw) {
+            console.log(`Storage getJSON: No data for key ${key}, returning default`);
+            return def;
+        }
+        const parsed = JSON.parse(raw) as T;
+        console.log(`Storage getJSON: Loaded for ${key}:`, parsed);
+        return parsed;
+    } catch (e) { 
+        console.error(`Storage getJSON error for ${key}:`, e);
+        localStorage.removeItem(key); // сбрасываем поврежденные данные
         return def; 
     }
 };
@@ -35,8 +43,10 @@ export const getJSON = <T>(key: string, def: T): T => {
  */
 export const setJSON = (key: string, val: unknown): void => {
     try {
-        localStorage.setItem(key, JSON.stringify(val));
+        const json = JSON.stringify(val);
+        localStorage.setItem(key, json);
+        console.log(`Storage setJSON: Saved for ${key}:`, val);
     } catch (error) {
-        console.warn(`Failed to save to localStorage: ${error}`);
+        console.error(`Failed to save to localStorage for ${key}:`, error);
     }
 };

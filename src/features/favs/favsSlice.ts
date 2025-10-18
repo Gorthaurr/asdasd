@@ -8,21 +8,30 @@ name: 'favs', // имя ветки состояния
 initialState: { 
     ids: (() => {
         const stored = getJSON('techhome_favs', [] as string[]);
-        // Если это не массив - сбрасываем
         if (!Array.isArray(stored)) {
+            console.warn('Invalid favs data: not an array, resetting');
             localStorage.removeItem('techhome_favs');
             return [];
         }
-        // Фильтруем только строковые ID
-        return stored.filter(id => typeof id === 'string');
+        const filtered = stored.filter(id => typeof id === 'string');
+        if (filtered.length !== stored.length) {
+            console.warn('Invalid favs data: non-string IDs removed');
+        }
+        console.log('Loaded favs IDs:', filtered);
+        return filtered;
     })()
 }, // начальное состояние из localStorage с валидацией
 reducers: {
 toggleFav: (s, a: PayloadAction<string>) => { // переключить товар в избранном
-const id = a.payload; // ID товара
-const i = s.ids.indexOf(id); // ищем позицию
-if (i >= 0) s.ids.splice(i, 1); // если уже есть — удалить
-else s.ids.push(id); // иначе — добавить
+    const id = a.payload;
+    const idx = s.ids.indexOf(id);
+    if (idx >= 0) {
+        s.ids.splice(idx, 1);
+        console.log('Removed from favs:', id);
+    } else {
+        s.ids.push(id);
+        console.log('Added to favs:', id);
+    }
 }
 }
 });

@@ -25,27 +25,29 @@ export const selectFilteredSorted = createSelector(
     selectFavIds, // список избранных
     (list, cfg, favIds) => {
         let items = list; // начинаем со всех
-        if (cfg.q) items = items.filter(p => p.name.toLowerCase().includes(cfg.q.toLowerCase())); // поиск
+        if (cfg.q) items = items.filter(p => p.name.toLowerCase().includes(cfg.q.toLowerCase().trim())); // поиск с trim
         if (cfg.chip !== 'Все') items = items.filter(p => p.category === cfg.chip); // категория
         if (cfg.favoriteOnly) items = items.filter(p => favIds.includes(p.id)); // только избранные
+        console.log('Filtered items count:', items.length);
 
 
         items = [...items]; // копия для сортировки
         switch (cfg.sort) { // применяем сортировку
-            case 'popular': items.sort((a,b)=>b.rating-a.rating); break; // популярные (по рейтингу)
-            case 'priceAsc': items.sort((a,b)=>a.price-b.price); break; // по цене ↑
-            case 'priceDesc': items.sort((a,b)=>b.price-a.price); break; // по цене ↓
-            case 'nameAsc': items.sort((a,b)=>a.name.localeCompare(b.name)); break; // по названию А-Я
-            case 'nameDesc': items.sort((a,b)=>b.name.localeCompare(a.name)); break; // по названию Я-А
-            case 'rating': items.sort((a,b)=>b.rating-a.rating); break; // по рейтингу
+            case 'popular': items.sort((a,b)=>b.rating-a.rating); break; // популярность (рейтинг) по умолчанию
+            case 'priceAsc': items.sort((a,b)=> (cfg.sortDirection === 'asc' ? a.price - b.price : b.price - a.price)); break;
+            case 'priceDesc': items.sort((a,b)=> (cfg.sortDirection === 'asc' ? b.price - a.price : a.price - b.price)); break;
+            case 'nameAsc': items.sort((a,b)=> (cfg.sortDirection === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name))); break;
+            case 'nameDesc': items.sort((a,b)=> (cfg.sortDirection === 'asc' ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name))); break;
+            case 'rating': items.sort((a,b)=> (cfg.sortDirection === 'asc' ? a.rating - b.rating : b.rating - a.rating)); break;
             case 'discount': items.sort((a,b)=>{
                 const discountA = a.oldPrice ? ((a.oldPrice - a.price) / a.oldPrice) * 100 : 0;
                 const discountB = b.oldPrice ? ((b.oldPrice - b.price) / b.oldPrice) * 100 : 0;
-                return discountB - discountA;
-            }); break; // по размеру скидки
-            case 'new': items.sort((a,b)=>b.id-a.id); break; // по новизне (id)
-            default: items.sort((a,b)=>b.rating-a.rating); // популярность (рейтинг) по умолчанию
+                return cfg.sortDirection === 'asc' ? discountA - discountB : discountB - discountA;
+            }); break;
+            case 'new': items.sort((a,b)=> (cfg.sortDirection === 'asc' ? a.id - b.id : b.id - a.id)); break;
+            default: items.sort((a,b)=>b.rating-a.rating);
         }
+        console.log('Applied sorting:', cfg.sort, 'direction:', cfg.sortDirection);
         return items; // отдаем упорядоченный список
     }
 );

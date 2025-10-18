@@ -14,13 +14,18 @@ const selectQueryKey = createSelector(
     (catalog) => JSON.stringify({
         page: catalog.page,
         page_size: catalog.pageSize,
-        q: catalog.q || undefined,
+        q: catalog.q?.trim() || undefined,
         category_slug: catalog.chip !== 'Все' ? catalog.chip : undefined,
-        sort: mapSortToApi(catalog.sort),
+        sort: mapSortToApi(`${catalog.sort}_${catalog.sortDirection}`), // учитываем direction
+        price_min: catalog.priceRange[0] > 0 ? catalog.priceRange[0] : undefined,
+        price_max: catalog.priceRange[1] < 1000000 ? catalog.priceRange[1] : undefined,
+        brands: catalog.brands.length > 0 ? catalog.brands.join(',') : undefined,
+        in_stock: catalog.inStock ? true : undefined,
         include_images: true,
         include_attributes: true,
     })
 );
+console.log('Generated query key:', queryKey);
 
 // Получение данных из API кэша с учетом параметров
 export const selectApiProducts = createSelector(
@@ -80,13 +85,18 @@ export const selectFilteredApiProducts = createSelector(
             unique: uniqueProducts.length
         });
         
-        if (!catalog.favoriteOnly) {
-            console.log('Showing all products:', uniqueProducts.length);
-            return uniqueProducts; // показываем все товары
+        let filtered = uniqueProducts;
+        if (catalog.priceRange) {
+            filtered = filtered.filter(p => p.price >= catalog.priceRange[0] && p.price <= catalog.priceRange[1]);
         }
-        // фильтруем только избранные
-        const filtered = uniqueProducts.filter(p => favIds.includes(p.id));
-        console.log('Showing only favorites:', filtered.length);
+        if (catalog.brands.length > 0) {
+            filtered = filtered.filter(p => catalog.brands.includes(p.brand));
+        }
+        if (catalog.inStock) {
+            filtered = filtered.filter(p => p.stock > 0);
+        }
+        if (catalog.favoriteOnly) return filtered.filter(p => favIds.includes(p.id));
+        console.log('Filtered API products count:', filtered.length);
         return filtered;
     }
 );
