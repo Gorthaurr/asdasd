@@ -11,12 +11,16 @@ const DashboardStats = () => {
     const fetchStats = async () => {
       try {
         setIsLoading(true);
+        console.log('DashboardStats: Starting to fetch stats...');
         const data = await adminApi.getDashboardStats();
+        console.log('DashboardStats: Data received:', data);
         setStats(data);
         setError(null);
+        console.log('DashboardStats: Stats set successfully');
       } catch (err) {
-        console.error('Error fetching dashboard stats:', err);
+        console.error('DashboardStats: Error fetching dashboard stats:', err);
         setError('Ошибка загрузки статистики');
+        setStats(null);
       } finally {
         setIsLoading(false);
       }

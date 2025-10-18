@@ -101,25 +101,21 @@ export default function Checkout() {
     setIsSubmitting(true);
 
     try {
-      // Подготавливаем данные заказа
+      // Подготавливаем данные заказа согласно схеме бекенда
       const orderData = {
-        customer: {
-          first_name: orderForm.firstName,
-          last_name: orderForm.lastName,
-          email: orderForm.email,
-          phone: orderForm.phone
-        },
-        delivery: {
-          city: orderForm.city,
-          address: orderForm.address,
-          apartment: orderForm.apartment
-        },
+        customer_first_name: orderForm.firstName,
+        customer_last_name: orderForm.lastName,
+        customer_email: orderForm.email,
+        customer_phone: orderForm.phone,
+        delivery_city: orderForm.city,
+        delivery_address: orderForm.address,
+        delivery_apartment: orderForm.apartment,
         items: cartItems.map(item => ({
           product_id: item.id,
           quantity: item.quantity,
-          price: item.price
+          price_cents: item.price
         })),
-        total_amount: calculateTotal(),
+        total_amount_cents: calculateTotal(),
         comment: orderForm.comment
       };
 

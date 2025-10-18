@@ -78,11 +78,16 @@ const TopProducts = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
+        console.log('TopProducts: Starting to fetch products...');
         const response = await adminApi.getProducts({ page: 1, page_size: 5 });
+        console.log('TopProducts: Response received:', response);
+        console.log('TopProducts: Products items:', response.items);
         setProducts(response.items);
+        console.log('TopProducts: Products set successfully');
       } catch (err) {
         setError('Ошибка загрузки продуктов');
-        console.error('Error fetching products:', err);
+        console.error('TopProducts: Error fetching products:', err);
+        setProducts([]);
       } finally {
         setIsLoading(false);
       }
