@@ -1,4 +1,4 @@
-import{r as P}from"./router-Db_-w4Oe.js";import{r as ot}from"./vendor-D3F3s8fL.js";var oe={exports:{}},ie={};/**
+import{r as P}from"./router-Cr_N4Rhw.js";import{r as ot}from"./vendor-D3F3s8fL.js";var oe={exports:{}},ie={};/**
  * @license React
  * use-sync-external-store-with-selector.production.js
  *

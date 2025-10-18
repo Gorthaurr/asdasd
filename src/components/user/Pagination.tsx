@@ -68,8 +68,10 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           className="pagination-btn pagination-btn-prev"
           onClick={() => {
-              console.log('Pagination prev clicked, going to page:', currentPage - 1);
-              onPageChange(currentPage - 1);
+              const newPage = currentPage - 1;
+              console.log('Pagination prev clicked, going to page:', newPage);
+              console.log('Calling onPageChange with:', newPage);
+              onPageChange(newPage);
           }}
           disabled={currentPage === 1}
           aria-label="Предыдущая страница"
@@ -90,6 +92,7 @@ const Pagination: React.FC<PaginationProps> = ({
                   }`}
                   onClick={() => {
                       console.log('Pagination page clicked:', page);
+                      console.log('Calling onPageChange with:', page);
                       onPageChange(page as number);
                   }}
                   aria-label={`Страница ${page}`}
