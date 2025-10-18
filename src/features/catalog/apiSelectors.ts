@@ -25,7 +25,7 @@ const selectQueryKey = createSelector(
         include_attributes: true,
     })
 );
-console.log('Generated query key:', queryKey);
+console.log('Generated query key:', queryKey, 'with filters:', { price_min, price_max, brands, in_stock });
 
 // Получение данных из API кэша с учетом параметров
 export const selectApiProducts = createSelector(
@@ -86,16 +86,25 @@ export const selectFilteredApiProducts = createSelector(
         });
         
         let filtered = uniqueProducts;
+        console.log('Before price filter:', filtered.length);
         if (catalog.priceRange) {
             filtered = filtered.filter(p => p.price >= catalog.priceRange[0] && p.price <= catalog.priceRange[1]);
+            console.log('After price filter:', filtered.length);
         }
+        console.log('Before brands filter:', filtered.length);
         if (catalog.brands.length > 0) {
             filtered = filtered.filter(p => catalog.brands.includes(p.brand));
+            console.log('After brands filter:', filtered.length);
         }
+        console.log('Before inStock filter:', filtered.length);
         if (catalog.inStock) {
             filtered = filtered.filter(p => p.stock > 0);
+            console.log('After inStock filter:', filtered.length);
         }
-        if (catalog.favoriteOnly) return filtered.filter(p => favIds.includes(p.id));
+        if (catalog.favoriteOnly) {
+            filtered = filtered.filter(p => favIds.includes(p.id));
+            console.log('After favoriteOnly filter:', filtered.length);
+        }
         console.log('Filtered API products count:', filtered.length);
         return filtered;
     }

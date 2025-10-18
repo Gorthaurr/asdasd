@@ -25,9 +25,21 @@ export const selectFilteredSorted = createSelector(
     selectFavIds, // список избранных
     (list, cfg, favIds) => {
         let items = list; // начинаем со всех
-        if (cfg.q) items = items.filter(p => p.name.toLowerCase().includes(cfg.q.toLowerCase().trim())); // поиск с trim
-        if (cfg.chip !== 'Все') items = items.filter(p => p.category === cfg.chip); // категория
-        if (cfg.favoriteOnly) items = items.filter(p => favIds.includes(p.id)); // только избранные
+        if (cfg.q) {
+            console.log('Applying search filter, before:', items.length);
+            items = items.filter(p => p.name.toLowerCase().includes(cfg.q.toLowerCase().trim()));
+            console.log('After search filter:', items.length);
+        }
+        if (cfg.chip !== 'Все') {
+            console.log('Applying category filter, before:', items.length);
+            items = items.filter(p => p.category === cfg.chip);
+            console.log('After category filter:', items.length);
+        }
+        if (cfg.favoriteOnly) {
+            console.log('Applying favorites filter, before:', items.length);
+            items = items.filter(p => favIds.includes(p.id));
+            console.log('After favorites filter:', items.length);
+        }
         console.log('Filtered items count:', items.length);
 
 
@@ -47,7 +59,7 @@ export const selectFilteredSorted = createSelector(
             case 'new': items.sort((a,b)=> (cfg.sortDirection === 'asc' ? a.id - b.id : b.id - a.id)); break;
             default: items.sort((a,b)=>b.rating-a.rating);
         }
-        console.log('Applied sorting:', cfg.sort, 'direction:', cfg.sortDirection);
+        console.log('Applied sorting:', cfg.sort, 'direction:', cfg.sortDirection, 'sorted count:', items.length);
         return items; // отдаем упорядоченный список
     }
 );
