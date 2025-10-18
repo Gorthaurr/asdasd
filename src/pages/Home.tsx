@@ -2,7 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../app/store';
 import { useGetProductsQuery, useGetCategoriesQuery } from '../api/productsApi';
-import { setChip, setPage, setSort, applyFilters } from '../features/catalog/catalogSlice';
+import { setPage, setSort, applyFilters } from '../features/catalog/catalogSlice';
+import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
 import { addToCart } from '../features/cart/cartSlice';
 import { toggleFav } from '../features/favs/favsSlice';
 import ProductGrid from '../components/user/ProductGrid';
@@ -14,6 +15,7 @@ import { transformProduct } from '../utils/productTransform';
 
 export default function Home() {
   const dispatch = useDispatch();
+  const { setChip: setChipUrl } = useCatalogUrlActions();
   const catalogState = useSelector((s: RootState) => s.catalog);
   const favorites = useSelector((s: RootState) => s.favs.ids);
   
@@ -129,8 +131,7 @@ export default function Home() {
 
   // Handlers
   const handleCategoryChange = (categorySlug: string) => {
-    dispatch(setChip(categorySlug));
-    dispatch(setPage(1));
+    setChipUrl(categorySlug); // Используем URL-синхронизацию вместо прямого dispatch
     setSidebarOpen(false);
   };
 

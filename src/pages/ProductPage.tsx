@@ -62,8 +62,19 @@ export default function ProductPage() {
     : [product.image || ''];
 
   const handleAddToCart = () => {
+    // Сохраняем данные товара для checkout
+    const cartProducts = JSON.parse(localStorage.getItem('techhome_cart_products') || '{}');
+    cartProducts[product.id] = {
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      brand: product.brand
+    };
+    localStorage.setItem('techhome_cart_products', JSON.stringify(cartProducts));
+    
+    // Добавляем в корзину
     for (let i = 0; i < quantity; i++) {
-      dispatch(addToCart({ productId: product.id, quantity: 1 }));
+      dispatch(addToCart(product.id));
     }
   };
 
