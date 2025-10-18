@@ -289,7 +289,9 @@
   color: var(--text-secondary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
+  font-family: var(--font-family-sans);
   font-weight: var(--font-medium);
+  font-size: var(--text-sm);
   cursor: pointer;
   transition: all 0.2s ease;
 }
