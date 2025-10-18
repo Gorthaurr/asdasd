@@ -32,6 +32,14 @@ toggleFav: (s, a: PayloadAction<string>) => { // переключить това
         s.ids.push(id);
         console.log('Added to favs:', id);
     }
+    
+    // Сохраняем в localStorage
+    try {
+        localStorage.setItem('techhome_favs', JSON.stringify(s.ids));
+        console.log('Saved favs to localStorage:', s.ids);
+    } catch (e) {
+        console.error('Failed to save favs to localStorage:', e);
+    }
 }
 }
 });
