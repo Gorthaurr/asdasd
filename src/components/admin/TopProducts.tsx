@@ -35,7 +35,7 @@ const TopProducts = () => {
       console.log('Product for editing:', product);
       
       // Создаем более удобный интерфейс для редактирования
-      const currentPrice = product.price_cents ? (product.price_cents / 100).toLocaleString('ru-RU') : 'Не указана';
+      const currentPrice = product.price_cents ? product.price_cents.toLocaleString('ru-RU') : 'Не указана';
       
       const editChoice = prompt(
         `Редактировать товар #${productId}\n\n` +
@@ -111,6 +111,7 @@ const TopProducts = () => {
   }
 
   if (error) {
+    console.log('TopProducts: Rendering error state, error:', error);
     return (
       <div className="top-products">
         <div className="section-header">
@@ -122,6 +123,8 @@ const TopProducts = () => {
       </div>
     );
   }
+
+  console.log('TopProducts: Rendering products:', products);
 
   return (
     <div className="admin-card">
@@ -136,11 +139,22 @@ const TopProducts = () => {
             <div className="product-rank">#{index + 1}</div>
 
             <div className="product-image">
-              {product.has_images ? (
-                <div className="image-placeholder">🖼️</div>
-              ) : (
-                <div className="no-image">📦</div>
-              )}
+              {product.images && product.images.length > 0 ? (
+                <img 
+                  src={product.images[0].url || `${(import.meta as any).env.VITE_API_URL || 'https://api.technofame.store'}/static/${product.images[0].path}`}
+                  alt={product.name}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const nextElement = e.currentTarget.nextElementSibling;
+                    if (nextElement) {
+                      (nextElement as HTMLElement).style.display = 'block';
+                    }
+                  }}
+                />
+              ) : null}
+              <div className="image-fallback" style={{ display: product.images && product.images.length > 0 ? 'none' : 'block' }}>
+                📦
+              </div>
             </div>
 
             <div className="product-info">

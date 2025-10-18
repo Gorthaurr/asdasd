@@ -22,6 +22,7 @@ adminApiClient.interceptors.request.use((config) => {
 // Интерцептор для обработки ошибок и автообновления токена
 adminApiClient.interceptors.response.use(
   (response) => {
+    console.log('Admin API Response:', response.config.url, response.status);
     // Если в ответе есть новый токен, обновляем его
     const newToken = response.headers['x-new-token'];
     if (newToken) {
@@ -30,8 +31,10 @@ adminApiClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    console.error('Admin API Error:', error.config?.url, error.response?.status, error.message);
     if (error.response?.status === 401) {
       // Токен истек или недействителен
+      console.log('Token expired, redirecting to login');
       localStorage.removeItem('admin_token');
       window.location.href = '/admin/login';
     }

@@ -22,7 +22,7 @@ const RecentOrders = () => {
       const order = await adminApi.getOrder(orderId);
       console.log('Order details:', order);
       // Можно открыть модальное окно или перейти на страницу заказа
-      alert(`Заказ #${orderId}\nКлиент: ${order.customer_name}\nСумма: ${(order.total_cents / 100).toLocaleString('ru-RU')} ₽\nСтатус: ${order.status}`);
+      alert(`Заказ #${orderId}\nКлиент: ${order.customer_name}\nСумма: ${order.total_cents.toLocaleString('ru-RU')} ₽\nСтатус: ${order.status}`);
     } catch (error) {
       console.error('Error fetching order:', error);
       alert('Ошибка загрузки заказа');
@@ -49,7 +49,7 @@ const RecentOrders = () => {
       const newStatus = prompt(
         `Редактировать заказ #${orderId}\n\n` +
         `Клиент: ${order.customer_name}\n` +
-        `Сумма: ${(order.total_cents / 100).toLocaleString('ru-RU')} ₽\n` +
+        `Сумма: ${order.total_cents.toLocaleString('ru-RU')} ₽\n` +
         `Текущий статус: ${currentStatusLabel}\n\n` +
         `Доступные статусы:\n${statuses.map(s => `- ${s}`).join('\n')}\n\n` +
         `Введите новый статус:`,
@@ -177,7 +177,7 @@ const RecentOrders = () => {
               </div>
 
               <div className="order-amount">
-                {(order.total_cents / 100).toLocaleString('ru-RU')} ₽
+                {order.total_cents.toLocaleString('ru-RU')} ₽
                 <div className="items-count">{order.items_count} поз.</div>
               </div>
             </div>

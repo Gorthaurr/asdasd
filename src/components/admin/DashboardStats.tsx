@@ -39,12 +39,15 @@ const DashboardStats = () => {
   }
 
   if (error || !stats) {
+    console.log('DashboardStats: Rendering error state, error:', error, 'stats:', stats);
     return (
       <div className="stats-error">
         <p>{error || 'Не удалось загрузить статистику'}</p>
       </div>
     );
   }
+
+  console.log('DashboardStats: Rendering stats:', stats);
 
   return (
     <div className="dashboard-stats">

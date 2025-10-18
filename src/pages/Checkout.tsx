@@ -103,20 +103,21 @@ export default function Checkout() {
     try {
       // Подготавливаем данные заказа согласно схеме бекенда
       const orderData = {
-        customer_first_name: orderForm.firstName,
-        customer_last_name: orderForm.lastName,
-        customer_email: orderForm.email,
-        customer_phone: orderForm.phone,
-        delivery_city: orderForm.city,
-        delivery_address: orderForm.address,
-        delivery_apartment: orderForm.apartment,
+        customer: {
+          name: `${orderForm.firstName} ${orderForm.lastName}`,
+          email: orderForm.email,
+          phone: orderForm.phone,
+          address: `${orderForm.address}, ${orderForm.apartment}`,
+          city: orderForm.city,
+          postal_code: ""
+        },
         items: cartItems.map(item => ({
           product_id: item.id,
-          quantity: item.quantity,
-          price_cents: item.price
+          qty: item.quantity
         })),
-        total_amount_cents: calculateTotal(),
-        comment: orderForm.comment
+        comment: orderForm.comment,
+        shipping_cents: 0,
+        currency: "RUB"
       };
 
       // Отправляем заказ на сервер
