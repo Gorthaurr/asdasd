@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../app/store';
 import { useGetProductsQuery, useGetCategoriesQuery } from '../api/productsApi';
-import { applyFilters } from '../features/catalog/catalogSlice';
+import { applyFilters, setPageSize } from '../features/catalog/catalogSlice';
 import { useCatalogUrlActions } from '../routing/useCatalogUrlActions';
 import { addToCart } from '../features/cart/cartSlice';
 import { toggleFav } from '../features/favs/favsSlice';
@@ -41,7 +41,7 @@ export default function Home() {
   }, [categoriesData, catalogState.chip]);
   
   // Получаем товары с поиском, фильтром категории и пагинацией
-  const { data: productsData, isLoading } = useGetProductsQuery({
+  const { data: productsData, isLoading, refetch } = useGetProductsQuery({
     page: catalogState.page,
     page_size: catalogState.pageSize,
     category_slug: catalogState.chip !== 'Все' ? catalogState.chip : undefined,
@@ -49,6 +49,8 @@ export default function Home() {
     q: catalogState.q || undefined,
     include_images: true,
     include_attributes: true,
+  }, {
+    refetchOnMountOrArgChange: true,
   });
 
   // Transform API products to UI products
@@ -287,6 +289,25 @@ export default function Home() {
                 <option value="priceDesc">Цена: по убыванию</option>
                 <option value="name">По названию</option>
                 <option value="rating">По рейтингу</option>
+              </select>
+            </div>
+            
+            <div className="sort-section">
+              <span className="sort-label">Показывать:</span>
+              <select 
+                value={catalogState.pageSize}
+                onChange={(e) => {
+                  const newSize = Number(e.target.value);
+                  console.log('PageSize changed to:', newSize);
+                  dispatch(setPageSize(newSize));
+                }}
+                className="sort-select"
+              >
+                <option value="20">20 товаров</option>
+                <option value="40">40 товаров</option>
+                <option value="60">60 товаров</option>
+                <option value="80">80 товаров</option>
+                <option value="100">100 товаров</option>
               </select>
             </div>
             
