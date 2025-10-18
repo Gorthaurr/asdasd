@@ -5,7 +5,7 @@ import type { ProductApi, ProductsResponse, CategoryApi } from '../types/api';
 // Параметры для запроса продуктов
 export interface ProductsQueryParams {
     page?: number;
-    page_size?: number = 100; // Default to 100 to avoid 422
+    page_size?: number; // Убрано =100, defaults не в interface
     category_id?: number;
     category_slug?: string;
     q?: string;
@@ -31,9 +31,13 @@ export const productsApi = createApi({
         getProducts: builder.query<ProductsResponse, ProductsQueryParams>({
             query: (params) => {
                 console.log('Fetching products with params:', params);
+                const queryParams = {
+                    ...params,
+                    page_size: params.page_size ?? 100, // Default здесь
+                };
                 return {
                     url: '/api/v1/products',
-                    params,
+                    params: queryParams,
                 };
             },
             transformResponse: (response: ProductsResponse) => ({
