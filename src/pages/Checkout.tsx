@@ -100,18 +100,60 @@ export default function Checkout() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Симуляция отправки заказа
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      // Подготавливаем данные заказа
+      const orderData = {
+        customer: {
+          first_name: orderForm.firstName,
+          last_name: orderForm.lastName,
+          email: orderForm.email,
+          phone: orderForm.phone
+        },
+        delivery: {
+          city: orderForm.city,
+          address: orderForm.address,
+          apartment: orderForm.apartment
+        },
+        items: cartItems.map(item => ({
+          product_id: item.id,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        total_amount: calculateTotal(),
+        comment: orderForm.comment
+      };
 
-    setIsSubmitting(false);
-    setShowSuccess(true);
-    
-    // Очищаем корзину
-    dispatch(clearCart());
-    
-    setTimeout(() => {
-      navigate('/');
-    }, 3000);
+      // Отправляем заказ на сервер
+      const response = await fetch('/api/v1/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Ошибка при создании заказа');
+      }
+
+      const result = await response.json();
+      console.log('Заказ создан:', result);
+
+      setIsSubmitting(false);
+      setShowSuccess(true);
+      
+      // Очищаем корзину
+      dispatch(clearCart());
+      
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
+
+    } catch (error) {
+      console.error('Ошибка при оформлении заказа:', error);
+      setIsSubmitting(false);
+      alert('Произошла ошибка при оформлении заказа. Попробуйте еще раз.');
+    }
   };
 
   if (showSuccess) {
