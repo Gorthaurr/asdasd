@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, Heart, Menu } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../app/store';
-import { setDrawerOpen, setQ } from '../../features/catalog/catalogSlice';
+import { setDrawerOpen } from '../../features/catalog/catalogSlice';
+import { useCatalogUrlActions } from '../../routing/useCatalogUrlActions';
 import { useGetProductsQuery } from '../../api/productsApi';
 import SearchAutocomplete from './SearchAutocomplete';
 import type { Product } from '../../types/product';
@@ -13,13 +14,16 @@ import './Header.css';
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { setQ: setQUrl } = useCatalogUrlActions();
   const cartCount = useSelector((s: RootState) => Object.values(s.cart.items).reduce((sum, qty) => sum + qty, 0));
   const wishlistCount = useSelector((s: RootState) => s.favs.ids.length);
 
-  // Получаем товары для автокомплита
+  // Получаем товары для автокомплита (все товары из каталога)
+  const catalogProducts = useSelector((s: RootState) => s.catalog);
   const { data: productsData } = useGetProductsQuery({
     page: 1,
-    page_size: 1000,
+    page_size: 20, // Backend max
+    include_images: true,
   });
 
   // Transform API products to UI products for search
@@ -29,7 +33,8 @@ const Header: React.FC = () => {
   }, [productsData]);
 
   const handleSearch = (query: string) => {
-    dispatch(setQ(query));
+    console.log('Search query:', query);
+    setQUrl(query); // Используем URL-синхронизацию
     // Если мы не на главной странице, переходим туда
     if (window.location.pathname !== '/') {
       navigate('/');
