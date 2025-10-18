@@ -47,6 +47,8 @@ export default function Home() {
     category_slug: catalogState.chip !== 'Все' ? catalogState.chip : undefined,
     category_id: catalogState.chip !== 'Все' ? selectedCategoryId : undefined,
     q: catalogState.q || undefined,
+    include_images: true,
+    include_attributes: true,
   });
 
   // Transform API products to UI products
