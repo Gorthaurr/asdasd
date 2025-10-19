@@ -12,6 +12,7 @@ export interface CatalogState {
     // Дополнительные фильтры для нового UI
     priceRange: [number, number];
     brands: string[];
+    heatingTypes: string[]; // Типы нагрева для варочных панелей: газовые, электрические, индукционные
     inStock: boolean;
     sortDirection: 'asc' | 'desc';
 }
@@ -26,6 +27,7 @@ const initialState: CatalogState = {
     drawerOpen: false,
     priceRange: [0, 1000000],
     brands: [],
+    heatingTypes: [],
     inStock: false,
     sortDirection: 'desc',
 };
@@ -77,6 +79,19 @@ const catalogSlice = createSlice({
             }
             s.page = 1;
         },
+        setHeatingTypes: (s, a: PayloadAction<string[]>) => {
+            s.heatingTypes = a.payload;
+            s.page = 1;
+        },
+        toggleHeatingType: (s, a: PayloadAction<string>) => {
+            const heatingType = a.payload;
+            if (s.heatingTypes.includes(heatingType)) {
+                s.heatingTypes = s.heatingTypes.filter(h => h !== heatingType);
+            } else {
+                s.heatingTypes.push(heatingType);
+            }
+            s.page = 1;
+        },
         setInStock: (s, a: PayloadAction<boolean>) => {
             s.inStock = a.payload;
             s.page = 1;
@@ -89,6 +104,7 @@ const catalogSlice = createSlice({
             s.chip = f.category;
             s.priceRange = f.priceRange;
             s.brands = f.brands;
+            s.heatingTypes = f.heatingTypes || [];
             s.inStock = f.inStock;
             s.sort = f.sortBy;
             s.sortDirection = f.sortDirection;
@@ -97,6 +113,7 @@ const catalogSlice = createSlice({
         clearFilters: (s) => {
             s.priceRange = [0, 1000000];
             s.brands = [];
+            s.heatingTypes = [];
             s.inStock = false;
             s.chip = "Все";
             s.page = 1;
@@ -109,7 +126,7 @@ export const {
     toggleFavoriteOnly, setFavoriteOnly,
     openDrawer, closeDrawer, setDrawerOpen,
     applyQuery,
-    setPriceRange, setBrands, toggleBrand, setInStock, setSortDirection,
+    setPriceRange, setBrands, toggleBrand, setHeatingTypes, toggleHeatingType, setInStock, setSortDirection,
     applyFilters, clearFilters,
 } = catalogSlice.actions;
 

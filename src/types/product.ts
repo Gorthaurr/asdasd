@@ -17,6 +17,7 @@ export interface Product {
     specifications?: Record<string, string>;
     image?: string; // primary image URL
     originalPrice?: number;
+    heatingType?: string; // тип нагрева для варочных панелей
 }
 
 // Тип состояния фильтров
@@ -24,6 +25,7 @@ export interface FilterState {
     category: string;
     priceRange: [number, number];
     brands: string[];
+    heatingTypes: string[];
     inStock: boolean;
     sortBy: 'name' | 'price' | 'rating' | 'newest';
     sortDirection: 'asc' | 'desc';

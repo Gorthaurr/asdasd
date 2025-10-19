@@ -12,6 +12,7 @@ interface FiltersPanelProps {
   isOpen: boolean;
   onClose: () => void;
   onApply?: () => void;
+  showHeatingTypeFilter?: boolean;
 }
 
 const FiltersPanel: React.FC<FiltersPanelProps> = ({
@@ -22,14 +23,17 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
   maxPrice,
   isOpen,
   onClose,
-  onApply
+  onApply,
+  showHeatingTypeFilter = false
 }) => {
   const [expandedSections, setExpandedSections] = useState<{
     price: boolean;
     brands: boolean;
+    heatingTypes: boolean;
   }>({
     price: true,
     brands: true,
+    heatingTypes: true,
   });
 
   const toggleSection = (section: keyof typeof expandedSections) => {
@@ -55,6 +59,23 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
     }
   };
 
+  const handleHeatingTypeToggle = (heatingType: string) => {
+    const currentTypes = filters.heatingTypes || [];
+    if (currentTypes.includes(heatingType)) {
+      // Убираем тип нагрева
+      onFiltersChange({
+        ...filters,
+        heatingTypes: currentTypes.filter(type => type !== heatingType)
+      });
+    } else {
+      // Добавляем тип нагрева
+      onFiltersChange({
+        ...filters,
+        heatingTypes: [...currentTypes, heatingType]
+      });
+    }
+  };
+
   const handlePriceRangeChange = (index: number, value: string) => {
     const newRange = [...filters.priceRange] as [number, number];
     newRange[index] = parseInt(value) || 0;
@@ -69,6 +90,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
       category: 'all',
       priceRange: [minPrice, maxPrice],
       brands: [],
+      heatingTypes: [],
       inStock: false,
       sortBy: 'rating',
       sortDirection: 'desc'
@@ -80,6 +102,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
     if (filters.category !== 'all') count++;
     if (filters.priceRange[0] !== minPrice || filters.priceRange[1] !== maxPrice) count++;
     if (filters.brands.length > 0) count++;
+    if (filters.heatingTypes && filters.heatingTypes.length > 0) count++;
     return count;
   };
 
@@ -173,6 +196,44 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
                         />
                         <span className="checkmark"></span>
                         <span className="brand-name">{brand}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Типы нагрева для варочных панелей */}
+          {showHeatingTypeFilter && (
+            <div className="filter-section">
+              <button 
+                className="filter-section-header"
+                onClick={() => toggleSection('heatingTypes')}
+              >
+                <span>🔥 Тип нагрева</span>
+                <ChevronDown 
+                  size={16} 
+                  className={`chevron ${expandedSections.heatingTypes ? 'expanded' : ''}`}
+                />
+              </button>
+              {expandedSections.heatingTypes && (
+                <div className="filter-section-content">
+                  <div className="heating-types-list">
+                    {[
+                      { value: 'газовые', label: 'Газовые', icon: '🔥' },
+                      { value: 'электрические', label: 'Электрические', icon: '⚡' },
+                      { value: 'индукционные', label: 'Индукционные', icon: '🧲' }
+                    ].map(heatingType => (
+                      <label key={heatingType.value} className="heating-type-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={(filters.heatingTypes || []).includes(heatingType.value)}
+                          onChange={() => handleHeatingTypeToggle(heatingType.value)}
+                        />
+                        <span className="checkmark"></span>
+                        <span className="heating-type-icon">{heatingType.icon}</span>
+                        <span className="heating-type-name">{heatingType.label}</span>
                       </label>
                     ))}
                   </div>

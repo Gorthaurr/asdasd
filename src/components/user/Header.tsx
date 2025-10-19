@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Heart, Menu } from 'lucide-react';
+import { ShoppingCart, Heart, Menu } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../app/store';
 import { setDrawerOpen } from '../../features/catalog/catalogSlice';
@@ -78,10 +78,6 @@ const Header: React.FC = () => {
             <ShoppingCart size={24} />
             <span className="action-label">Корзина</span>
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-          </button>
-          <button className="header-action">
-            <User size={24} />
-            <span className="action-label">Профиль</span>
           </button>
         </div>
       </div>

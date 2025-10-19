@@ -20,12 +20,13 @@ const selectQueryKey = createSelector(
         price_min: catalog.priceRange[0] > 0 ? catalog.priceRange[0] : undefined,
         price_max: catalog.priceRange[1] < 1000000 ? catalog.priceRange[1] : undefined,
         brands: catalog.brands.length > 0 ? catalog.brands.join(',') : undefined,
+        heating_types: catalog.heatingTypes.length > 0 ? catalog.heatingTypes.join(',') : undefined,
         in_stock: catalog.inStock ? true : undefined,
         include_images: true,
         include_attributes: true,
     })
 );
-console.log('Generated query key:', queryKey, 'with filters:', { price_min, price_max, brands, in_stock });
+// console.log('Generated query key:', queryKey, 'with filters:', { price_min, price_max, brands, in_stock });
 
 // Получение данных из API кэша с учетом параметров
 export const selectApiProducts = createSelector(
@@ -95,6 +96,11 @@ export const selectFilteredApiProducts = createSelector(
         if (catalog.brands.length > 0) {
             filtered = filtered.filter(p => catalog.brands.includes(p.brand));
             console.log('After brands filter:', filtered.length);
+        }
+        console.log('Before heating types filter:', filtered.length);
+        if (catalog.heatingTypes.length > 0) {
+            filtered = filtered.filter(p => p.heatingType && catalog.heatingTypes.includes(p.heatingType));
+            console.log('After heating types filter:', filtered.length);
         }
         console.log('Before inStock filter:', filtered.length);
         if (catalog.inStock) {

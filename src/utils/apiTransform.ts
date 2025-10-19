@@ -20,6 +20,7 @@ export function transformProduct(apiProduct: ProductApi): Product {
         oldPrice: getOldPriceFromAttributes(apiProduct.attributes),
         rating: getRatingFromAttributes(apiProduct.attributes) || 4.5, // дефолтный рейтинг
         images: apiProduct.images, // передаем изображения
+        heatingType: getHeatingTypeFromAttributes(apiProduct.attributes), // тип нагрева для варочных панелей
     };
 }
 
@@ -86,6 +87,40 @@ function getRatingFromAttributes(attributes?: Array<{ key: string; value: string
     if (ratingAttr?.value) {
         const rating = parseFloat(ratingAttr.value);
         return isNaN(rating) ? null : Math.min(5, Math.max(0, rating)); // ограничиваем 0-5
+    }
+    
+    return null;
+}
+
+/**
+ * Получает тип нагрева из атрибутов продукта для варочных панелей
+ */
+function getHeatingTypeFromAttributes(attributes?: Array<{ key: string; value: string }>): string | null {
+    if (!attributes) return null;
+    
+    // Ищем атрибуты, связанные с типом нагрева
+    const heatingTypeAttr = attributes.find(attr => 
+        attr.key.toLowerCase().includes('heating') || 
+        attr.key.toLowerCase().includes('нагрев') ||
+        attr.key.toLowerCase().includes('тип') ||
+        attr.key.toLowerCase().includes('type') ||
+        attr.key.toLowerCase().includes('панели')
+    );
+    
+    if (heatingTypeAttr?.value) {
+        const value = heatingTypeAttr.value.toLowerCase();
+        
+        // Определяем тип нагрева по значению
+        if (value.includes('газ') || value.includes('gas')) {
+            return 'газовые';
+        } else if (value.includes('индукц') || value.includes('induction') || value.includes('индукционные')) {
+            return 'индукционные';
+        } else if (value.includes('электр') || value.includes('electric') || value.includes('электрические')) {
+            return 'электрические';
+        }
+        
+        // Если не удалось определить, возвращаем исходное значение
+        return heatingTypeAttr.value;
     }
     
     return null;

@@ -42,18 +42,26 @@ export default function Home() {
   }, [categoriesData, catalogState.chip]);
   
   // Получаем товары с поиском, фильтром категории, брендов и пагинацией
-  const { data: productsData, isLoading, refetch } = useGetProductsQuery({
+  const queryParams = {
     page: catalogState.page,
     page_size: catalogState.pageSize,
     category_slug: catalogState.chip !== 'Все' ? catalogState.chip : undefined,
     category_id: catalogState.chip !== 'Все' ? selectedCategoryId : undefined,
     brand: catalogState.brands.length === 1 ? catalogState.brands[0] : undefined,
+    brands: catalogState.brands.length > 1 ? catalogState.brands.join(',') : undefined,
+    heating_types: catalogState.heatingTypes.length > 0 ? catalogState.heatingTypes.join(',') : undefined,
     q: catalogState.q || undefined,
     price_min: catalogState.priceRange[0] > 0 ? catalogState.priceRange[0] : undefined,
     price_max: catalogState.priceRange[1] < 1000000 ? catalogState.priceRange[1] : undefined,
     include_images: true,
     include_attributes: true,
-  }, {
+  };
+  
+  // Отладочная информация
+  console.log('Home.tsx: Query params:', queryParams);
+  console.log('Home.tsx: Heating types:', catalogState.heatingTypes);
+  
+  const { data: productsData, isLoading, refetch } = useGetProductsQuery(queryParams, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -154,6 +162,7 @@ export default function Home() {
     category: catalogState.chip,
     priceRange: catalogState.priceRange,
     brands: catalogState.brands,
+    heatingTypes: catalogState.heatingTypes,
     inStock: catalogState.inStock,
     sortBy: catalogState.sort as any,
     sortDirection: catalogState.sortDirection,
@@ -288,7 +297,8 @@ export default function Home() {
                 <span className="filter-icon">⚙️</span>
                 <span>Фильтры</span>
                 {(filters.category !== 'Все' || filters.brands.length > 0 || filters.inStock || 
-                  filters.priceRange[0] > priceRange.min || filters.priceRange[1] < priceRange.max) && (
+                  filters.priceRange[0] > priceRange.min || filters.priceRange[1] < priceRange.max ||
+                  (filters.heatingTypes && filters.heatingTypes.length > 0)) && (
                   <span className="active-indicator"></span>
                 )}
               </button>
@@ -369,6 +379,7 @@ export default function Home() {
         isOpen={filtersPanelOpen}
         onClose={handleCancelFilters}
         onApply={handleApplyFilters}
+        showHeatingTypeFilter={catalogState.chip === 'варочные-панели'}
       />
 
       <style>{`

@@ -9,6 +9,8 @@ export interface ProductsQueryParams {
     category_id?: number;
     category_slug?: string;
     brand?: string;
+    brands?: string;
+    heating_types?: string;
     q?: string;
     price_min?: number;
     price_max?: number;
@@ -32,12 +34,14 @@ export const productsApi = createApi({
         getProducts: builder.query<ProductsResponse, ProductsQueryParams>({
             query: (params) => {
                 console.log('Fetching products with params:', params);
+                console.log('Heating types in API call:', params.heating_types);
                 const queryParams = {
                     ...params,
                     page_size: params.page_size ?? 20, // Теперь backend принимает до 100
                     include_images: params.include_images ?? true,
                     include_attributes: params.include_attributes ?? true,
                 };
+                console.log('Final query params:', queryParams);
                 return {
                     url: '/api/v1/products',
                     params: queryParams,
@@ -83,12 +87,22 @@ export const productsApi = createApi({
             }),
             providesTags: [{ type: 'Products', id: 'BRANDS' }]
         }),
+
+        // GET /api/v1/products/heating-types - уникальные типы нагрева
+        getHeatingTypes: builder.query<string[], { category_id?: number }>({
+            query: (params) => ({
+                url: '/api/v1/products/heating-types',
+                params: params.category_id ? { category_id: params.category_id } : undefined,
+            }),
+            providesTags: [{ type: 'Products', id: 'HEATING_TYPES' }]
+        }),
     })
 });
 
 export const { 
     useGetProductsQuery, 
-    useGetProductQuery,
+    useGetProductQuery, 
     useGetCategoriesQuery,
-    useGetBrandsQuery
+    useGetBrandsQuery,
+    useGetHeatingTypesQuery
 } = productsApi; // хуки для компонентов

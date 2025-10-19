@@ -249,6 +249,70 @@
   font-weight: var(--font-medium, 500);
 }
 
+/* Стили для типов нагрева */
+.heating-types-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+}
+
+.heating-type-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  padding: var(--space-2, 8px);
+  border-radius: var(--radius-md, 6px);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.heating-type-checkbox:hover {
+  background: var(--surface-secondary, #f8fafc);
+}
+
+.heating-type-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.heating-type-checkbox .checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-light, #e5e7eb);
+  border-radius: var(--radius-sm, 4px);
+  background: var(--surface-primary, white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.heating-type-checkbox input[type="checkbox"]:checked + .checkmark {
+  background: var(--primary, #2563eb);
+  border-color: var(--primary, #2563eb);
+}
+
+.heating-type-checkbox input[type="checkbox"]:checked + .checkmark::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.heating-type-icon {
+  font-size: 1.2rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.heating-type-name {
+  flex: 1;
+  font-size: var(--text-base, 16px);
+  color: var(--text-primary, #111827);
+  font-weight: var(--font-medium, 500);
+}
+
 /* Availability */
 .availability-checkbox {
   display: flex;

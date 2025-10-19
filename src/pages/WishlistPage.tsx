@@ -25,6 +25,7 @@ export default function WishlistPage() {
     category: catalogState.chip,
     priceRange: catalogState.priceRange,
     brands: catalogState.brands,
+    heatingTypes: catalogState.heatingTypes,
     inStock: catalogState.inStock,
     sortBy: catalogState.sort === 'rating' ? 'rating' :
             catalogState.sort === 'priceAsc' || catalogState.sort === 'priceDesc' ? 'price' :
@@ -74,6 +75,13 @@ export default function WishlistPage() {
     // Фильтр по брендам
     if (filters.brands.length > 0) {
       filtered = filtered.filter(product => filters.brands.includes(product.brand || ''));
+    }
+
+    // Фильтр по типам нагрева
+    if (filters.heatingTypes && filters.heatingTypes.length > 0) {
+      filtered = filtered.filter(product => 
+        product.heatingType && filters.heatingTypes.includes(product.heatingType)
+      );
     }
 
     // Фильтр по наличию
@@ -222,7 +230,8 @@ export default function WishlistPage() {
                 <span className="filter-icon">⚙️</span>
                 <span>Фильтры</span>
                 {(filters.category !== 'Все' || filters.brands.length > 0 || filters.inStock || 
-                  filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000) && (
+                  filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000 || 
+                  (filters.heatingTypes && filters.heatingTypes.length > 0)) && (
                   <span className="active-indicator"></span>
                 )}
               </button>
@@ -388,6 +397,7 @@ export default function WishlistPage() {
         isOpen={filtersPanelOpen}
         onClose={handleCancelFilters}
         onApply={handleApplyFilters}
+        showHeatingTypeFilter={filters.category === 'варочные-панели'}
       />
     </div>
   );
