@@ -60,9 +60,13 @@ export default function Home() {
   // Отладочная информация
   console.log('Home.tsx: Query params:', queryParams);
   console.log('Home.tsx: Heating types:', catalogState.heatingTypes);
+  console.log('Home.tsx: Category:', catalogState.chip);
+  console.log('Home.tsx: Brands:', catalogState.brands);
   
   const { data: productsData, isLoading, refetch } = useGetProductsQuery(queryParams, {
     refetchOnMountOrArgChange: true,
+    // Принудительно перезапускаем запрос при изменении параметров
+    skip: false,
   });
 
   // Transform API products to UI products

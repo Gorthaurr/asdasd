@@ -33,15 +33,17 @@ export const productsApi = createApi({
         // GET /api/v1/products - список продуктов
         getProducts: builder.query<ProductsResponse, ProductsQueryParams>({
             query: (params) => {
-                console.log('Fetching products with params:', params);
-                console.log('Heating types in API call:', params.heating_types);
+                console.log('🔄 API: Fetching products with params:', params);
+                console.log('🔄 API: Category:', params.category_slug);
+                console.log('🔄 API: Heating types:', params.heating_types);
+                console.log('🔄 API: Brands:', params.brands);
                 const queryParams = {
                     ...params,
                     page_size: params.page_size ?? 20, // Теперь backend принимает до 100
                     include_images: params.include_images ?? true,
                     include_attributes: params.include_attributes ?? true,
                 };
-                console.log('Final query params:', queryParams);
+                console.log('🔄 API: Final query params:', queryParams);
                 return {
                     url: '/api/v1/products',
                     params: queryParams,

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Filter, X, ChevronDown } from 'lucide-react';
 import type { FilterState } from '../../types/product';
+import { useCatalogUrlActions } from '../../routing/useCatalogUrlActions';
 import './FiltersPanel.css';
 
 interface FiltersPanelProps {
@@ -26,6 +27,8 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
   onApply,
   showHeatingTypeFilter = false
 }) => {
+  const { setBrands, setHeatingTypes, setPriceRange, setInStock } = useCatalogUrlActions();
+  
   const [expandedSections, setExpandedSections] = useState<{
     price: boolean;
     brands: boolean;
@@ -46,16 +49,20 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
   const handleBrandToggle = (brand: string) => {
     // Если бренд уже выбран - убираем его
     if (filters.brands.includes(brand)) {
+      const newBrands: string[] = [];
       onFiltersChange({
         ...filters,
-        brands: []
+        brands: newBrands
       });
+      setBrands(newBrands);
     } else {
       // Иначе выбираем только этот бренд (убираем остальные)
+      const newBrands = [brand];
       onFiltersChange({
         ...filters,
-        brands: [brand]
+        brands: newBrands
       });
+      setBrands(newBrands);
     }
   };
 
@@ -63,16 +70,20 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
     const currentTypes = filters.heatingTypes || [];
     if (currentTypes.includes(heatingType)) {
       // Убираем тип нагрева
+      const newTypes = currentTypes.filter(type => type !== heatingType);
       onFiltersChange({
         ...filters,
-        heatingTypes: currentTypes.filter(type => type !== heatingType)
+        heatingTypes: newTypes
       });
+      setHeatingTypes(newTypes);
     } else {
       // Добавляем тип нагрева
+      const newTypes = [...currentTypes, heatingType];
       onFiltersChange({
         ...filters,
-        heatingTypes: [...currentTypes, heatingType]
+        heatingTypes: newTypes
       });
+      setHeatingTypes(newTypes);
     }
   };
 
@@ -83,10 +94,11 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
       ...filters,
       priceRange: newRange
     });
+    setPriceRange(newRange);
   };
 
   const clearAllFilters = () => {
-    onFiltersChange({
+    const clearedFilters = {
       category: 'all',
       priceRange: [minPrice, maxPrice],
       brands: [],
@@ -94,7 +106,12 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
       inStock: false,
       sortBy: 'rating',
       sortDirection: 'desc'
-    });
+    };
+    onFiltersChange(clearedFilters);
+    setBrands([]);
+    setHeatingTypes([]);
+    setPriceRange([minPrice, maxPrice]);
+    setInStock(false);
   };
 
   const getActiveFiltersCount = () => {

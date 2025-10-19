@@ -37,8 +37,26 @@ const catalogSlice = createSlice({
     initialState,
     reducers: {
         // UI-экшены (оставляем для совместимости, если где-то используются):
-        setQ: (s, a: PayloadAction<string>) => { s.q = a.payload; s.page = 1; },
-        setChip: (s, a: PayloadAction<string>) => { s.chip = a.payload; s.page = 1; },
+        setQ: (s, a: PayloadAction<string>) => { 
+            s.q = a.payload; 
+            s.page = 1; 
+            // Сбрасываем фильтры при поиске
+            s.priceRange = [0, 1000000];
+            s.brands = [];
+            s.heatingTypes = [];
+            s.inStock = false;
+        },
+        setChip: (s, a: PayloadAction<string>) => { 
+            s.chip = a.payload; 
+            s.page = 1; 
+            // Сбрасываем фильтры и сортировку при смене категории
+            s.priceRange = [0, 1000000];
+            s.brands = [];
+            s.heatingTypes = [];
+            s.inStock = false;
+            s.sort = "rating";
+            s.sortDirection = 'desc';
+        },
         setSort: (s, a: PayloadAction<string>) => { s.sort = a.payload; s.page = 1; },
         setPage: (s, a: PayloadAction<number>) => { s.page = Math.max(1, a.payload); },
         setPageSize: (s, a: PayloadAction<number>) => { s.pageSize = Math.max(1, Math.min(100, a.payload)); s.page = 1; },
@@ -52,6 +70,7 @@ const catalogSlice = createSlice({
         // ВАЖНО: один атомарный экшен для накатки URL -> Redux БЕЗ скрытых сбросов
         applyQuery: (s, a: PayloadAction<{
             q?: string; chip?: string; sort?: string; page?: number; favoriteOnly?: boolean;
+            brands?: string[]; heatingTypes?: string[]; priceRange?: [number, number]; inStock?: boolean;
         }>) => {
             const p = a.payload;
             if (p.q !== undefined) s.q = p.q;
@@ -59,6 +78,10 @@ const catalogSlice = createSlice({
             if (p.sort !== undefined) s.sort = p.sort;
             if (p.favoriteOnly !== undefined) s.favoriteOnly = !!p.favoriteOnly;
             if (p.page !== undefined) s.page = Math.max(1, p.page);
+            if (p.brands !== undefined) s.brands = p.brands;
+            if (p.heatingTypes !== undefined) s.heatingTypes = p.heatingTypes;
+            if (p.priceRange !== undefined) s.priceRange = p.priceRange;
+            if (p.inStock !== undefined) s.inStock = p.inStock;
         },
 
         // Новые экшены для фильтров

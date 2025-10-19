@@ -35,6 +35,12 @@ export function useCatalogUrlActions(){
             // Убираем trim() чтобы сохранять пробелы
             if (q) p.set("q", q); else p.delete("q");
             p.delete("page"); // поиск всегда на 1-й странице
+            // Сбрасываем фильтры при поиске
+            p.delete("brands");
+            p.delete("heating_types");
+            p.delete("price_min");
+            p.delete("price_max");
+            p.delete("in_stock");
         });
         console.log('setQ: navigating to:', { pathname: "/", search: next });
         // replace для набора текста — не захламляем историю
@@ -46,6 +52,13 @@ export function useCatalogUrlActions(){
         const next = withParams(base, p=>{
             if (chip && chip!=="Все") p.set("chip", chip); else p.delete("chip");
             p.delete("page"); // смена фильтра -> страница 1
+            // Сбрасываем все фильтры при смене категории
+            p.delete("brands");
+            p.delete("heating_types");
+            p.delete("price_min");
+            p.delete("price_max");
+            p.delete("in_stock");
+            p.delete("sort");
         });
         navigate("/" + next, { replace: false });
         // Скролл к началу страницы при смене фильтра
@@ -92,5 +105,51 @@ export function useCatalogUrlActions(){
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [location, navigate]);
 
-    return { setQ, setChip, setSort, setPage, toggleFavorites };
+    const setBrands = useCallback((brands: string[])=>{
+        const base = location.pathname === "/" ? new URLSearchParams(location.search) : new URLSearchParams("");
+        const next = withParams(base, p=>{
+            if (brands.length > 0) {
+                p.set("brands", brands.join(','));
+            } else {
+                p.delete("brands");
+            }
+            p.delete("page"); // смена фильтра -> страница 1
+        });
+        navigate("/" + next, { replace: false });
+    }, [location, navigate]);
+
+    const setHeatingTypes = useCallback((heatingTypes: string[])=>{
+        const base = location.pathname === "/" ? new URLSearchParams(location.search) : new URLSearchParams("");
+        const next = withParams(base, p=>{
+            if (heatingTypes.length > 0) {
+                p.set("heating_types", heatingTypes.join(','));
+            } else {
+                p.delete("heating_types");
+            }
+            p.delete("page"); // смена фильтра -> страница 1
+        });
+        navigate("/" + next, { replace: false });
+    }, [location, navigate]);
+
+    const setPriceRange = useCallback((priceRange: [number, number])=>{
+        const base = location.pathname === "/" ? new URLSearchParams(location.search) : new URLSearchParams("");
+        const next = withParams(base, p=>{
+            const [min, max] = priceRange;
+            if (min > 0) p.set("price_min", String(min)); else p.delete("price_min");
+            if (max < 1000000) p.set("price_max", String(max)); else p.delete("price_max");
+            p.delete("page"); // смена фильтра -> страница 1
+        });
+        navigate("/" + next, { replace: false });
+    }, [location, navigate]);
+
+    const setInStock = useCallback((inStock: boolean)=>{
+        const base = location.pathname === "/" ? new URLSearchParams(location.search) : new URLSearchParams("");
+        const next = withParams(base, p=>{
+            if (inStock) p.set("in_stock", "true"); else p.delete("in_stock");
+            p.delete("page"); // смена фильтра -> страница 1
+        });
+        navigate("/" + next, { replace: false });
+    }, [location, navigate]);
+
+    return { setQ, setChip, setSort, setPage, toggleFavorites, setBrands, setHeatingTypes, setPriceRange, setInStock };
 }
